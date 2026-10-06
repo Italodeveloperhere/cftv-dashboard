@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFTV • Monitoramento Operacional</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:24px}
+  .container{max-width:1650px;margin:0 auto}
+  .top-block{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:20px;padding:18px 22px;margin-bottom:22px}
+  .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  h1{font-size:1.6rem;font-weight:800;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  h1 .badge{background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-text-fill-color:white;padding:9px 13px;border-radius:12px;font-size:1rem}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .clock{background:rgba(30,41,59,.7);padding:9px 16px;border-radius:12px;font-weight:600;font-size:.85rem;border:1px solid rgba(148,163,184,.15);color:#cbd5e1;display:flex;gap:8px;align-items:center}
+  .pulse-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+  .btn{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);color:#cbd5e1;padding:8px 14px;border-radius:9px;font-weight:600;font-size:.8rem;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap}
+  .btn:hover{border-color:#3b82f6;color:#fff}
+  .btn.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-color:transparent;color:#fff}
+  .btn.green{background:linear-gradient(135deg,#22c55e,#10b981);border:none;color:#fff}
+  .btn.red{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171}
+  .btn.small{padding:7px 12px;font-size:.76rem}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+  .kpi{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:14px;padding:12px 14px;position:relative;cursor:pointer;transition:.25s}
+  .kpi:hover{transform:translateY(-2px);border-color:rgba(96,165,250,.5)}
+  .kpi::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;border-radius:4px 0 0 4px;background:linear-gradient(180deg,#3b82f6,#8b5cf6)}
+  .kpi.red::before{background:linear-gradient(180deg,#ef4444,#f97316)}
+  .kpi.green::before{background:linear-gradient(180deg,#22c55e,#10b981)}
+  .kpi.amber::before{background:linear-gradient(180deg,#f59e0b,#ef4444)}
+  .kpi.purple::before{background:linear-gradient(180deg,#8b5cf6,#d946ef)}
+  .kpi-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;font-weight:600;margin-bottom:4px}
+  .kpi-value{font-size:1.5rem;font-weight:800;color:#f1f5f9;line-height:1}
+  .kpi.red .kpi-value{color:#f87171}
+  .kpi.green .kpi-value{color:#4ade80}
+  .kpi small{font-size:.66rem;color:#64748b;display:block;margin-top:3px}
+  .legend-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:14px 18px;margin-bottom:14px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+  .legend-title{font-size:.72rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+  .legend-item{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(15,23,42,.5);border:1px solid rgba(148,163,184,.15);font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;color:#cbd5e1;font-family:inherit}
+  .legend-item:hover{border-color:#3b82f6;transform:translateY(-1px)}
+  .legend-item.active{background:rgba(59,130,246,.2);border-color:#3b82f6;color:#fff}
+  .legend-item .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .legend-item .dot.ip{background:#60a5fa;box-shadow:0 0 8px rgba(96,165,250,.6)}
+  .legend-item .dot.analog{background:#fbbf24;box-shadow:0 0 8px rgba(251,191,36,.6)}
+  .legend-item .dot.online{background:#4ade80;box-shadow:0 0 8px rgba(74,222,128,.6)}
+  .legend-item .dot.offline{background:#f87171;box-shadow:0 0 8px rgba(248,113,113,.6)}
+  .legend-item .count{background:rgba(0,0,0,.3);padding:1px 8px;border-radius:10px;font-size:.7rem;margin-left:2px;color:#94a3b8}
+  .toolbar-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  input.search,select.search{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);padding:9px 13px;border-radius:9px;color:#e2e8f0;font-size:.83rem;outline:none;font-family:inherit}
+  input.search:focus,select.search:focus{border-color:#3b82f6}
+  input.search{flex:1;min-width:200px}
+  .table-box{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;margin-bottom:22px}
+  .table-scroll{overflow-x:auto;max-height:70vh;overflow-y:auto}
+  .table-scroll::-webkit-scrollbar{width:10px;height:10px}
+  .table-scroll::-webkit-scrollbar-track{background:rgba(15,23,42,.5)}
+  .table-scroll::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:8px}
+  table{width:100%;border-collapse:collapse;font-size:.82rem}
+  thead th{text-align:left;padding:12px;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;background:#1a2234;border-bottom:2px solid rgba(96,165,250,.2);white-space:nowrap;position:sticky;top:0;z-index:10}
+  tbody td{padding:10px 12px;border-bottom:1px solid rgba(148,163,184,.06);color:#e2e8f0;vertical-align:middle}
+  tbody tr:hover td{background:rgba(59,130,246,.05)}
+  tbody tr:nth-child(even){background:rgba(15,23,42,.2)}
+  .row-alert{background:rgba(239,68,68,.06)!important}
+  .piso{background:rgba(59,130,246,.2);color:#93c5fd;padding:3px 10px;border-radius:8px;font-weight:700;font-size:.72rem;display:inline-block}
+  .badge{padding:4px 10px;border-radius:20px;font-size:.68rem;font-weight:700;display:inline-flex;align-items:center;gap:5px}
+  .badge.ok{background:rgba(34,197,94,.15);color:#4ade80}
+  .badge.bad{background:rgba(239,68,68,.15);color:#f87171}
+  .badge.ip{background:rgba(59,130,246,.15);color:#60a5fa}
+  .badge.analog{background:rgba(245,158,11,.15);color:#fbbf24}
+  .toggle{position:relative;width:48px;height:24px;background:#ef4444;border-radius:20px;cursor:pointer;transition:.3s;display:inline-block}
+  .toggle.on{background:#22c55e}
+  .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.3s}
+  .toggle.on::after{left:27px}
+  .offtime{font-size:.7rem;color:#f87171;font-weight:600}
+  .offtime.long{color:#fbbf24}
+  .offtime.critical{color:#ef4444;font-weight:800;animation:blink 2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+  .btn-icon{background:transparent;border:1px solid rgba(148,163,184,.2);color:#94a3b8;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.72rem;margin-right:4px}
+  .btn-icon:hover{border-color:#3b82f6;color:#60a5fa}
+  .btn-icon.del:hover{border-color:#ef4444;color:#f87171}
+  .empty{text-align:center;padding:40px;color:#64748b}
+  .footer{text-align:center;padding:24px 0 12px;color:#64748b;font-size:.76rem;border-top:1px solid rgba(148,163,184,.1);margin-top:24px}
+  .info-cell{font-size:.72rem;color:#64748b}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal-bg.show{display:flex}
+  .modal{background:#1e293b;border:1px solid rgba(148,163,184,.2);border-radius:18px;padding:26px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+  .modal h2{margin-bottom:18px;font-size:1.1rem}
+  .form-group{margin-bottom:14px}
+  .form-group label{display:block;font-size:.7rem;color:#94a3b8;text-transform:uppercase;margin-bottom:6px;font-weight:600}
+  .form-group input,.form-group select{width:100%;background:rgba(15,23,42,.8);border:1px solid rgba(148,163,184,.2);padding:10px 12px;border-radius:8px;color:#e2e8f0;font-size:.85rem;outline:none;font-family:inherit}
+  .form-group input:focus{border-color:#3b82f6}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+  .toast{position:fixed;bottom:24px;right:24px;background:#1e293b;border:1px solid #22c55e;color:#4ade80;padding:14px 22px;border-radius:12px;font-weight:600;font-size:.85rem;z-index:200;display:none;max-width:340px}
+  .toast.show{display:block;animation:slide .3s}
+  .toast.error{border-color:#ef4444;color:#f87171}
+  @keyframes slide{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+  @media(max-width:700px){body{padding:12px}h1{font-size:1.2rem}.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo } = React;
+
+const NOMES_IP = [
+["C ELEV AMARELO","C","Sala de Segurança"],["141 HALL ELEV LOBY","L","Sala de Segurança"],
+["G ESC ROL GOLDEN","G","Sala de Segurança"],["LIP 96 TERREO AMARELO","T","Sala de Segurança"],
+["158 RAMPA SAIDA","L","Sala de Segurança"],["SOFAS LOBBY","L","Sala de Segurança"],
+["L BAR LOBY","L","Sala de Segurança"],["L PTZ 160","L","Sala de Segurança"],
+["FOYER DO GOL 2","G","Sala de Segurança"],["L RECEP","L","Sala de Segurança"],
+["C HALL ELEV AMA","C","Piso C"],["G SAIDA DE EMER","G","Sala de Segurança"],
+["L WC","L","Sala de Segurança"],["G JUMBAO VERDE","G","Sala de Segurança"],
+["G ELEVADOR LARANJA","G","Sala de Segurança"],["JUMBAO VERDE GOLDEN","G","Sala de Segurança"],
+["PISO L RESTAURANTE","L","Sala de Segurança"],["G FOYER 1","G","Sala de Segurança"],
+["FOYER GOLDEN 5","G","Sala de Segurança"],["L P GIR EXTERNA","L","Sala de Segurança"],
+["L COR BUSINESS","L","Sala de Segurança"],["L RAMPA ENTRADA","L","Sala de Segurança"],
+["GOLDEN 3","G","Sala de Segurança"],["G FOYER 6","G","Sala de Segurança"],
+["G CORR CAMARIM","G","Sala de Segurança"],["TERREO ELEV LARANJA","T","Sala de Segurança"],
+["C HALL ELEV AMARELO","C","Sala de Segurança"],["G FOYER 3","G","Sala de Segurança"],
+["G FOYER 2","G","Sala de Segurança"],["L REST INTERNA","L","Sala de Segurança"],
+["M ELEV LARANJA","M","Sala de Segurança"],["ACADEMIA 2","L","Sala de Segurança"],
+["C CORRE BALROON 2","C","Piso C"],["C CORR BALLROON 1","C","Piso C"],
+["C HALL ELEV 13","C","Piso C"],["M CORR MONET","M","Shaft 1º Andar"],
+["SALA SIG","L","Sala TI"],["LOBY 15 ANDAR","15º","Shaft 10º Andar"],
+["M CORR VOLP","M","Shaft 1º Andar"],["C CORR BALLROON 3","C","Piso C"],
+["C CORR TEATRO 2","C","Piso C"],["CORR TEATRO 3","C","Piso C"],
+["C1 CORREDOR 2","C","Piso C"],["C 1 CORREDOR 1","C","Shaft 1º Andar"],
+["C FOYER SANTOS","C","Piso C"],["FOYER RJ","C","Piso C"],
+["PISO C1 SALA BONEMI","C","Piso C"],["C HALL GALERIA","C","Shaft 1º Andar"],
+["CORR BALLRONN 4","C","Piso C"],["C CORR TEATRO 3","C","Piso C"],
+["C CORR BALROON 1","C","Piso C"],["SALA EVENTOS","C","Piso C"],
+["M CORR DEGAS","M","Shaft 1º Andar"],["M JUMBAO VERDE","M","Shaft 1º Andar"],
+["M ESCADA ROL","M","Shaft 1º Andar"],["C SALA SÃO PAULO","C","Piso C"],
+["M CORR PORTINARI","M","Shaft 1º Andar"],["M HALL SOCIAL","M","Shaft 1º Andar"],
+["C FOYER BALLROON","C","Piso C"],["13A HALL DE SERV","13º","Shaft 10º Andar"],
+["C SHAFT DE CFTV","C","Piso C"],["C NEW ORLEANS","C","Piso C"],
+["M CORR AREA TECN","M","Shaft 1º Andar"],["M CORR CASA BLAN","M","Shaft 1º Andar"],
+["L BAD ALMOX","L","Sala TI"],["C CORR TEATR ESQU","C","Piso C"],
+["C CORR TEATR DIR","C","Piso C"],["C CORR PALCO ESQ","C","Piso C"],
+["C COR PALCO DIR","C","Piso C"],["L BAD COZ FRIA","L","Sala TI"],
+["L BAD COZ QUENTE","L","Sala TI"],["L BAD VARANDA","L","Sala TI"],
+["L RESTAURANTE 2","L","Sala TI"],["C CURITIBA","C","Piso C"],
+["G CAMARIN","G","Piso C"],["C BRASILIA","C","Piso C"],
+["C TEATRO PLATEIA","C","Piso C"],["ELEV TEATRO AMAR","C","Piso C"],
+["M HALL JUMBÃO","M","Shaft 1º Andar"],["M ACADENIA","M","Shaft 1º Andar"],
+["M GAUGUIN","M","Shaft 1º Andar"],["M CHAGAL","M","Shaft 1º Andar"],
+["C SANTOS 2","C","Piso C"],["M SALA DILUIDOR","M","Shaft 1º Andar"],
+["C1 PANAMA","C","Piso C"],["C1 VOLP","C","Piso C"],
+["C1 VIVALD 2","C","Piso C"],["C1 BOMENI","C","Piso C"],
+["C1 VIVALD 1","C","Piso C"],["C SALVADOR 2","C","Piso C"],
+["C SANTOS 1","C","Piso C"],["C SALVADOR 1","C","Piso C"],
+["C BACK BALLROON","C","Piso C"],["C BALLROON 3","C","Piso C"],
+["C BACK BALLROON 1","C","Piso C"],["C FOYER SP","C","Piso C"],
+["C SÃO PAULO 1","C","Piso C"],["C BALLROON 4","C","Piso C"],
+["C CURITIBA 2","C","Piso C"],["C ESPAÇO GALERIA","C","Piso C"],
+["C SÃO PAULO 4","C","Piso C"],["C SÃO PAULO 3","C","Piso C"],
+["C SÃO PAULO 2","C","Piso C"],["C CORR TEATRO 1","C","Shaft 1º Andar"],
+["C1 PARANAGUA","C","Piso C"],["M GAUGUIN 2","M","Shaft 1º Andar"],
+["C CURITIBA 1","C","Piso C"],["G TI","G","Shaft 1º Andar"],
+["16 ANDAR","16º","Shaft 10º Andar"],["M MONET","M","Shaft 1º Andar"],
+["10 B1","10º","Shaft 10º Andar"],["10 B3","10º","Shaft 10º Andar"],
+["M RENOIR","M","Shaft 1º Andar"],["M DEGAS","M","Shaft 1º Andar"],
+["M MAISSE","M","Shaft 1º Andar"],["M TARSILA","M","Shaft 1º Andar"],
+["M PORTINARI","M","Shaft 1º Andar"],["10 B2","10º","Shaft 10º Andar"],
+["10 HALL SOCIAL","10º","Shaft 10º Andar"],["10 HALL SERVIÇO","10º","Shaft 10º Andar"],
+["10 10A2","10º","Shaft 10º Andar"],["10 A3","10º","Shaft 10º Andar"],
+["10 A1","10º","Shaft 10º Andar"],["M VOLP","M","Shaft 1º Andar"],
+["M ESC ROLANTE","M","Shaft 1º Andar"],["M CHAGAL 1","M","Shaft 1º Andar"],
+["PTZ GOLDEN","G","Shaft 1º Andar"],["M ACESS FORUM","M","Shaft 1º Andar"],
+["M AUX LIMPEZA","M","Shaft 1º Andar"]
+];
+
+const NOMES_ANALOG = [
+["17 ANDAR","17º","DVR Andares"],["17 ANDAR CORR HELIPONTO","17º","DVR Andares"],
+["Hall Serv 16 andar","16º","DVR Andares"],["17 CORR CASA MAQUINAS","17º","DVR Andares"],
+["Asa A 14 Andar","14º","DVR Andares"],["Asa B14 Andar","14º","DVR Andares"],
+["Hal Serv 14 Andar","14º","DVR Andares"],["Asa A 15 Andar","15º","DVR Andares"],
+["Asa B 15 Andar","15º","DVR Andares"],["Hall Social 15 Andar","15º","DVR Andares"],
+["15 ANDAR HALL SERV","15º","DVR Andares"],["Asa A 11 Andar","11º","DVR Andares"],
+["11 ANDAR HALL SERV","11º","DVR Andares"],["11 ANDAR ASA B","11º","DVR Andares"],
+["ELEVADOR H6","19","DVR Andares"],["ELEVADOR H7","19","DVR Andares"],
+["12 ANDAR HALL SERV","12º","DVR Andares"],["12 ANDAR ASA A","12º","DVR Andares"],
+["12 ANDAR ASA B","12º","DVR Andares"],["ASA B 9 ANDAR","9º","DVR Andares"],
+["ELEVADOR H 5","19","DVR Andares"],["ASA A 9 ANDAR","9º","DVR Andares"],
+["AREA SERV 7 ANDAR","7º","DVR Andares"],["7 ANDAR ASA A","7º","DVR Andares"],
+["AREA SERV 9 ANDAR","9º","DVR Andares"],["7 ANDAR ASA B","7º","DVR Andares"],
+["8 Andar Asa A","8º","DVR Andares"],["8 andar Hall Serv","8º","DVR Andares"],
+["8 ANDAR ASA B","8º","DVR Andares"],["16 HALL SOCIAL","16º","DVR Andares"],
+["L P1","L","DVR Lazer"],["L P 2","L","DVR Lazer"],
+["L DOCAS 1","L","DVR Lazer"],["L ENT DOCAS","L","DVR Lazer"],
+["L SALA Descanso","L","DVR Lazer"],["BUSINESS 1","L","DVR Lazer"],
+["BUSINESS 2","L","DVR Lazer"],["PISO M HALL SERV","M","DVR Lazer"],
+["S3 GOV1","S3","DVR Lazer"],["MALEIRO L","L","DVR Lazer"],
+["S2 WC FEMININO","S2","DVR Lazer"],["DOCAS 3","L","DVR Lazer"],
+["L PORT RECEPÇAO","L","DVR Lazer"],["PTZ LOBY","L","DVR Lazer"],
+["PISO S 3 GOV 2","S3","DVR Lazer"],["ACESSO BUSINNES","L","DVR Lazer"],
+["L ENTRADA GR","L","DVR Lazer"],["C JUMBAO VERDE","C","DVR Lazer"],
+["S3 RESTAURANTE","S3","DVR Lazer"],["L CORREDOR SEG","L","DVR Lazer"],
+["L BUSINNES CENTER","L","DVR Lazer"],["L CAIXA GERAL","L","DVR Lazer"],
+["L CORR T I","L","DVR Lazer"],["PISO C JUBAO V 2","C","DVR Lazer"],
+["PISO C JUMBAO V","C","DVR Lazer"],["CENTRAL SEG","L","DVR Lazer"],
+["ALMOX MANUT","L","DVR Lazer"],["MANUTENCAO 1","L","DVR Lazer"],
+["CAQ","L","DVR Lazer"],["CAQ 2","L","DVR Lazer"],
+["S2 CONFEITARIA","S2","DVR Lazer"],["ADM MANUTENÇÃO","L","DVR Lazer"],
+["S 2 WC MASC","S2","DVR Lazer"],["S2 AREA DESCANÇO","S2","DVR Lazer"],
+["RELOGIO DE PONTO","L","DVR Lazer"],["LAVANDERIA 1","L","DVR Lazer"],
+["LAVANDERIA 2","L","DVR Lazer"],["ADM MANUTENCAO","L","DVR Lazer"]
+];
+
+function buildInitial(){
+  const now = Date.now();
+  const cams = [];
+  let id = 1;
+  NOMES_IP.forEach(([n,p,local],i) => {
+    cams.push({id:id++, n, ip:`192.168.1.${20+i}`, t:'IP', s:'ok', p, mod:'ONVIF', local, statusSince:now});
+  });
+  NOMES_ANALOG.forEach(([n,p,local]) => {
+    cams.push({id:id++, n, ip:'', t:'Analogica', s:'ok', p, mod:'', local, statusSince:now});
+  });
+  const shuffled = [...cams].sort(()=>Math.random()-0.5);
+  shuffled.slice(0,78).forEach(c => {
+    const idx = cams.findIndex(x=>x.id===c.id);
+    cams[idx].s = 'Parada';
+    cams[idx].statusSince = now - (Math.random()*72+1)*3600000;
+  });
+  return cams;
+}
+
+function timeAgo(ts){if(!ts)return '';const d=Date.now()-ts;const m=Math.floor(d/60000);const h=Math.floor(m/60);const dy=Math.floor(h/24);if(dy>0)return `há ${dy}d ${h%24}h`;if(h>0)return `há ${h}h ${m%60}min`;if(m>0)return `há ${m}min`;return 'agora';}
+function formatDateTime(ts){if(!ts)return '—';return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function getDurationHours(ts){if(!ts)return 0;return (Date.now()-ts)/3600000;}
+
+function useLS(key, initial){
+  const [v, setV] = useState(()=>{
+    try{
+      const s = localStorage.getItem(key);
+      return s ? JSON.parse(s) : (typeof initial === 'function' ? initial() : initial);
+    }catch{ return typeof initial === 'function' ? initial() : initial; }
+  });
+  useEffect(()=>{ try{ localStorage.setItem(key, JSON.stringify(v)); }catch{} },[key,v]);
+  return [v, setV];
+}
+
+const STORAGE_KEY = 'cftv_v13';
+const LOG_KEY = 'cftv_log_v13';
+
+function App(){
+  const [cameras, setCameras] = useLS(STORAGE_KEY, buildInitial);
+  const [log, setLog] = useLS(LOG_KEY, []);
+  const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [floorFilter, setFloorFilter] = useState('all');
+  const [legendFilters, setLegendFilters] = useState({ip:false, analog:false, online:false, offline:false});
+  const [modal, setModal] = useState(null);
+  const [toast, setToast] = useState({msg:'', type:'success'});
+  const [, setTick] = useState(0);
+  const [now, setNow] = useState(new Date());
+
+  useEffect(()=>{
+    const t = setInterval(()=>{ setTick(x=>x+1); setNow(new Date()); }, 1000);
+    return ()=>clearInterval(t);
+  },[]);
+
+  const notify = (msg, type='success') => {
+    setToast({msg, type});
+    setTimeout(()=>setToast({msg:'', type:'success'}), 3000);
+  };
+
+  const addLog = (msg) => setLog(prev => [{id:Date.now()+Math.random(), time:Date.now(), msg}, ...prev].slice(0,300));
+
+  const toggleCamera = (id) => {
+    setCameras(prev => prev.map(c => {
+      if (c.id !== id) return c;
+      const novo = c.s.toLowerCase()==='ok' ? 'Parada' : 'ok';
+      addLog(`${novo==='ok'?'🟢 LIGADA':'🔴 DESLIGADA'}: ${c.n}`);
+      notify(`${c.n} → ${novo==='ok'?'Ligada':'Desligada'}`, novo==='ok'?'success':'error');
+      return {...c, s:novo, statusSince: Date.now()};
+    }));
+  };
+
+  const saveCamera = (data) => {
+    if (modal.mode === 'add') {
+      const newId = Math.max(0, ...cameras.map(c=>c.id)) + 1;
+      const nova = {...data, id:newId, statusSince:Date.now()};
+      setCameras(prev => [...prev, nova]);
+      addLog(`➕ ADICIONADA: ${nova.n}`);
+      notify('Câmera adicionada!');
+    } else {
+      setCameras(prev => prev.map(c => {
+        if (c.id !== modal.camera.id) return c;
+        const mudou = c.s !== data.s;
+        addLog(`✏️ EDITADA: ${data.n}`);
+        return {...c, ...data, statusSince: mudou ? Date.now() : c.statusSince};
+      }));
+      notify('Câmera atualizada!');
+    }
+    setModal(null);
+  };
+
+  const deleteCamera = (id) => {
+    const cam = cameras.find(c=>c.id===id);
+    if (!confirm(`Remover "${cam.n}"?`)) return;
+    setCameras(prev => prev.filter(c=>c.id!==id));
+    addLog(`🗑️ REMOVIDA: ${cam.n}`);
+    notify('Câmera removida','info');
+  };
+
+  const resetAll = () => {
+    if (!confirm('Restaurar dados com 78 câmeras off-line?')) return;
+    setCameras(buildInitial());
+    setLog([]);
+    notify('Dados restaurados!','info');
+  };
+
+  const exportCSV = () => {
+    const headers = ['ID','Nome','Tipo','Status','Piso','IP','Modelo','Local','Desde'];
+    const rows = cameras.map(c => [
+      c.id, `"${c.n}"`, c.t, c.s, c.p||'', c.ip||'', c.mod||'', c.local||'',
+      c.s.toLowerCase()==='ok'?'—':formatDateTime(c.statusSince)
+    ].join(','));
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cftv_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    notify('CSV exportado!');
+  };
+
+  const metrics = useMemo(()=>{
+    const total = cameras.length;
+    const online = cameras.filter(c=>c.s.toLowerCase()==='ok').length;
+    const offline = total - online;
+    const ip = cameras.filter(c=>c.t==='IP').length;
+    const analog = total - ip;
+    return {total, online, offline, ip, analog};
+  },[cameras]);
+
+  const filtered = useMemo(()=>{
+    return cameras.filter(c => {
+      if (filter==='IP' && c.t!=='IP') return false;
+      if (filter==='Analogica' && c.t!=='Analogica') return false;
+      if (filter==='offline' && c.s.toLowerCase()!=='parada') return false;
+      if (filter==='online' && c.s.toLowerCase()!=='ok') return false;
+      if (filter==='critical' && !(c.s.toLowerCase()==='parada' && getDurationHours(c.statusSince)>24)) return false;
+      if (floorFilter!=='all' && (c.p||'Sem piso')!==floorFilter) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        if (!c.n.toLowerCase().includes(q) && !(c.ip||'').includes(q)
+            && !(c.mod||'').toLowerCase().includes(q)
+            && !(c.local||'').toLowerCase().includes(q)) return false;
+      }
+      const legendActive = Object.entries(legendFilters).filter(([k,v])=>v).map(([k])=>k);
+      if (legendActive.length > 0) {
+        let match = false;
+        if (legendFilters.ip && c.t==='IP') match = true;
+        if (legendFilters.analog && c.t==='Analogica') match = true;
+        if (legendFilters.online && c.s.toLowerCase()==='ok') match = true;
+        if (legendFilters.offline && c.s.toLowerCase()==='parada') match = true;
+        if (!match) return false;
+      }
+      return true;
+    });
+  },[cameras, filter, search, floorFilter, legendFilters]);
+
+  const allFloors = useMemo(()=>{
+    const s = new Set(cameras.map(c => c.p && c.p.trim() ? c.p : 'Sem piso'));
+    return Array.from(s).sort();
+  },[cameras]);
+
+  const toggleLegend = (key) => setLegendFilters(prev => ({...prev, [key]: !prev[key]}));
+
+  return (
+    <div className="container">
+      <div className="top-block">
+        <div className="header">
+          <h1><span className="badge">🎥</span> CFTV • Monitoramento Operacional</h1>
+          <div className="actions">
+            <div className="clock"><span className="pulse-dot"></span>{now.toLocaleTimeString('pt-BR')}</div>
+            <button className="btn green" onClick={()=>setModal({mode:'add'})}>+ Nova Câmera</button>
+            <button className="btn" onClick={exportCSV}>⬇ CSV</button>
+            <button className="btn red" onClick={resetAll}>↺ Restaurar</button>
+          </div>
+        </div>
+        <div className="kpis">
+          <div className="kpi" onClick={()=>{setFilter('all');setFloorFilter('all');setLegendFilters({ip:false,analog:false,online:false,offline:false});}}>
+            <div className="kpi-label">Total</div>
+            <div className="kpi-value">{metrics.total}</div>
+            <small>Clique para ver todas</small>
+          </div>
+          <div className="kpi green" onClick={()=>{setFilter('online');setLegendFilters({ip:false,analog:false,online:false,offline:false});}}>
+            <div className="kpi-label">Online</div>
+            <div className="kpi-value">{metrics.online}</div>
+            <small>{((metrics.online/metrics.total)*100).toFixed(1)}% operacionais</small>
+          </div>
+          <div className="kpi red" onClick={()=>{setFilter('offline');setLegendFilters({ip:false,analog:false,online:false,offline:false});}}>
+            <div className="kpi-label">Off-line</div>
+            <div className="kpi-value">{metrics.offline}</div>
+            <small>{((metrics.offline/metrics.total)*100).toFixed(1)}% com falha</small>
+          </div>
+          <div className="kpi amber" onClick={()=>{setFilter('critical');setLegendFilters({ip:false,analog:false,online:false,offline:false});}}>
+            <div className="kpi-label">⚠️ Críticas +24h</div>
+            <div className="kpi-value">{cameras.filter(c=>c.s.toLowerCase()==='parada'&&getDurationHours(c.statusSince)>24).length}</div>
+            <small>Off-line há mais de 24h</small>
+          </div>
+          <div className="kpi purple">
+            <div className="kpi-label">📜 Eventos</div>
+            <div className="kpi-value">{log.length}</div>
+            <small>Histórico</small>
+          </div>
+        </div>
+      </div>
+
+      <div className="legend-box">
+        <span className="legend-title">Legenda:</span>
+        <button className={`legend-item ${legendFilters.ip?'active':''}`} onClick={()=>toggleLegend('ip')}>
+          <span className="dot ip"></span> IP <span className="count">{metrics.ip}</span>
+        </button>
+        <button className={`legend-item ${legendFilters.analog?'active':''}`} onClick={()=>toggleLegend('analog')}>
+          <span className="dot analog"></span> Analógica <span className="count">{metrics.analog}</span>
+        </button>
+        <button className={`legend-item ${legendFilters.online?'active':''}`} onClick={()=>toggleLegend('online')}>
+          <span className="dot online"></span> Online <span className="count">{metrics.online}</span>
+        </button>
+        <button className={`legend-item ${legendFilters.offline?'active':''}`} onClick={()=>toggleLegend('offline')}>
+          <span className="dot offline"></span> Off-line <span className="count">{metrics.offline}</span>
+        </button>
+      </div>
+
+      <div className="toolbar-box">
+        <div className="toolbar">
+          <input className="search" placeholder="🔍 Buscar..." value={search} onChange={e=>setSearch(e.target.value)} />
+          <button className={`btn small ${filter==='all'?'active':''}`} onClick={()=>setFilter('all')}>Todas</button>
+          <button className={`btn small ${filter==='online'?'active':''}`} onClick={()=>setFilter('online')}>🟢 Online</button>
+          <button className={`btn small ${filter==='offline'?'active':''}`} onClick={()=>setFilter('offline')}>🔴 Off-line</button>
+          <button className={`btn small ${filter==='critical'?'active':''}`} onClick={()=>setFilter('critical')}>⚠️ +24h</button>
+          <select className="search" style={{maxWidth:160}} value={floorFilter} onChange={e=>setFloorFilter(e.target.value)}>
+            <option value="all">Todos os pisos</option>
+            {allFloors.map(f=><option key={f} value={f}>{f}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div className="table-box">
+        <div className="table-scroll">
+          <table>
+            <thead><tr>
+              <th style={{width:60}}>Ligar</th>
+              <th>Nome da Câmera</th>
+              <th>Tipo</th>
+              <th>Piso</th>
+              <th>Local</th>
+              <th>IP</th>
+              <th>Status</th>
+              <th>Desde</th>
+              <th>Tempo</th>
+              <th style={{width:80}}>Ações</th>
+            </tr></thead>
+            <tbody>
+              {filtered.length===0 ? (
+                <tr><td colSpan="10" className="empty">Nenhuma câmera encontrada</td></tr>
+              ) : filtered.map(c => {
+                const online = c.s.toLowerCase()==='ok';
+                const horas = getDurationHours(c.statusSince);
+                let offClass = 'offtime';
+                if (horas > 72) offClass += ' critical';
+                else if (horas > 24) offClass += ' long';
+                const isCritical = !online && horas > 24;
+                return (
+                  <tr key={c.id} className={isCritical ? 'row-alert' : ''}>
+                    <td><div className={`toggle ${online?'on':''}`} onClick={()=>toggleCamera(c.id)}></div></td>
+                    <td><div style={{fontWeight:600}}>{c.n}</div></td>
+                    <td><span className={`badge ${c.t==='IP'?'ip':'analog'}`}>{c.t}</span></td>
+                    <td>{c.p ? <span className="piso">{c.p}</span> : '—'}</td>
+                    <td className="info-cell">{c.local||'—'}</td>
+                    <td className="info-cell">{c.ip||'—'}</td>
+                    <td><span className={`badge ${online?'ok':'bad'}`}>{online?'● Online':'● Off-line'}</span></td>
+                    <td className="info-cell">{online?'—':formatDateTime(c.statusSince)}</td>
+                    <td className={offClass}>{online?'—':timeAgo(c.statusSince)}</td>
+                    <td>
+                      <button className="btn-icon" onClick={()=>setModal({mode:'edit',camera:c})}>✏️</button>
+                      <button className="btn-icon del" onClick={()=>deleteCamera(c.id)}>🗑️</button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="footer">
+        💾 Dados salvos no navegador • {cameras.length} câmeras • {metrics.offline} off-line • {log.length} eventos
+      </div>
+
+      {modal && <CameraModal camera={modal.camera} onSave={saveCamera} onClose={()=>setModal(null)} />}
+
+      {toast.msg && (
+        <div className={`toast show ${toast.type}`}>
+          {toast.type==='success'?'✅ ':toast.type==='error'?'🔴 ':'ℹ️ '}{toast.msg}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CameraModal({camera, onSave, onClose}){
+  const [form, setForm] = useState(camera ? {
+    n: camera.n, t: camera.t, s: camera.s, p: camera.p,
+    ip: camera.ip, mod: camera.mod, local: camera.local
+  } : {n:'', t:'IP', s:'ok', p:'', ip:'', mod:'', local:''});
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (!form.n.trim()) return alert('Digite um nome');
+    onSave(form);
+  };
+
+  return (
+    <div className="modal-bg show" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <h2>{camera?'✏️ Editar Câmera':'➕ Nova Câmera'}</h2>
+        <form onSubmit={submit}>
+          <div className="form-group"><label>Nome</label>
+            <input value={form.n} onChange={e=>setForm({...form,n:e.target.value})} autoFocus /></div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+            <div className="form-group"><label>Tipo</label>
+              <select value={form.t} onChange={e=>setForm({...form,t:e.target.value})}>
+                <option value="IP">IP</option><option value="Analogica">Analógica</option>
+              </select></div>
+            <div className="form-group"><label>Status</label>
+              <select value={form.s} onChange={e=>setForm({...form,s:e.target.value})}>
+                <option value="ok">Online</option><option value="Parada">Off-line</option>
+              </select></div>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+            <div className="form-group"><label>Piso</label>
+              <input value={form.p} onChange={e=>setForm({...form,p:e.target.value})} /></div>
+            <div className="form-group"><label>Local</label>
+              <input value={form.local} onChange={e=>setForm({...form,local:e.target.value})} /></div>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+            <div className="form-group"><label>IP</label>
+              <input value={form.ip} onChange={e=>setForm({...form,ip:e.target.value})} /></div>
+            <div className="form-group"><label>Modelo</label>
+              <input value={form.mod} onChange={e=>setForm({...form,mod:e.target.value})} /></div>
+          </div>
+          <div className="modal-actions">
+            <button type="button" className="btn" onClick={onClose}>Cancelar</button>
+            <button type="submit" className="btn green">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
