@@ -4,23 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CFTV • Monitoramento Operacional</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:24px}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:24px}
   .container{max-width:1650px;margin:0 auto}
   .top-block{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:20px;padding:18px 22px;margin-bottom:22px}
   .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-  h1{font-size:1.6rem;font-weight:800;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  h1{font-size:1.6rem;font-weight:800;display:flex;align-items:center;gap:12px;
+    background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   h1 .badge{background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-text-fill-color:white;padding:9px 13px;border-radius:12px;font-size:1rem}
   .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .clock{background:rgba(30,41,59,.7);padding:9px 16px;border-radius:12px;font-weight:600;font-size:.85rem;border:1px solid rgba(148,163,184,.15);color:#cbd5e1;display:flex;gap:8px;align-items:center}
   .pulse-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
-  .btn{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);color:#cbd5e1;padding:8px 14px;border-radius:9px;font-weight:600;font-size:.8rem;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap}
+  .btn{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);color:#cbd5e1;padding:9px 16px;border-radius:9px;font-weight:600;font-size:.83rem;cursor:pointer;transition:.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
   .btn:hover{border-color:#3b82f6;color:#fff}
   .btn.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-color:transparent;color:#fff}
   .btn.green{background:linear-gradient(135deg,#22c55e,#10b981);border:none;color:#fff}
@@ -32,7 +29,6 @@
   .kpi::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;border-radius:4px 0 0 4px;background:linear-gradient(180deg,#3b82f6,#8b5cf6)}
   .kpi.red::before{background:linear-gradient(180deg,#ef4444,#f97316)}
   .kpi.green::before{background:linear-gradient(180deg,#22c55e,#10b981)}
-  .kpi.amber::before{background:linear-gradient(180deg,#f59e0b,#ef4444)}
   .kpi.purple::before{background:linear-gradient(180deg,#8b5cf6,#d946ef)}
   .kpi-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;font-weight:600;margin-bottom:4px}
   .kpi-value{font-size:1.5rem;font-weight:800;color:#f1f5f9;line-height:1}
@@ -103,11 +99,106 @@
 </style>
 </head>
 <body>
-<div id="root"></div>
+<div class="container">
+  <div class="top-block">
+    <div class="header">
+      <h1><span class="badge">🎥</span> CFTV • Monitoramento Operacional</h1>
+      <div class="actions">
+        <div class="clock"><span class="pulse-dot"></span><span id="clock">--:--:--</span></div>
+        <button class="btn green" onclick="abrirModal()">+ Nova Câmera</button>
+        <button class="btn" onclick="exportarCSV()">⬇ CSV</button>
+        <button class="btn red" onclick="resetar()">↺ Restaurar</button>
+      </div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </div>
 
-<script type="text/babel" data-presets="react">
-const { useState, useEffect, useMemo } = React;
+  <div class="legend-box">
+    <span class="legend-title">Legenda:</span>
+    <button class="legend-item" data-legend="ip" onclick="toggleLegend('ip')">
+      <span class="dot ip"></span> IP <span class="count" id="count-ip">0</span>
+    </button>
+    <button class="legend-item" data-legend="analog" onclick="toggleLegend('analog')">
+      <span class="dot analog"></span> Analógica <span class="count" id="count-analog">0</span>
+    </button>
+    <button class="legend-item" data-legend="online" onclick="toggleLegend('online')">
+      <span class="dot online"></span> Online <span class="count" id="count-online">0</span>
+    </button>
+    <button class="legend-item" data-legend="offline" onclick="toggleLegend('offline')">
+      <span class="dot offline"></span> Off-line <span class="count" id="count-offline">0</span>
+    </button>
+  </div>
 
+  <div class="toolbar-box">
+    <div class="toolbar">
+      <input class="search" id="search" placeholder="🔍 Buscar por nome, IP, modelo ou local...">
+      <button class="btn small active" data-filter="all" onclick="setFilter('all')">Todas</button>
+      <button class="btn small" data-filter="online" onclick="setFilter('online')">🟢 Online</button>
+      <button class="btn small" data-filter="offline" onclick="setFilter('offline')">🔴 Off-line</button>
+      <select class="search" id="floorFilter" style="max-width:170px">
+        <option value="all">Todos os pisos</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-box">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:60px">Ligar</th>
+            <th>Nome da Câmera</th>
+            <th>Tipo</th>
+            <th>Piso</th>
+            <th>Local</th>
+            <th>IP</th>
+            <th>Status</th>
+            <th>Desde</th>
+            <th>Tempo</th>
+            <th style="width:80px">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    💾 Dados salvos no navegador • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2 id="modalTitle">Nova Câmera</h2>
+    <div class="form-group"><label>Nome</label><input id="fNome"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label>Tipo</label>
+        <select id="fTipo"><option value="IP">IP</option><option value="Analogica">Analógica</option></select></div>
+      <div class="form-group"><label>Status</label>
+        <select id="fStatus"><option value="ok">Online</option><option value="Parada">Off-line</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label>Piso</label><input id="fPiso"></div>
+      <div class="form-group"><label>Local</label><input id="fLocal"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label>IP</label><input id="fIp"></div>
+      <div class="form-group"><label>Modelo</label><input id="fMod"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="fecharModal()">Cancelar</button>
+      <button class="btn green" onclick="salvarCamera()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// BASE DE CÂMERAS
+// ============================================================
 const NOMES_IP = [
 ["C ELEV AMARELO","C","Sala de Segurança"],["141 HALL ELEV LOBY","L","Sala de Segurança"],
 ["G ESC ROL GOLDEN","G","Sala de Segurança"],["LIP 96 TERREO AMARELO","T","Sala de Segurança"],
@@ -213,6 +304,21 @@ const NOMES_ANALOG = [
 ["LAVANDERIA 2","L","DVR Lazer"],["ADM MANUTENCAO","L","DVR Lazer"]
 ];
 
+// ============================================================
+// ESTADO
+// ============================================================
+let cameras = [];
+let filter = 'all';
+let search = '';
+let floorFilter = 'all';
+let legendFilters = {ip:false, analog:false, online:false, offline:false};
+let editando = null;
+
+const STORAGE_KEY = 'cftv_v14';
+
+// ============================================================
+// HELPERS
+// ============================================================
 function buildInitial(){
   const now = Date.now();
   const cams = [];
@@ -232,337 +338,303 @@ function buildInitial(){
   return cams;
 }
 
-function timeAgo(ts){if(!ts)return '';const d=Date.now()-ts;const m=Math.floor(d/60000);const h=Math.floor(m/60);const dy=Math.floor(h/24);if(dy>0)return `há ${dy}d ${h%24}h`;if(h>0)return `há ${h}h ${m%60}min`;if(m>0)return `há ${m}min`;return 'agora';}
-function formatDateTime(ts){if(!ts)return '—';return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
-function getDurationHours(ts){if(!ts)return 0;return (Date.now()-ts)/3600000;}
+function carregar(){
+  try{
+    const s = localStorage.getItem(STORAGE_KEY);
+    cameras = s ? JSON.parse(s) : buildInitial();
+  }catch(e){ cameras = buildInitial(); }
+}
+function salvar(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(cameras)); }catch(e){}
+}
 
-function useLS(key, initial){
-  const [v, setV] = useState(()=>{
-    try{
-      const s = localStorage.getItem(key);
-      return s ? JSON.parse(s) : (typeof initial === 'function' ? initial() : initial);
-    }catch{ return typeof initial === 'function' ? initial() : initial; }
+function timeAgo(ts){
+  if(!ts) return '';
+  const d = Date.now()-ts;
+  const m = Math.floor(d/60000);
+  const h = Math.floor(m/60);
+  const dy = Math.floor(h/24);
+  if(dy>0) return `há ${dy}d ${h%24}h`;
+  if(h>0) return `há ${h}h ${m%60}min`;
+  if(m>0) return `há ${m}min`;
+  return 'agora';
+}
+function fmtDT(ts){
+  if(!ts) return '—';
+  return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+function durH(ts){
+  if(!ts) return 0;
+  return (Date.now()-ts)/3600000;
+}
+
+function toast(msg, type='success'){
+  const el = document.getElementById('toast');
+  el.textContent = (type==='success'?'✅ ':type==='error'?'🔴 ':'ℹ️ ') + msg;
+  el.className = 'toast show' + (type!=='success' ? ' '+type : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>{ el.className = 'toast'; }, 2500);
+}
+
+// ============================================================
+// AÇÕES
+// ============================================================
+function toggleCamera(id){
+  const cam = cameras.find(c=>c.id===id);
+  const novo = cam.s.toLowerCase()==='ok' ? 'Parada' : 'ok';
+  cam.s = novo;
+  cam.statusSince = Date.now();
+  salvar();
+  render();
+  toast(`${cam.n} → ${novo==='ok'?'Ligada':'Desligada'}`, novo==='ok'?'success':'error');
+}
+
+function toggleLegend(key){
+  legendFilters[key] = !legendFilters[key];
+  document.querySelector(`[data-legend="${key}"]`).classList.toggle('active', legendFilters[key]);
+  render();
+}
+
+function setFilter(f){
+  filter = f;
+  document.querySelectorAll('[data-filter]').forEach(b=>{
+    const isActive = b.dataset.filter === f;
+    b.classList.toggle('active', isActive);
   });
-  useEffect(()=>{ try{ localStorage.setItem(key, JSON.stringify(v)); }catch{} },[key,v]);
-  return [v, setV];
+  render();
 }
 
-const STORAGE_KEY = 'cftv_v13';
-const LOG_KEY = 'cftv_log_v13';
+function resetar(){
+  if(!confirm('Restaurar dados com 78 câmeras off-line?')) return;
+  cameras = buildInitial();
+  salvar();
+  render();
+  toast('Dados restaurados!');
+}
 
-function App(){
-  const [cameras, setCameras] = useLS(STORAGE_KEY, buildInitial);
-  const [log, setLog] = useLS(LOG_KEY, []);
-  const [filter, setFilter] = useState('all');
-  const [search, setSearch] = useState('');
-  const [floorFilter, setFloorFilter] = useState('all');
-  const [legendFilters, setLegendFilters] = useState({ip:false, analog:false, online:false, offline:false});
-  const [modal, setModal] = useState(null);
-  const [toast, setToast] = useState({msg:'', type:'success'});
-  const [, setTick] = useState(0);
-  const [now, setNow] = useState(new Date());
+function exportarCSV(){
+  const headers = ['ID','Nome','Tipo','Status','Piso','IP','Modelo','Local','Desde'];
+  const rows = cameras.map(c => [
+    c.id, `"${c.n}"`, c.t, c.s, c.p||'', c.ip||'', c.mod||'', c.local||'',
+    c.s.toLowerCase()==='ok'?'':fmtDT(c.statusSince)
+  ].join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `cftv_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('CSV exportado!');
+}
 
-  useEffect(()=>{
-    const t = setInterval(()=>{ setTick(x=>x+1); setNow(new Date()); }, 1000);
-    return ()=>clearInterval(t);
-  },[]);
+// ============================================================
+// MODAL
+// ============================================================
+function abrirModal(camera){
+  editando = camera || null;
+  document.getElementById('modalTitle').textContent = camera ? '✏️ Editar Câmera' : '➕ Nova Câmera';
+  document.getElementById('fNome').value = camera ? camera.n : '';
+  document.getElementById('fTipo').value = camera ? camera.t : 'IP';
+  document.getElementById('fStatus').value = camera ? camera.s : 'ok';
+  document.getElementById('fPiso').value = camera ? (camera.p||'') : '';
+  document.getElementById('fLocal').value = camera ? (camera.local||'') : '';
+  document.getElementById('fIp').value = camera ? (camera.ip||'') : '';
+  document.getElementById('fMod').value = camera ? (camera.mod||'') : '';
+  document.getElementById('modalBg').classList.add('show');
+}
 
-  const notify = (msg, type='success') => {
-    setToast({msg, type});
-    setTimeout(()=>setToast({msg:'', type:'success'}), 3000);
+function fecharModal(){
+  document.getElementById('modalBg').classList.remove('show');
+  editando = null;
+}
+
+function salvarCamera(){
+  const nome = document.getElementById('fNome').value.trim();
+  if(!nome){ alert('Digite um nome'); return; }
+  const dados = {
+    n: nome,
+    t: document.getElementById('fTipo').value,
+    s: document.getElementById('fStatus').value,
+    p: document.getElementById('fPiso').value.trim(),
+    local: document.getElementById('fLocal').value.trim(),
+    ip: document.getElementById('fIp').value.trim(),
+    mod: document.getElementById('fMod').value.trim()
   };
+  if(editando){
+    const idx = cameras.findIndex(c=>c.id===editando.id);
+    const statusMudou = cameras[idx].s !== dados.s;
+    cameras[idx] = {...cameras[idx], ...dados, statusSince: statusMudou ? Date.now() : cameras[idx].statusSince};
+    toast('Câmera atualizada!');
+  } else {
+    const newId = Math.max(0, ...cameras.map(c=>c.id)) + 1;
+    cameras.push({...dados, id: newId, statusSince: Date.now()});
+    toast('Câmera adicionada!');
+  }
+  salvar();
+  fecharModal();
+  render();
+}
 
-  const addLog = (msg) => setLog(prev => [{id:Date.now()+Math.random(), time:Date.now(), msg}, ...prev].slice(0,300));
+function deletarCamera(id){
+  const cam = cameras.find(c=>c.id===id);
+  if(!confirm(`Remover "${cam.n}"?`)) return;
+  cameras = cameras.filter(c=>c.id!==id);
+  salvar();
+  render();
+  toast('Câmera removida');
+}
 
-  const toggleCamera = (id) => {
-    setCameras(prev => prev.map(c => {
-      if (c.id !== id) return c;
-      const novo = c.s.toLowerCase()==='ok' ? 'Parada' : 'ok';
-      addLog(`${novo==='ok'?'🟢 LIGADA':'🔴 DESLIGADA'}: ${c.n}`);
-      notify(`${c.n} → ${novo==='ok'?'Ligada':'Desligada'}`, novo==='ok'?'success':'error');
-      return {...c, s:novo, statusSince: Date.now()};
-    }));
-  };
-
-  const saveCamera = (data) => {
-    if (modal.mode === 'add') {
-      const newId = Math.max(0, ...cameras.map(c=>c.id)) + 1;
-      const nova = {...data, id:newId, statusSince:Date.now()};
-      setCameras(prev => [...prev, nova]);
-      addLog(`➕ ADICIONADA: ${nova.n}`);
-      notify('Câmera adicionada!');
-    } else {
-      setCameras(prev => prev.map(c => {
-        if (c.id !== modal.camera.id) return c;
-        const mudou = c.s !== data.s;
-        addLog(`✏️ EDITADA: ${data.n}`);
-        return {...c, ...data, statusSince: mudou ? Date.now() : c.statusSince};
-      }));
-      notify('Câmera atualizada!');
+// ============================================================
+// FILTROS
+// ============================================================
+function getFiltered(){
+  return cameras.filter(c => {
+    if(filter==='IP' && c.t!=='IP') return false;
+    if(filter==='Analogica' && c.t!=='Analogica') return false;
+    if(filter==='offline' && c.s.toLowerCase()!=='parada') return false;
+    if(filter==='online' && c.s.toLowerCase()!=='ok') return false;
+    if(floorFilter!=='all' && (c.p||'Sem piso')!==floorFilter) return false;
+    if(search){
+      const q = search.toLowerCase();
+      if(!c.n.toLowerCase().includes(q) && !(c.ip||'').includes(q)
+          && !(c.mod||'').toLowerCase().includes(q)
+          && !(c.local||'').toLowerCase().includes(q)) return false;
     }
-    setModal(null);
-  };
-
-  const deleteCamera = (id) => {
-    const cam = cameras.find(c=>c.id===id);
-    if (!confirm(`Remover "${cam.n}"?`)) return;
-    setCameras(prev => prev.filter(c=>c.id!==id));
-    addLog(`🗑️ REMOVIDA: ${cam.n}`);
-    notify('Câmera removida','info');
-  };
-
-  const resetAll = () => {
-    if (!confirm('Restaurar dados com 78 câmeras off-line?')) return;
-    setCameras(buildInitial());
-    setLog([]);
-    notify('Dados restaurados!','info');
-  };
-
-  const exportCSV = () => {
-    const headers = ['ID','Nome','Tipo','Status','Piso','IP','Modelo','Local','Desde'];
-    const rows = cameras.map(c => [
-      c.id, `"${c.n}"`, c.t, c.s, c.p||'', c.ip||'', c.mod||'', c.local||'',
-      c.s.toLowerCase()==='ok'?'—':formatDateTime(c.statusSince)
-    ].join(','));
-    const csv = [headers.join(','), ...rows].join('\n');
-    const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `cftv_${new Date().toISOString().slice(0,10)}.csv`;
-    a.click();
-    notify('CSV exportado!');
-  };
-
-  const metrics = useMemo(()=>{
-    const total = cameras.length;
-    const online = cameras.filter(c=>c.s.toLowerCase()==='ok').length;
-    const offline = total - online;
-    const ip = cameras.filter(c=>c.t==='IP').length;
-    const analog = total - ip;
-    return {total, online, offline, ip, analog};
-  },[cameras]);
-
-  const filtered = useMemo(()=>{
-    return cameras.filter(c => {
-      if (filter==='IP' && c.t!=='IP') return false;
-      if (filter==='Analogica' && c.t!=='Analogica') return false;
-      if (filter==='offline' && c.s.toLowerCase()!=='parada') return false;
-      if (filter==='online' && c.s.toLowerCase()!=='ok') return false;
-      if (filter==='critical' && !(c.s.toLowerCase()==='parada' && getDurationHours(c.statusSince)>24)) return false;
-      if (floorFilter!=='all' && (c.p||'Sem piso')!==floorFilter) return false;
-      if (search) {
-        const q = search.toLowerCase();
-        if (!c.n.toLowerCase().includes(q) && !(c.ip||'').includes(q)
-            && !(c.mod||'').toLowerCase().includes(q)
-            && !(c.local||'').toLowerCase().includes(q)) return false;
-      }
-      const legendActive = Object.entries(legendFilters).filter(([k,v])=>v).map(([k])=>k);
-      if (legendActive.length > 0) {
-        let match = false;
-        if (legendFilters.ip && c.t==='IP') match = true;
-        if (legendFilters.analog && c.t==='Analogica') match = true;
-        if (legendFilters.online && c.s.toLowerCase()==='ok') match = true;
-        if (legendFilters.offline && c.s.toLowerCase()==='parada') match = true;
-        if (!match) return false;
-      }
-      return true;
-    });
-  },[cameras, filter, search, floorFilter, legendFilters]);
-
-  const allFloors = useMemo(()=>{
-    const s = new Set(cameras.map(c => c.p && c.p.trim() ? c.p : 'Sem piso'));
-    return Array.from(s).sort();
-  },[cameras]);
-
-  const toggleLegend = (key) => setLegendFilters(prev => ({...prev, [key]: !prev[key]}));
-
-  return (
-    <div className="container">
-      <div className="top-block">
-        <div className="header">
-          <h1><span className="badge">🎥</span> CFTV • Monitoramento Operacional</h1>
-          <div className="actions">
-            <div className="clock"><span className="pulse-dot"></span>{now.toLocaleTimeString('pt-BR')}</div>
-            <button className="btn green" onClick={()=>setModal({mode:'add'})}>+ Nova Câmera</button>
-            <button className="btn" onClick={exportCSV}>⬇ CSV</button>
-            <button className="btn red" onClick={resetAll}>↺ Restaurar</button>
-          </div>
-        </div>
-        <div className="kpis">
-          <div className="kpi" onClick={()=>{setFilter('all');setFloorFilter('all');setLegendFilters({ip:false,analog:false,online:false,offline:false});}}>
-            <div className="kpi-label">Total</div>
-            <div className="kpi-value">{metrics.total}</div>
-            <small>Clique para ver todas</small>
-          </div>
-          <div className="kpi green" onClick={()=>{setFilter('online');setLegendFilters({ip:false,analog:false,online:false,offline:false});}}>
-            <div className="kpi-label">Online</div>
-            <div className="kpi-value">{metrics.online}</div>
-            <small>{((metrics.online/metrics.total)*100).toFixed(1)}% operacionais</small>
-          </div>
-          <div className="kpi red" onClick={()=>{setFilter('offline');setLegendFilters({ip:false,analog:false,online:false,offline:false});}}>
-            <div className="kpi-label">Off-line</div>
-            <div className="kpi-value">{metrics.offline}</div>
-            <small>{((metrics.offline/metrics.total)*100).toFixed(1)}% com falha</small>
-          </div>
-          <div className="kpi amber" onClick={()=>{setFilter('critical');setLegendFilters({ip:false,analog:false,online:false,offline:false});}}>
-            <div className="kpi-label">⚠️ Críticas +24h</div>
-            <div className="kpi-value">{cameras.filter(c=>c.s.toLowerCase()==='parada'&&getDurationHours(c.statusSince)>24).length}</div>
-            <small>Off-line há mais de 24h</small>
-          </div>
-          <div className="kpi purple">
-            <div className="kpi-label">📜 Eventos</div>
-            <div className="kpi-value">{log.length}</div>
-            <small>Histórico</small>
-          </div>
-        </div>
-      </div>
-
-      <div className="legend-box">
-        <span className="legend-title">Legenda:</span>
-        <button className={`legend-item ${legendFilters.ip?'active':''}`} onClick={()=>toggleLegend('ip')}>
-          <span className="dot ip"></span> IP <span className="count">{metrics.ip}</span>
-        </button>
-        <button className={`legend-item ${legendFilters.analog?'active':''}`} onClick={()=>toggleLegend('analog')}>
-          <span className="dot analog"></span> Analógica <span className="count">{metrics.analog}</span>
-        </button>
-        <button className={`legend-item ${legendFilters.online?'active':''}`} onClick={()=>toggleLegend('online')}>
-          <span className="dot online"></span> Online <span className="count">{metrics.online}</span>
-        </button>
-        <button className={`legend-item ${legendFilters.offline?'active':''}`} onClick={()=>toggleLegend('offline')}>
-          <span className="dot offline"></span> Off-line <span className="count">{metrics.offline}</span>
-        </button>
-      </div>
-
-      <div className="toolbar-box">
-        <div className="toolbar">
-          <input className="search" placeholder="🔍 Buscar..." value={search} onChange={e=>setSearch(e.target.value)} />
-          <button className={`btn small ${filter==='all'?'active':''}`} onClick={()=>setFilter('all')}>Todas</button>
-          <button className={`btn small ${filter==='online'?'active':''}`} onClick={()=>setFilter('online')}>🟢 Online</button>
-          <button className={`btn small ${filter==='offline'?'active':''}`} onClick={()=>setFilter('offline')}>🔴 Off-line</button>
-          <button className={`btn small ${filter==='critical'?'active':''}`} onClick={()=>setFilter('critical')}>⚠️ +24h</button>
-          <select className="search" style={{maxWidth:160}} value={floorFilter} onChange={e=>setFloorFilter(e.target.value)}>
-            <option value="all">Todos os pisos</option>
-            {allFloors.map(f=><option key={f} value={f}>{f}</option>)}
-          </select>
-        </div>
-      </div>
-
-      <div className="table-box">
-        <div className="table-scroll">
-          <table>
-            <thead><tr>
-              <th style={{width:60}}>Ligar</th>
-              <th>Nome da Câmera</th>
-              <th>Tipo</th>
-              <th>Piso</th>
-              <th>Local</th>
-              <th>IP</th>
-              <th>Status</th>
-              <th>Desde</th>
-              <th>Tempo</th>
-              <th style={{width:80}}>Ações</th>
-            </tr></thead>
-            <tbody>
-              {filtered.length===0 ? (
-                <tr><td colSpan="10" className="empty">Nenhuma câmera encontrada</td></tr>
-              ) : filtered.map(c => {
-                const online = c.s.toLowerCase()==='ok';
-                const horas = getDurationHours(c.statusSince);
-                let offClass = 'offtime';
-                if (horas > 72) offClass += ' critical';
-                else if (horas > 24) offClass += ' long';
-                const isCritical = !online && horas > 24;
-                return (
-                  <tr key={c.id} className={isCritical ? 'row-alert' : ''}>
-                    <td><div className={`toggle ${online?'on':''}`} onClick={()=>toggleCamera(c.id)}></div></td>
-                    <td><div style={{fontWeight:600}}>{c.n}</div></td>
-                    <td><span className={`badge ${c.t==='IP'?'ip':'analog'}`}>{c.t}</span></td>
-                    <td>{c.p ? <span className="piso">{c.p}</span> : '—'}</td>
-                    <td className="info-cell">{c.local||'—'}</td>
-                    <td className="info-cell">{c.ip||'—'}</td>
-                    <td><span className={`badge ${online?'ok':'bad'}`}>{online?'● Online':'● Off-line'}</span></td>
-                    <td className="info-cell">{online?'—':formatDateTime(c.statusSince)}</td>
-                    <td className={offClass}>{online?'—':timeAgo(c.statusSince)}</td>
-                    <td>
-                      <button className="btn-icon" onClick={()=>setModal({mode:'edit',camera:c})}>✏️</button>
-                      <button className="btn-icon del" onClick={()=>deleteCamera(c.id)}>🗑️</button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="footer">
-        💾 Dados salvos no navegador • {cameras.length} câmeras • {metrics.offline} off-line • {log.length} eventos
-      </div>
-
-      {modal && <CameraModal camera={modal.camera} onSave={saveCamera} onClose={()=>setModal(null)} />}
-
-      {toast.msg && (
-        <div className={`toast show ${toast.type}`}>
-          {toast.type==='success'?'✅ ':toast.type==='error'?'🔴 ':'ℹ️ '}{toast.msg}
-        </div>
-      )}
-    </div>
-  );
+    const legendActive = Object.keys(legendFilters).filter(k=>legendFilters[k]);
+    if(legendActive.length > 0){
+      let match = false;
+      if(legendFilters.ip && c.t==='IP') match=true;
+      if(legendFilters.analog && c.t==='Analogica') match=true;
+      if(legendFilters.online && c.s.toLowerCase()==='ok') match=true;
+      if(legendFilters.offline && c.s.toLowerCase()==='parada') match=true;
+      if(!match) return false;
+    }
+    return true;
+  });
 }
 
-function CameraModal({camera, onSave, onClose}){
-  const [form, setForm] = useState(camera ? {
-    n: camera.n, t: camera.t, s: camera.s, p: camera.p,
-    ip: camera.ip, mod: camera.mod, local: camera.local
-  } : {n:'', t:'IP', s:'ok', p:'', ip:'', mod:'', local:''});
+// ============================================================
+// RENDER
+// ============================================================
+function render(){
+  const filtered = getFiltered();
+  const total = cameras.length;
+  const online = cameras.filter(c=>c.s.toLowerCase()==='ok').length;
+  const offline = total - online;
+  const ip = cameras.filter(c=>c.t==='IP').length;
+  const analog = total - ip;
 
-  const submit = (e) => {
-    e.preventDefault();
-    if (!form.n.trim()) return alert('Digite um nome');
-    onSave(form);
-  };
-
-  return (
-    <div className="modal-bg show" onClick={onClose}>
-      <div className="modal" onClick={e=>e.stopPropagation()}>
-        <h2>{camera?'✏️ Editar Câmera':'➕ Nova Câmera'}</h2>
-        <form onSubmit={submit}>
-          <div className="form-group"><label>Nome</label>
-            <input value={form.n} onChange={e=>setForm({...form,n:e.target.value})} autoFocus /></div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-            <div className="form-group"><label>Tipo</label>
-              <select value={form.t} onChange={e=>setForm({...form,t:e.target.value})}>
-                <option value="IP">IP</option><option value="Analogica">Analógica</option>
-              </select></div>
-            <div className="form-group"><label>Status</label>
-              <select value={form.s} onChange={e=>setForm({...form,s:e.target.value})}>
-                <option value="ok">Online</option><option value="Parada">Off-line</option>
-              </select></div>
-          </div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-            <div className="form-group"><label>Piso</label>
-              <input value={form.p} onChange={e=>setForm({...form,p:e.target.value})} /></div>
-            <div className="form-group"><label>Local</label>
-              <input value={form.local} onChange={e=>setForm({...form,local:e.target.value})} /></div>
-          </div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-            <div className="form-group"><label>IP</label>
-              <input value={form.ip} onChange={e=>setForm({...form,ip:e.target.value})} /></div>
-            <div className="form-group"><label>Modelo</label>
-              <input value={form.mod} onChange={e=>setForm({...form,mod:e.target.value})} /></div>
-          </div>
-          <div className="modal-actions">
-            <button type="button" className="btn" onClick={onClose}>Cancelar</button>
-            <button type="submit" className="btn green">Salvar</button>
-          </div>
-        </form>
-      </div>
+  // KPIs
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi" onclick="setFilter('all');legendFilters={ip:false,analog:false,online:false,offline:false};document.querySelectorAll('[data-legend]').forEach(b=>b.classList.remove('active'));render();">
+      <div class="kpi-label">Total</div>
+      <div class="kpi-value">${total}</div>
+      <small>Clique para ver todas</small>
     </div>
-  );
+    <div class="kpi green" onclick="setFilter('online');render();">
+      <div class="kpi-label">Online</div>
+      <div class="kpi-value">${online}</div>
+      <small>${total>0?((online/total)*100).toFixed(1):0}% operacionais</small>
+    </div>
+    <div class="kpi red" onclick="setFilter('offline');render();">
+      <div class="kpi-label">Off-line</div>
+      <div class="kpi-value">${offline}</div>
+      <small>${total>0?((offline/total)*100).toFixed(1):0}% com falha</small>
+    </div>
+    <div class="kpi purple" onclick="setFilter('all');toggleLegend('ip');">
+      <div class="kpi-label">IP</div>
+      <div class="kpi-value">${ip}</div>
+      <small>${total>0?((ip/total)*100).toFixed(1):0}% do parque</small>
+    </div>
+    <div class="kpi purple" onclick="setFilter('all');toggleLegend('analog');">
+      <div class="kpi-label">Analógica</div>
+      <div class="kpi-value">${analog}</div>
+      <small>${total>0?((analog/total)*100).toFixed(1):0}% do parque</small>
+    </div>
+  `;
+
+  // Contadores da legenda
+  document.getElementById('count-ip').textContent = ip;
+  document.getElementById('count-analog').textContent = analog;
+  document.getElementById('count-online').textContent = online;
+  document.getElementById('count-offline').textContent = offline;
+
+  // Tabela
+  const tbody = document.getElementById('tbody');
+  if(filtered.length===0){
+    tbody.innerHTML = '<tr><td colspan="10" class="empty">Nenhuma câmera encontrada</td></tr>';
+  } else {
+    tbody.innerHTML = filtered.map(c => {
+      const isOn = c.s.toLowerCase()==='ok';
+      const h = durH(c.statusSince);
+      let cls = 'offtime';
+      if(h>72) cls += ' critical';
+      else if(h>24) cls += ' long';
+      const isCritical = !isOn && h > 24;
+      return `<tr class="${isCritical?'row-alert':''}">
+        <td><div class="toggle ${isOn?'on':''}" onclick="toggleCamera(${c.id})"></div></td>
+        <td style="font-weight:600">${escapeHtml(c.n)}</td>
+        <td><span class="badge ${c.t==='IP'?'ip':'analog'}">${c.t}</span></td>
+        <td>${c.p?'<span class="piso">'+escapeHtml(c.p)+'</span>':'—'}</td>
+        <td class="info-cell">${escapeHtml(c.local||'—')}</td>
+        <td class="info-cell">${escapeHtml(c.ip||'—')}</td>
+        <td><span class="badge ${isOn?'ok':'bad'}">${isOn?'● Online':'● Off-line'}</span></td>
+        <td class="info-cell">${isOn?'—':fmtDT(c.statusSince)}</td>
+        <td class="${isOn?'info-cell':cls}">${isOn?'—':timeAgo(c.statusSince)}</td>
+        <td>
+          <button class="btn-icon" onclick="editarCamera(${c.id})" title="Editar">✏️</button>
+          <button class="btn-icon del" onclick="deletarCamera(${c.id})" title="Remover">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('offCount').textContent = offline;
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+function editarCamera(id){
+  const cam = cameras.find(c=>c.id===id);
+  if(cam) abrirModal(cam);
+}
+
+function escapeHtml(s){
+  if(s==null) return '';
+  return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+carregar();
+
+// Popula select de pisos
+const floors = [...new Set(cameras.map(c=>c.p||'Sem piso'))].sort();
+const sel = document.getElementById('floorFilter');
+floors.forEach(f => {
+  const opt = document.createElement('option');
+  opt.value = f; opt.textContent = f;
+  sel.appendChild(opt);
+});
+sel.onchange = e => { floorFilter = e.target.value; render(); };
+
+document.getElementById('search').oninput = e => { search = e.target.value; render(); };
+
+document.getElementById('modalBg').onclick = fecharModal;
+
+// Relógio
+function atualizaRelogio(){
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR');
+}
+atualizaRelogio();
+setInterval(atualizaRelogio, 1000);
+
+// Re-renderiza a cada 30s (para atualizar os "há X min")
+setInterval(render, 30000);
+
+// Primeira renderização
+render();
 </script>
 </body>
 </html>
