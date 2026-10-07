@@ -6,55 +6,73 @@
 <title>CFTV • Monitoramento Operacional</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:24px}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:20px}
   .container{max-width:1650px;margin:0 auto}
-  .top-block{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:20px;padding:18px 22px;margin-bottom:22px}
+  .top-block{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:20px;padding:18px 22px;margin-bottom:18px}
   .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-  h1{font-size:1.6rem;font-weight:800;display:flex;align-items:center;gap:12px;
-    background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  h1{font-size:1.5rem;font-weight:800;display:flex;align-items:center;gap:12px;
+    background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   h1 .badge{background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-text-fill-color:white;padding:9px 13px;border-radius:12px;font-size:1rem}
   .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .clock{background:rgba(30,41,59,.7);padding:9px 16px;border-radius:12px;font-weight:600;font-size:.85rem;border:1px solid rgba(148,163,184,.15);color:#cbd5e1;display:flex;gap:8px;align-items:center}
-  .pulse-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite}
+  .clock{background:rgba(30,41,59,.7);padding:9px 16px;border-radius:12px;font-weight:600;font-size:.85rem;border:1px solid rgba(148,163,184,.15);color:#cbd5e1}
+  .pulse-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite;display:inline-block;margin-right:6px}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
-  .btn{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);color:#cbd5e1;padding:9px 16px;border-radius:9px;font-weight:600;font-size:.83rem;cursor:pointer;transition:.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+
+  .btn{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);color:#cbd5e1;padding:9px 16px;border-radius:9px;font-weight:600;font-size:.83rem;cursor:pointer;transition:.2s;font-family:inherit}
   .btn:hover{border-color:#3b82f6;color:#fff}
   .btn.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-color:transparent;color:#fff}
   .btn.green{background:linear-gradient(135deg,#22c55e,#10b981);border:none;color:#fff}
   .btn.red{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171}
   .btn.small{padding:7px 12px;font-size:.76rem}
+
+  /* TABS */
+  .tabs{display:flex;gap:6px;background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:4px;margin-bottom:14px;overflow-x:auto}
+  .tab{padding:11px 20px;background:transparent;border:none;color:#94a3b8;font-weight:600;font-size:.83rem;cursor:pointer;border-radius:10px;transition:.2s;font-family:inherit;white-space:nowrap}
+  .tab.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff}
+  .tab .cnt{background:rgba(0,0,0,.25);padding:1px 8px;border-radius:10px;font-size:.7rem;margin-left:6px}
+  .tab.active .cnt{background:rgba(255,255,255,.2)}
+
+  /* KPIs */
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
   .kpi{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:14px;padding:12px 14px;position:relative;cursor:pointer;transition:.25s}
   .kpi:hover{transform:translateY(-2px);border-color:rgba(96,165,250,.5)}
   .kpi::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;border-radius:4px 0 0 4px;background:linear-gradient(180deg,#3b82f6,#8b5cf6)}
   .kpi.red::before{background:linear-gradient(180deg,#ef4444,#f97316)}
   .kpi.green::before{background:linear-gradient(180deg,#22c55e,#10b981)}
+  .kpi.amber::before{background:linear-gradient(180deg,#f59e0b,#ef4444)}
   .kpi.purple::before{background:linear-gradient(180deg,#8b5cf6,#d946ef)}
+  .kpi.blue::before{background:linear-gradient(180deg,#3b82f6,#06b6d4)}
+  .kpi.cyan::before{background:linear-gradient(180deg,#06b6d4,#0ea5e9)}
   .kpi-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;font-weight:600;margin-bottom:4px}
   .kpi-value{font-size:1.5rem;font-weight:800;color:#f1f5f9;line-height:1}
   .kpi.red .kpi-value{color:#f87171}
   .kpi.green .kpi-value{color:#4ade80}
+  .kpi.amber .kpi-value{color:#fbbf24}
   .kpi small{font-size:.66rem;color:#64748b;display:block;margin-top:3px}
+
+  /* LEGENDA */
   .legend-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:14px 18px;margin-bottom:14px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
   .legend-title{font-size:.72rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
   .legend-item{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(15,23,42,.5);border:1px solid rgba(148,163,184,.15);font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;color:#cbd5e1;font-family:inherit}
-  .legend-item:hover{border-color:#3b82f6;transform:translateY(-1px)}
+  .legend-item:hover{border-color:#3b82f6}
   .legend-item.active{background:rgba(59,130,246,.2);border-color:#3b82f6;color:#fff}
   .legend-item .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-  .legend-item .dot.ip{background:#60a5fa;box-shadow:0 0 8px rgba(96,165,250,.6)}
-  .legend-item .dot.analog{background:#fbbf24;box-shadow:0 0 8px rgba(251,191,36,.6)}
-  .legend-item .dot.online{background:#4ade80;box-shadow:0 0 8px rgba(74,222,128,.6)}
-  .legend-item .dot.offline{background:#f87171;box-shadow:0 0 8px rgba(248,113,113,.6)}
+  .dot.ip{background:#60a5fa}
+  .dot.analog{background:#fbbf24}
+  .dot.online{background:#4ade80}
+  .dot.offline{background:#f87171}
   .legend-item .count{background:rgba(0,0,0,.3);padding:1px 8px;border-radius:10px;font-size:.7rem;margin-left:2px;color:#94a3b8}
+
   .toolbar-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:12px 14px;margin-bottom:14px}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   input.search,select.search{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);padding:9px 13px;border-radius:9px;color:#e2e8f0;font-size:.83rem;outline:none;font-family:inherit}
   input.search:focus,select.search:focus{border-color:#3b82f6}
   input.search{flex:1;min-width:200px}
+
+  /* TABELA */
   .table-box{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;margin-bottom:22px}
   .table-scroll{overflow-x:auto;max-height:70vh;overflow-y:auto}
   .table-scroll::-webkit-scrollbar{width:10px;height:10px}
-  .table-scroll::-webkit-scrollbar-track{background:rgba(15,23,42,.5)}
   .table-scroll::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:8px}
   table{width:100%;border-collapse:collapse;font-size:.82rem}
   thead th{text-align:left;padding:12px;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;background:#1a2234;border-bottom:2px solid rgba(96,165,250,.2);white-space:nowrap;position:sticky;top:0;z-index:10}
@@ -68,6 +86,13 @@
   .badge.bad{background:rgba(239,68,68,.15);color:#f87171}
   .badge.ip{background:rgba(59,130,246,.15);color:#60a5fa}
   .badge.analog{background:rgba(245,158,11,.15);color:#fbbf24}
+  .badge.eol{background:rgba(239,68,68,.25);color:#fca5a5}
+  .badge.sw{background:rgba(139,92,246,.15);color:#a78bfa}
+  .badge.dvr{background:rgba(236,72,153,.15);color:#f472b6}
+  .badge.nvr{background:rgba(34,211,238,.15);color:#22d3ee}
+  .badge.nob{background:rgba(250,204,21,.15);color:#facc15}
+  .badge.srv{background:rgba(59,130,246,.15);color:#60a5fa}
+
   .toggle{position:relative;width:48px;height:24px;background:#ef4444;border-radius:20px;cursor:pointer;transition:.3s;display:inline-block}
   .toggle.on{background:#22c55e}
   .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.3s}
@@ -82,20 +107,63 @@
   .empty{text-align:center;padding:40px;color:#64748b}
   .footer{text-align:center;padding:24px 0 12px;color:#64748b;font-size:.76rem;border-top:1px solid rgba(148,163,184,.1);margin-top:24px}
   .info-cell{font-size:.72rem;color:#64748b}
-  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
-  .modal-bg.show{display:flex}
-  .modal{background:#1e293b;border:1px solid rgba(148,163,184,.2);border-radius:18px;padding:26px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
-  .modal h2{margin-bottom:18px;font-size:1.1rem}
-  .form-group{margin-bottom:14px}
-  .form-group label{display:block;font-size:.7rem;color:#94a3b8;text-transform:uppercase;margin-bottom:6px;font-weight:600}
-  .form-group input,.form-group select{width:100%;background:rgba(15,23,42,.8);border:1px solid rgba(148,163,184,.2);padding:10px 12px;border-radius:8px;color:#e2e8f0;font-size:.85rem;outline:none;font-family:inherit}
-  .form-group input:focus{border-color:#3b82f6}
-  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+
+  /* ============ EQUIPAMENTOS ============ */
+  .locais-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:22px}
+  .local-card{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;transition:.25s}
+  .local-card:hover{border-color:rgba(96,165,250,.4);transform:translateY(-2px)}
+  .local-header{padding:14px 18px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.12));border-bottom:1px solid rgba(148,163,184,.1);display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+  .local-title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;color:#f1f5f9}
+  .local-count{font-size:.7rem;background:rgba(0,0,0,.3);padding:3px 9px;border-radius:20px;color:#cbd5e1;font-weight:700}
+  .local-body{padding:14px 18px 16px}
+  .local-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(148,163,184,.08)}
+  .stat-box{text-align:center}
+  .stat-box .num{font-size:1.15rem;font-weight:800;color:#f1f5f9}
+  .stat-box .lbl{font-size:.6rem;text-transform:uppercase;color:#64748b;font-weight:600;letter-spacing:.05em;margin-top:2px}
+  .stat-box.ok .num{color:#4ade80}
+  .stat-box.bad .num{color:#f87171}
+  .equip-list{display:flex;flex-direction:column;gap:8px}
+  .equip-item{display:flex;align-items:center;gap:12px;padding:9px 11px;background:rgba(15,23,42,.4);border-radius:10px;border-left:3px solid #3b82f6;transition:.2s}
+  .equip-item:hover{background:rgba(15,23,42,.7)}
+  .equip-item.sw{border-left-color:#a78bfa}
+  .equip-item.dvr{border-left-color:#f472b6}
+  .equip-item.nvr{border-left-color:#22d3ee}
+  .equip-item.nob{border-left-color:#facc15}
+  .equip-item.srv{border-left-color:#60a5fa}
+  .equip-item.mon{border-left-color:#94a3b8}
+  .equip-item.eol{border-left-color:#ef4444;background:rgba(239,68,68,.06)}
+  .equip-icon{width:30px;height:30px;border-radius:8px;background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;color:#60a5fa;font-size:.8rem;flex-shrink:0}
+  .equip-item.sw .equip-icon{background:rgba(139,92,246,.15);color:#a78bfa}
+  .equip-item.dvr .equip-icon{background:rgba(236,72,153,.15);color:#f472b6}
+  .equip-item.nvr .equip-icon{background:rgba(34,211,238,.15);color:#22d3ee}
+  .equip-item.nob .equip-icon{background:rgba(250,204,21,.15);color:#facc15}
+  .equip-item.eol .equip-icon{background:rgba(239,68,68,.2);color:#fca5a5}
+  .equip-info{flex:1;min-width:0}
+  .equip-name{font-weight:600;font-size:.82rem;color:#e2e8f0}
+  .equip-meta{font-size:.68rem;color:#64748b;margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
+  .equip-tag{font-size:.6rem;padding:2px 7px;border-radius:6px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+  .equip-tag.sw{background:rgba(139,92,246,.2);color:#a78bfa}
+  .equip-tag.dvr{background:rgba(236,72,153,.2);color:#f472b6}
+  .equip-tag.nvr{background:rgba(34,211,238,.2);color:#22d3ee}
+  .equip-tag.nob{background:rgba(250,204,21,.2);color:#facc15}
+  .equip-tag.srv{background:rgba(59,130,246,.2);color:#60a5fa}
+  .equip-tag.mon{background:rgba(148,163,184,.2);color:#cbd5e1}
+
+  .cam-list-mini{margin-top:10px;padding:10px;background:rgba(15,23,42,.5);border-radius:8px;border-left:2px solid #3b82f6}
+  .cam-list-mini .lbl{font-size:.65rem;color:#64748b;text-transform:uppercase;font-weight:600;letter-spacing:.05em;margin-bottom:6px}
+  .cam-list-mini .item{font-size:.72rem;color:#94a3b8;padding:2px 0;display:flex;justify-content:space-between;gap:8px}
+  .cam-list-mini .item .on{color:#4ade80}
+  .cam-list-mini .item .off{color:#f87171}
+
   .toast{position:fixed;bottom:24px;right:24px;background:#1e293b;border:1px solid #22c55e;color:#4ade80;padding:14px 22px;border-radius:12px;font-weight:600;font-size:.85rem;z-index:200;display:none;max-width:340px}
-  .toast.show{display:block;animation:slide .3s}
+  .toast.show{display:block}
   .toast.error{border-color:#ef4444;color:#f87171}
-  @keyframes slide{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
-  @media(max-width:700px){body{padding:12px}h1{font-size:1.2rem}.kpis{grid-template-columns:repeat(2,1fr)}}
+
+  @media(max-width:700px){
+    body{padding:12px}h1{font-size:1.1rem}
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .locais-grid{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
@@ -105,91 +173,77 @@
       <h1><span class="badge">🎥</span> CFTV • Monitoramento Operacional</h1>
       <div class="actions">
         <div class="clock"><span class="pulse-dot"></span><span id="clock">--:--:--</span></div>
-        <button class="btn green" onclick="abrirModal()">+ Nova Câmera</button>
-        <button class="btn" onclick="exportarCSV()">⬇ CSV</button>
+        <button class="btn green" onclick="exportarCSV()">⬇ CSV</button>
         <button class="btn red" onclick="resetar()">↺ Restaurar</button>
       </div>
     </div>
     <div class="kpis" id="kpis"></div>
   </div>
 
-  <div class="legend-box">
-    <span class="legend-title">Legenda:</span>
-    <button class="legend-item" data-legend="ip" onclick="toggleLegend('ip')">
-      <span class="dot ip"></span> IP <span class="count" id="count-ip">0</span>
-    </button>
-    <button class="legend-item" data-legend="analog" onclick="toggleLegend('analog')">
-      <span class="dot analog"></span> Analógica <span class="count" id="count-analog">0</span>
-    </button>
-    <button class="legend-item" data-legend="online" onclick="toggleLegend('online')">
-      <span class="dot online"></span> Online <span class="count" id="count-online">0</span>
-    </button>
-    <button class="legend-item" data-legend="offline" onclick="toggleLegend('offline')">
-      <span class="dot offline"></span> Off-line <span class="count" id="count-offline">0</span>
-    </button>
+  <div class="tabs">
+    <button class="tab active" data-tab="cameras" onclick="setTab('cameras')">📋 Câmeras <span class="cnt" id="tab-cam-count">0</span></button>
+    <button class="tab" data-tab="equipamentos" onclick="setTab('equipamentos')">🖥️ Equipamentos <span class="cnt" id="tab-equip-count">0</span></button>
   </div>
 
-  <div class="toolbar-box">
-    <div class="toolbar">
-      <input class="search" id="search" placeholder="🔍 Buscar por nome, IP, modelo ou local...">
-      <button class="btn small active" data-filter="all" onclick="setFilter('all')">Todas</button>
-      <button class="btn small" data-filter="online" onclick="setFilter('online')">🟢 Online</button>
-      <button class="btn small" data-filter="offline" onclick="setFilter('offline')">🔴 Off-line</button>
-      <select class="search" id="floorFilter" style="max-width:170px">
-        <option value="all">Todos os pisos</option>
-      </select>
+  <!-- ABA CÂMERAS -->
+  <div id="tab-cameras-content">
+    <div class="legend-box">
+      <span class="legend-title">Legenda:</span>
+      <button class="legend-item" data-legend="ip" onclick="toggleLegend('ip')">
+        <span class="dot ip"></span> IP <span class="count" id="count-ip">0</span>
+      </button>
+      <button class="legend-item" data-legend="analog" onclick="toggleLegend('analog')">
+        <span class="dot analog"></span> Analógica <span class="count" id="count-analog">0</span>
+      </button>
+      <button class="legend-item" data-legend="online" onclick="toggleLegend('online')">
+        <span class="dot online"></span> Online <span class="count" id="count-online">0</span>
+      </button>
+      <button class="legend-item" data-legend="offline" onclick="toggleLegend('offline')">
+        <span class="dot offline"></span> Off-line <span class="count" id="count-offline">0</span>
+      </button>
+    </div>
+
+    <div class="toolbar-box">
+      <div class="toolbar">
+        <input class="search" id="search" placeholder="🔍 Buscar por nome, IP, modelo ou local...">
+        <button class="btn small active" data-filter="all" onclick="setFilter('all')">Todas</button>
+        <button class="btn small" data-filter="online" onclick="setFilter('online')">🟢 Online</button>
+        <button class="btn small" data-filter="offline" onclick="setFilter('offline')">🔴 Off-line</button>
+        <select class="search" id="floorFilter" style="max-width:170px">
+          <option value="all">Todos os pisos</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-box">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60px">Ligar</th>
+              <th>Nome da Câmera</th>
+              <th>Tipo</th>
+              <th>Piso</th>
+              <th>Local</th>
+              <th>IP</th>
+              <th>Status</th>
+              <th>Desde</th>
+              <th>Tempo</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div class="table-box">
-    <div class="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:60px">Ligar</th>
-            <th>Nome da Câmera</th>
-            <th>Tipo</th>
-            <th>Piso</th>
-            <th>Local</th>
-            <th>IP</th>
-            <th>Status</th>
-            <th>Desde</th>
-            <th>Tempo</th>
-            <th style="width:80px">Ações</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
+  <!-- ABA EQUIPAMENTOS -->
+  <div id="tab-equipamentos-content" style="display:none">
+    <div class="locais-grid" id="equipGrid"></div>
   </div>
 
   <div class="footer">
-    💾 Dados salvos no navegador • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line • <span id="onCount">0</span> online
-  </div>
-</div>
-
-<div class="modal-bg" id="modalBg">
-  <div class="modal" onclick="event.stopPropagation()">
-    <h2 id="modalTitle">Nova Câmera</h2>
-    <div class="form-group"><label>Nome</label><input id="fNome"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group"><label>Tipo</label>
-        <select id="fTipo"><option value="IP">IP</option><option value="Analogica">Analógica</option></select></div>
-      <div class="form-group"><label>Status</label>
-        <select id="fStatus"><option value="ok">Online</option><option value="Parada">Off-line</option></select></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group"><label>Piso</label><input id="fPiso"></div>
-      <div class="form-group"><label>Local</label><input id="fLocal"></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group"><label>IP</label><input id="fIp"></div>
-      <div class="form-group"><label>Modelo</label><input id="fMod"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn" onclick="fecharModal()">Cancelar</button>
-      <button class="btn green" onclick="salvarCamera()">Salvar</button>
-    </div>
+    💾 Dados salvos no navegador • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line • <span id="equipCount">0</span> equipamentos
   </div>
 </div>
 
@@ -197,7 +251,76 @@
 
 <script>
 // ============================================================
-// BASE DE CÂMERAS — 250 CÂMERAS
+// EQUIPAMENTOS — Inventário do CFTV
+// ============================================================
+const EQUIPAMENTOS = [
+  // ============ SALA DE SEGURANÇA ============
+  {local:"Sala de Segurança", tipo:"SW", nome:"Switch HP sem gerência", modelo:"HP V1910", status:"ok"},
+  {local:"Sala de Segurança", tipo:"SW", nome:"Switch POE JG92CA", modelo:"JG92CA", status:"eol", obs:"Com defeito — trocar"},
+  {local:"Sala de Segurança", tipo:"SW", nome:"Switch 48 portas HP", modelo:"HP 48P", status:"eol", obs:"Trocar"},
+  {local:"Sala de Segurança", tipo:"NOB", nome:"Nobreak 3000 kVA", modelo:"3000 kVA", status:"ok"},
+  {local:"Sala de Segurança", tipo:"SRV", nome:"Servidor HP Proliant #1", modelo:"Proliant", status:"ok"},
+  {local:"Sala de Segurança", tipo:"SRV", nome:"Servidor HP Proliant #2", modelo:"Proliant", status:"ok"},
+  {local:"Sala de Segurança", tipo:"SRV", nome:"Servidor montado #1", modelo:"—", status:"ok"},
+  {local:"Sala de Segurança", tipo:"SRV", nome:"Servidor montado #2", modelo:"—", status:"ok"},
+  {local:"Sala de Segurança", tipo:"SRV", nome:"Servidor montado #3", modelo:"—", status:"ok"},
+  {local:"Sala de Segurança", tipo:"SRV", nome:"Servidor montado #4", modelo:"—", status:"ok"},
+  {local:"Sala de Segurança", tipo:"NVR", nome:"NVR Motorola #1", modelo:"MTN322K0012", status:"ok"},
+  {local:"Sala de Segurança", tipo:"NVR", nome:"NVR Motorola #2", modelo:"MTN322K0012", status:"ok"},
+  {local:"Sala de Segurança", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
+  {local:"Sala de Segurança", tipo:"DVR", nome:"DVR Motorola", modelo:"MTR16A1080L", status:"ok"},
+  {local:"Sala de Segurança", tipo:"MON", nome:"TV/Monitor LG", modelo:"LG", status:"ok", qtd:6},
+  {local:"Sala de Segurança", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
+
+  // ============ SALA TI ============
+  {local:"Sala TI", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"},
+  {local:"Sala TI", tipo:"SW", nome:"Switch Ubiquiti", modelo:"UniFi", status:"ok"},
+  {local:"Sala TI", tipo:"SRV", nome:"Servidor DELL montado", modelo:"DELL", status:"ok"},
+
+  // ============ SALA CPD ============
+  {local:"Sala CPD", tipo:"SW", nome:"Switch Ubiquiti", modelo:"UniFi", status:"ok"},
+  {local:"Sala CPD", tipo:"SRV", nome:"Servidor DELL montado", modelo:"DELL", status:"ok"},
+
+  // ============ SHAFT 1º ANDAR ============
+  {local:"Shaft 1º Andar", tipo:"SW", nome:"Switch POE Geovision", modelo:"Geovision PoE", status:"eol", obs:"Trocar"},
+  {local:"Shaft 1º Andar", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
+  {local:"Shaft 1º Andar", tipo:"DVR", nome:"DVR Intelbras", modelo:"MHDX 1232", status:"ok"},
+
+  // ============ SHAFT 10º ANDAR ============
+  {local:"Shaft 10º Andar", tipo:"SW", nome:"Switch POE Geovision", modelo:"Geovision PoE", status:"eol", obs:"Trocar"},
+  {local:"Shaft 10º Andar", tipo:"SW", nome:"Switch HP POE 24 portas", modelo:"HP 1910-24G-PoE+", status:"ok"},
+  {local:"Shaft 10º Andar", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
+
+  // ============ PISO C ============
+  {local:"Piso C", tipo:"SW", nome:"Switch POE Intelbras #1", modelo:"Intelbras PoE", status:"ok"},
+  {local:"Piso C", tipo:"SW", nome:"Switch POE Intelbras #2", modelo:"Intelbras PoE", status:"ok"},
+  {local:"Piso C", tipo:"SW", nome:"Switch POE Netgear", modelo:"Netgear PoE", status:"eol", obs:"Trocar"},
+  {local:"Piso C", tipo:"NOB", nome:"Nobreak APC 3000", modelo:"APC 3000", status:"ok"},
+  {local:"Piso C", tipo:"NVR", nome:"NVR Motorola", modelo:"MTN322K0012", status:"ok"},
+
+  // ============ 3SUB2 ============
+  {local:"3SUB2", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"},
+
+  // ============ PORTARIA ============
+  {local:"Portaria", tipo:"SRV", nome:"Servidor DELL OptiPlex", modelo:"OptiPlex", status:"ok"},
+  {local:"Portaria", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
+
+  // ============ DIRETORIA ============
+  {local:"Sala da Diretoria", tipo:"SRV", nome:"Servidor DELL OptiPlex", modelo:"OptiPlex", status:"ok"},
+  {local:"Sala da Gerência", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
+
+  // ============ DVR ANDARES (concentrador) ============
+  {local:"DVR Andares", tipo:"DVR", nome:"DVR 40 câmeras", modelo:"DVR 40CH", status:"ok"},
+  {local:"DVR Andares", tipo:"DVR", nome:"DVR 6º andar ao piso M", modelo:"DVR 20CH", status:"ok"},
+
+  // ============ DVR LAZER ============
+  {local:"DVR Lazer", tipo:"DVR", nome:"DVR 192.168.1.139", modelo:"DVR 26 dias HD 6T", status:"ok"},
+  {local:"DVR Lazer", tipo:"DVR", nome:"DVR 192.168.1.10", modelo:"8 canais HD 1T", status:"ok"},
+  {local:"DVR Lazer", tipo:"SW", nome:"Switch GIGA", modelo:"Giga", status:"ok"}
+];
+
+// ============================================================
+// CÂMERAS
 // ============================================================
 const NOMES_IP = [
 ["C ELEV AMARELO","C","Sala de Segurança"],["141 HALL ELEV LOBY","L","Sala de Segurança"],
@@ -264,20 +387,7 @@ const NOMES_IP = [
 ["10 A1","10º","Shaft 10º Andar"],["M VOLP","M","Shaft 1º Andar"],
 ["M ESC ROLANTE","M","Shaft 1º Andar"],["M CHAGAL 1","M","Shaft 1º Andar"],
 ["PTZ GOLDEN","G","Shaft 1º Andar"],["M ACESS FORUM","M","Shaft 1º Andar"],
-["M AUX LIMPEZA","M","Shaft 1º Andar"],["C HALL PRINCIPAL","C","Piso C"],
-["C ENTRADA PRINCIPAL","C","Piso C"],["M WC FEMININO","M","Shaft 1º Andar"],
-["M WC MASCULINO","M","Shaft 1º Andar"],["L HALL ELEVADORES","L","Sala de Segurança"],
-["L ESCADA SOCIAL","L","Sala de Segurança"],["G ESTACIONAMENTO","G","Sala de Segurança"],
-["G PORTARIA GARAGEM","G","Sala de Segurança"],["C DOCAS CARGA","C","Piso C"],
-["C DOCAS DESCARGA","C","Piso C"],["L VESTIARIO","L","Sala de Segurança"],
-["M VESTIARIO","M","Shaft 1º Andar"],["G DEPOSITO","G","Sala de Segurança"],
-["C LIXEIRA","C","Piso C"],["C SALA DE MAQUINAS","C","Piso C"],
-["L SALA CFTV","L","Sala TI"],["M CORREDOR SERVIDOR","M","Shaft 1º Andar"],
-["G CORREDOR PRINCIPAL","G","Sala de Segurança"],["C RACK SECUNDARIO","C","Piso C"],
-["M GERADOR","M","Shaft 1º Andar"],["G SUBESTACAO","G","Sala de Segurança"],
-["L CAIXA DAGUA","L","Sala de Segurança"],["C ESCADA EMERGENCIA 1","C","Piso C"],
-["C ESCADA EMERGENCIA 2","C","Piso C"],["M ESCADA EMERGENCIA","M","Shaft 1º Andar"],
-["G ESCADA EMERGENCIA","G","Sala de Segurança"],["L ESCADA EMERGENCIA","L","Sala de Segurança"]
+["M AUX LIMPEZA","M","Shaft 1º Andar"]
 ];
 
 const NOMES_ANALOG = [
@@ -314,11 +424,7 @@ const NOMES_ANALOG = [
 ["S2 CONFEITARIA","S2","DVR Lazer"],["ADM MANUTENÇÃO","L","DVR Lazer"],
 ["S 2 WC MASC","S2","DVR Lazer"],["S2 AREA DESCANÇO","S2","DVR Lazer"],
 ["RELOGIO DE PONTO","L","DVR Lazer"],["LAVANDERIA 1","L","DVR Lazer"],
-["LAVANDERIA 2","L","DVR Lazer"],["ADM MANUTENCAO","L","DVR Lazer"],
-["GARAGEM G1","S1","DVR Andares"],["GARAGEM G2","S1","DVR Andares"],
-["GARAGEM G3","S1","DVR Andares"],["GARAGEM G4","S1","DVR Andares"],
-["RECEPCAO FUNDOS","L","DVR Lazer"],["AREA TECNICA","M","DVR Andares"],
-["SALA GERADOR","S1","DVR Andares"],["DEPOSITO GERAL","S1","DVR Andares"]
+["LAVANDERIA 2","L","DVR Lazer"],["ADM MANUTENCAO","L","DVR Lazer"]
 ];
 
 // ============================================================
@@ -329,9 +435,9 @@ let filter = 'all';
 let search = '';
 let floorFilter = 'all';
 let legendFilters = {ip:false, analog:false, online:false, offline:false};
-let editando = null;
+let currentTab = 'cameras';
 
-const STORAGE_KEY = 'cftv_v15';
+const STORAGE_KEY = 'cftv_v16';
 const TOTAL_CAMERAS = 250;
 const TOTAL_OFF = 78;
 
@@ -342,45 +448,30 @@ function buildInitial(){
   const now = Date.now();
   const cams = [];
   let id = 1;
-
-  // Adiciona IPs
   NOMES_IP.forEach(([n,p,local],i) => {
     cams.push({id:id++, n, ip:`192.168.1.${20+i}`, t:'IP', s:'ok', p, mod:'ONVIF', local, statusSince:now});
   });
-
-  // Adiciona Analógicas
   NOMES_ANALOG.forEach(([n,p,local]) => {
     cams.push({id:id++, n, ip:'', t:'Analogica', s:'ok', p, mod:'', local, statusSince:now});
   });
-
-  // Garante exatamente 250 câmeras (adiciona genéricas se precisar)
   while(cams.length < TOTAL_CAMERAS){
     const idx = cams.length + 1;
     const piso = ['C','M','L','G','T'][idx % 5];
     cams.push({
-      id: id++,
-      n: `Câmera Extra ${idx}`,
-      ip: `192.168.1.${200 + (idx % 50)}`,
-      t: idx % 3 === 0 ? 'Analogica' : 'IP',
-      s: 'ok',
-      p: piso,
+      id:id++, n:`Câmera Extra ${idx}`, ip:`192.168.1.${200 + (idx % 50)}`,
+      t: idx % 3 === 0 ? 'Analogica' : 'IP', s:'ok', p:piso,
       mod: idx % 3 === 0 ? '' : 'ONVIF',
       local: piso === 'C' ? 'Piso C' : piso === 'L' ? 'Sala de Segurança' : 'Shaft 1º Andar',
       statusSince: now
     });
   }
-
-  // Corta se passar (segurança)
   cams.splice(TOTAL_CAMERAS);
-
-  // Força EXATAMENTE 78 off-line (aleatórias)
   const shuffled = [...cams].sort(()=>Math.random()-0.5);
   shuffled.slice(0, TOTAL_OFF).forEach(c => {
     const idx = cams.findIndex(x=>x.id===c.id);
     cams[idx].s = 'Parada';
     cams[idx].statusSince = now - (Math.random()*72+1)*3600000;
   });
-
   return cams;
 }
 
@@ -388,46 +479,25 @@ function carregar(){
   try{
     const s = localStorage.getItem(STORAGE_KEY);
     if(s){
-      const parsed = JSON.parse(s);
-      // Se a versão antiga tinha quantidade diferente, recria
-      if(parsed.length !== TOTAL_CAMERAS){
-        cameras = buildInitial();
-        salvar();
-      } else {
-        cameras = parsed;
-      }
-    } else {
-      cameras = buildInitial();
-      salvar();
-    }
-  }catch(e){
-    cameras = buildInitial();
-    salvar();
-  }
+      const p = JSON.parse(s);
+      if(p.length !== TOTAL_CAMERAS){ cameras = buildInitial(); salvar(); }
+      else cameras = p;
+    } else { cameras = buildInitial(); salvar(); }
+  }catch(e){ cameras = buildInitial(); salvar(); }
 }
-function salvar(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(cameras)); }catch(e){}
-}
+function salvar(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(cameras)); }catch(e){} }
 
 function timeAgo(ts){
   if(!ts) return '';
-  const d = Date.now()-ts;
-  const m = Math.floor(d/60000);
-  const h = Math.floor(m/60);
-  const dy = Math.floor(h/24);
+  const d = Date.now()-ts, m = Math.floor(d/60000), h = Math.floor(m/60), dy = Math.floor(h/24);
   if(dy>0) return `há ${dy}d ${h%24}h`;
   if(h>0) return `há ${h}h ${m%60}min`;
   if(m>0) return `há ${m}min`;
   return 'agora';
 }
-function fmtDT(ts){
-  if(!ts) return '—';
-  return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-}
-function durH(ts){
-  if(!ts) return 0;
-  return (Date.now()-ts)/3600000;
-}
+function fmtDT(ts){ if(!ts) return '—'; return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+function durH(ts){ return ts ? (Date.now()-ts)/3600000 : 0; }
+function escapeHtml(s){ return s==null ? '' : String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 
 function toast(msg, type='success'){
   const el = document.getElementById('toast');
@@ -443,10 +513,8 @@ function toast(msg, type='success'){
 function toggleCamera(id){
   const cam = cameras.find(c=>c.id===id);
   const novo = cam.s.toLowerCase()==='ok' ? 'Parada' : 'ok';
-  cam.s = novo;
-  cam.statusSince = Date.now();
-  salvar();
-  render();
+  cam.s = novo; cam.statusSince = Date.now();
+  salvar(); render();
   toast(`${cam.n} → ${novo==='ok'?'Ligada':'Desligada'}`, novo==='ok'?'success':'error');
 }
 
@@ -464,11 +532,16 @@ function setFilter(f){
   render();
 }
 
+function setTab(t){
+  currentTab = t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===t));
+  document.getElementById('tab-cameras-content').style.display = t==='cameras' ? 'block' : 'none';
+  document.getElementById('tab-equipamentos-content').style.display = t==='equipamentos' ? 'block' : 'none';
+}
+
 function resetar(){
   if(!confirm('Restaurar dados com 250 câmeras (78 off-line)?')) return;
-  cameras = buildInitial();
-  salvar();
-  render();
+  cameras = buildInitial(); salvar(); render();
   toast('Dados restaurados!');
 }
 
@@ -480,83 +553,18 @@ function exportarCSV(){
   ].join(','));
   const csv = [headers.join(','), ...rows].join('\n');
   const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
+  a.href = URL.createObjectURL(blob);
   a.download = `cftv_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   toast('CSV exportado!');
 }
 
 // ============================================================
-// MODAL
-// ============================================================
-function abrirModal(camera){
-  editando = camera || null;
-  document.getElementById('modalTitle').textContent = camera ? '✏️ Editar Câmera' : '➕ Nova Câmera';
-  document.getElementById('fNome').value = camera ? camera.n : '';
-  document.getElementById('fTipo').value = camera ? camera.t : 'IP';
-  document.getElementById('fStatus').value = camera ? camera.s : 'ok';
-  document.getElementById('fPiso').value = camera ? (camera.p||'') : '';
-  document.getElementById('fLocal').value = camera ? (camera.local||'') : '';
-  document.getElementById('fIp').value = camera ? (camera.ip||'') : '';
-  document.getElementById('fMod').value = camera ? (camera.mod||'') : '';
-  document.getElementById('modalBg').classList.add('show');
-}
-
-function fecharModal(){
-  document.getElementById('modalBg').classList.remove('show');
-  editando = null;
-}
-
-function salvarCamera(){
-  const nome = document.getElementById('fNome').value.trim();
-  if(!nome){ alert('Digite um nome'); return; }
-  const dados = {
-    n: nome,
-    t: document.getElementById('fTipo').value,
-    s: document.getElementById('fStatus').value,
-    p: document.getElementById('fPiso').value.trim(),
-    local: document.getElementById('fLocal').value.trim(),
-    ip: document.getElementById('fIp').value.trim(),
-    mod: document.getElementById('fMod').value.trim()
-  };
-  if(editando){
-    const idx = cameras.findIndex(c=>c.id===editando.id);
-    const statusMudou = cameras[idx].s !== dados.s;
-    cameras[idx] = {...cameras[idx], ...dados, statusSince: statusMudou ? Date.now() : cameras[idx].statusSince};
-    toast('Câmera atualizada!');
-  } else {
-    const newId = Math.max(0, ...cameras.map(c=>c.id)) + 1;
-    cameras.push({...dados, id: newId, statusSince: Date.now()});
-    toast('Câmera adicionada!');
-  }
-  salvar();
-  fecharModal();
-  render();
-}
-
-function deletarCamera(id){
-  const cam = cameras.find(c=>c.id===id);
-  if(!confirm(`Remover "${cam.n}"?`)) return;
-  cameras = cameras.filter(c=>c.id!==id);
-  salvar();
-  render();
-  toast('Câmera removida');
-}
-
-function editarCamera(id){
-  const cam = cameras.find(c=>c.id===id);
-  if(cam) abrirModal(cam);
-}
-
-// ============================================================
-// FILTROS
+// FILTROS DE CÂMERAS
 // ============================================================
 function getFiltered(){
   return cameras.filter(c => {
-    if(filter==='IP' && c.t!=='IP') return false;
-    if(filter==='Analogica' && c.t!=='Analogica') return false;
     if(filter==='offline' && c.s.toLowerCase()!=='parada') return false;
     if(filter==='online' && c.s.toLowerCase()!=='ok') return false;
     if(floorFilter!=='all' && (c.p||'Sem piso')!==floorFilter) return false;
@@ -566,14 +574,14 @@ function getFiltered(){
           && !(c.mod||'').toLowerCase().includes(q)
           && !(c.local||'').toLowerCase().includes(q)) return false;
     }
-    const legendActive = Object.keys(legendFilters).filter(k=>legendFilters[k]);
-    if(legendActive.length > 0){
-      let match = false;
-      if(legendFilters.ip && c.t==='IP') match=true;
-      if(legendFilters.analog && c.t==='Analogica') match=true;
-      if(legendFilters.online && c.s.toLowerCase()==='ok') match=true;
-      if(legendFilters.offline && c.s.toLowerCase()==='parada') match=true;
-      if(!match) return false;
+    const la = Object.keys(legendFilters).filter(k=>legendFilters[k]);
+    if(la.length > 0){
+      let m = false;
+      if(legendFilters.ip && c.t==='IP') m=true;
+      if(legendFilters.analog && c.t==='Analogica') m=true;
+      if(legendFilters.online && c.s.toLowerCase()==='ok') m=true;
+      if(legendFilters.offline && c.s.toLowerCase()==='parada') m=true;
+      if(!m) return false;
     }
     return true;
   });
@@ -583,57 +591,55 @@ function getFiltered(){
 // RENDER
 // ============================================================
 function render(){
-  const filtered = getFiltered();
   const total = cameras.length;
   const online = cameras.filter(c=>c.s.toLowerCase()==='ok').length;
   const offline = total - online;
   const ip = cameras.filter(c=>c.t==='IP').length;
   const analog = total - ip;
+  const switches = EQUIPAMENTOS.filter(e=>e.tipo==='SW').length;
+  const eol = EQUIPAMENTOS.filter(e=>e.status==='eol').length;
+  const dvrs = EQUIPAMENTOS.filter(e=>e.tipo==='DVR').length;
+  const nvrs = EQUIPAMENTOS.filter(e=>e.tipo==='NVR').length;
+  const servidores = EQUIPAMENTOS.filter(e=>e.tipo==='SRV').length;
 
-  // KPIs
   document.getElementById('kpis').innerHTML = `
     <div class="kpi" onclick="setFilter('all');legendFilters={ip:false,analog:false,online:false,offline:false};document.querySelectorAll('[data-legend]').forEach(b=>b.classList.remove('active'));render();">
-      <div class="kpi-label">Total</div>
-      <div class="kpi-value">${total}</div>
-      <small>Clique para ver todas</small>
-    </div>
+      <div class="kpi-label">Total</div><div class="kpi-value">${total}</div><small>Câmeras</small></div>
     <div class="kpi green" onclick="setFilter('online');render();">
-      <div class="kpi-label">Online</div>
-      <div class="kpi-value">${online}</div>
-      <small>${total>0?((online/total)*100).toFixed(1):0}% operacionais</small>
-    </div>
+      <div class="kpi-label">Online</div><div class="kpi-value">${online}</div><small>${((online/total)*100).toFixed(1)}%</small></div>
     <div class="kpi red" onclick="setFilter('offline');render();">
-      <div class="kpi-label">Off-line</div>
-      <div class="kpi-value">${offline}</div>
-      <small>${total>0?((offline/total)*100).toFixed(1):0}% com falha</small>
-    </div>
-    <div class="kpi purple" onclick="setFilter('all');toggleLegend('ip');">
-      <div class="kpi-label">IP</div>
-      <div class="kpi-value">${ip}</div>
-      <small>${total>0?((ip/total)*100).toFixed(1):0}% do parque</small>
-    </div>
-    <div class="kpi purple" onclick="setFilter('all');toggleLegend('analog');">
-      <div class="kpi-label">Analógica</div>
-      <div class="kpi-value">${analog}</div>
-      <small>${total>0?((analog/total)*100).toFixed(1):0}% do parque</small>
-    </div>
+      <div class="kpi-label">Off-line</div><div class="kpi-value">${offline}</div><small>${((offline/total)*100).toFixed(1)}%</small></div>
+    <div class="kpi blue" onclick="setFilter('all');legendFilters={ip:true,analog:false,online:false,offline:false};document.querySelectorAll('[data-legend]').forEach(b=>b.classList.toggle('active',b.dataset.legend==='ip'));render();">
+      <div class="kpi-label">IP</div><div class="kpi-value">${ip}</div><small>Câmeras IP</small></div>
+    <div class="kpi purple" onclick="setFilter('all');legendFilters={ip:false,analog:true,online:false,offline:false};document.querySelectorAll('[data-legend]').forEach(b=>b.classList.toggle('active',b.dataset.legend==='analog'));render();">
+      <div class="kpi-label">Analógica</div><div class="kpi-value">${analog}</div><small>Câmeras analógicas</small></div>
+    <div class="kpi cyan" onclick="setTab('equipamentos');">
+      <div class="kpi-label">🔀 Switches</div><div class="kpi-value">${switches}</div><small>${eol} em fim de vida</small></div>
+    <div class="kpi amber" onclick="setTab('equipamentos');">
+      <div class="kpi-label">⚠️ EOL</div><div class="kpi-value">${eol}</div><small>Precisam trocar</small></div>
+    <div class="kpi purple" onclick="setTab('equipamentos');">
+      <div class="kpi-label">📼 DVR/NVR</div><div class="kpi-value">${dvrs+nvrs}</div><small>Gravadores</small></div>
+    <div class="kpi blue" onclick="setTab('equipamentos');">
+      <div class="kpi-label">🖥️ Servidores</div><div class="kpi-value">${servidores}</div><small>Gravação</small></div>
   `;
 
   document.getElementById('count-ip').textContent = ip;
   document.getElementById('count-analog').textContent = analog;
   document.getElementById('count-online').textContent = online;
   document.getElementById('count-offline').textContent = offline;
+  document.getElementById('tab-cam-count').textContent = total;
+  document.getElementById('tab-equip-count').textContent = EQUIPAMENTOS.length;
 
+  const filtered = getFiltered();
   const tbody = document.getElementById('tbody');
   if(filtered.length===0){
-    tbody.innerHTML = '<tr><td colspan="10" class="empty">Nenhuma câmera encontrada</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="empty">Nenhuma câmera encontrada</td></tr>';
   } else {
     tbody.innerHTML = filtered.map(c => {
       const isOn = c.s.toLowerCase()==='ok';
       const h = durH(c.statusSince);
       let cls = 'offtime';
-      if(h>72) cls += ' critical';
-      else if(h>24) cls += ' long';
+      if(h>72) cls += ' critical'; else if(h>24) cls += ' long';
       const isCritical = !isOn && h > 24;
       return `<tr class="${isCritical?'row-alert':''}">
         <td><div class="toggle ${isOn?'on':''}" onclick="toggleCamera(${c.id})"></div></td>
@@ -645,22 +651,85 @@ function render(){
         <td><span class="badge ${isOn?'ok':'bad'}">${isOn?'● Online':'● Off-line'}</span></td>
         <td class="info-cell">${isOn?'—':fmtDT(c.statusSince)}</td>
         <td class="${isOn?'info-cell':cls}">${isOn?'—':timeAgo(c.statusSince)}</td>
-        <td>
-          <button class="btn-icon" onclick="editarCamera(${c.id})" title="Editar">✏️</button>
-          <button class="btn-icon del" onclick="deletarCamera(${c.id})" title="Remover">🗑️</button>
-        </td>
       </tr>`;
     }).join('');
   }
 
+  // ============ RENDER EQUIPAMENTOS ============
+  const locais = {};
+  EQUIPAMENTOS.forEach(e => {
+    if(!locais[e.local]) locais[e.local] = [];
+    locais[e.local].push(e);
+  });
+  const camPorLocal = {};
+  cameras.forEach(c => {
+    const loc = c.local || 'Sem local';
+    if(!camPorLocal[loc]) camPorLocal[loc] = {total:0, online:0, offline:0};
+    camPorLocal[loc].total++;
+    if(c.s.toLowerCase()==='ok') camPorLocal[loc].online++;
+    else camPorLocal[loc].offline++;
+  });
+
+  const iconTipo = t => t==='SW'?'fa-network-wired':t==='DVR'?'fa-video':t==='NVR'?'fa-hdd':t==='NOB'?'fa-battery-full':t==='SRV'?'fa-server':t==='MON'?'fa-tv':'fa-microchip';
+  const nomeTipo = t => t==='SW'?'Switch':t==='DVR'?'DVR':t==='NVR'?'NVR':t==='NOB'?'Nobreak':t==='SRV'?'Servidor':t==='MON'?'Monitor':'Equip';
+
+  document.getElementById('equipGrid').innerHTML = Object.keys(locais).sort().map(local => {
+    const equips = locais[local];
+    const sw = equips.filter(e=>e.tipo==='SW').length;
+    const dv = equips.filter(e=>e.tipo==='DVR').length;
+    const nv = equips.filter(e=>e.tipo==='NVR').length;
+    const eol = equips.filter(e=>e.status==='eol').length;
+    const cams = camPorLocal[local] || {total:0, online:0, offline:0};
+
+    return `<div class="local-card">
+      <div class="local-header">
+        <div class="local-title">📍 ${escapeHtml(local)}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${cams.total>0?'<span class="local-count">🎥 '+cams.total+'</span>':''}
+          ${eol>0?'<span class="badge eol">⚠ '+eol+' EOL</span>':''}
+        </div>
+      </div>
+      <div class="local-body">
+        ${cams.total>0 ? `
+        <div class="local-stats">
+          <div class="stat-box"><div class="num">${cams.total}</div><div class="lbl">Câmeras</div></div>
+          <div class="stat-box ok"><div class="num">${cams.online}</div><div class="lbl">Online</div></div>
+          <div class="stat-box bad"><div class="num">${cams.offline}</div><div class="lbl">Off-line</div></div>
+          <div class="stat-box"><div class="num">${equips.length}</div><div class="lbl">Equip.</div></div>
+        </div>` : ''}
+        <div class="equip-list">
+          ${equips.map(e => `
+            <div class="equip-item ${e.tipo.toLowerCase()} ${e.status==='eol'?'eol':''}">
+              <div class="equip-icon"><i class="fas ${iconTipo(e.tipo)}"></i></div>
+              <div class="equip-info">
+                <div class="equip-name">${escapeHtml(e.nome)}${e.qtd?' <span style="color:#94a3b8">(x'+e.qtd+')</span>':''}</div>
+                <div class="equip-meta">
+                  <span>📦 ${escapeHtml(e.modelo)}</span>
+                  ${e.obs?'<span style="color:#fca5a5">⚠ '+escapeHtml(e.obs)+'</span>':''}
+                </div>
+              </div>
+              <span class="equip-tag ${e.tipo.toLowerCase()}">${nomeTipo(e.tipo)}</span>
+            </div>
+          `).join('')}
+        </div>
+        ${cams.total>0 ? `
+        <div class="cam-list-mini">
+          <div class="lbl">🎥 Câmeras atendidas por este local</div>
+          ${cameras.filter(c=>(c.local||'Sem local')===local).slice(0,8).map(c=>`
+            <div class="item">
+              <span class="${c.s.toLowerCase()==='ok'?'on':'off'}">${c.s.toLowerCase()==='ok'?'●':'○'} ${escapeHtml(c.n)}</span>
+              <span style="color:#64748b;font-size:.68rem">${escapeHtml(c.p||'—')}</span>
+            </div>
+          `).join('')}
+          ${cams.total>8?'<div class="item" style="color:#64748b;font-style:italic">... e mais '+(cams.total-8)+' câmeras</div>':''}
+        </div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
   document.getElementById('totalCount').textContent = total;
   document.getElementById('offCount').textContent = offline;
-  document.getElementById('onCount').textContent = online;
-}
-
-function escapeHtml(s){
-  if(s==null) return '';
-  return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  document.getElementById('equipCount').textContent = EQUIPAMENTOS.length;
 }
 
 // ============================================================
@@ -668,7 +737,6 @@ function escapeHtml(s){
 // ============================================================
 carregar();
 
-// Popula select de pisos
 const floors = [...new Set(cameras.map(c=>c.p||'Sem piso'))].sort();
 const sel = document.getElementById('floorFilter');
 floors.forEach(f => {
@@ -677,18 +745,15 @@ floors.forEach(f => {
   sel.appendChild(opt);
 });
 sel.onchange = e => { floorFilter = e.target.value; render(); };
-
 document.getElementById('search').oninput = e => { search = e.target.value; render(); };
-document.getElementById('modalBg').onclick = fecharModal;
 
-function atualizaRelogio(){
-  document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR');
-}
+function atualizaRelogio(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR'); }
 atualizaRelogio();
 setInterval(atualizaRelogio, 1000);
 setInterval(render, 30000);
 
 render();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 </body>
 </html>
