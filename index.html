@@ -25,14 +25,12 @@
   .btn.red{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171}
   .btn.small{padding:7px 12px;font-size:.76rem}
 
-  /* TABS */
   .tabs{display:flex;gap:6px;background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:4px;margin-bottom:14px;overflow-x:auto}
   .tab{padding:11px 20px;background:transparent;border:none;color:#94a3b8;font-weight:600;font-size:.83rem;cursor:pointer;border-radius:10px;transition:.2s;font-family:inherit;white-space:nowrap}
   .tab.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff}
   .tab .cnt{background:rgba(0,0,0,.25);padding:1px 8px;border-radius:10px;font-size:.7rem;margin-left:6px}
   .tab.active .cnt{background:rgba(255,255,255,.2)}
 
-  /* KPIs */
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
   .kpi{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:14px;padding:12px 14px;position:relative;cursor:pointer;transition:.25s}
   .kpi:hover{transform:translateY(-2px);border-color:rgba(96,165,250,.5)}
@@ -50,7 +48,6 @@
   .kpi.amber .kpi-value{color:#fbbf24}
   .kpi small{font-size:.66rem;color:#64748b;display:block;margin-top:3px}
 
-  /* LEGENDA */
   .legend-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:14px 18px;margin-bottom:14px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
   .legend-title{font-size:.72rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
   .legend-item{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(15,23,42,.5);border:1px solid rgba(148,163,184,.15);font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;color:#cbd5e1;font-family:inherit}
@@ -69,7 +66,6 @@
   input.search:focus,select.search:focus{border-color:#3b82f6}
   input.search{flex:1;min-width:200px}
 
-  /* TABELA */
   .table-box{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;margin-bottom:22px}
   .table-scroll{overflow-x:auto;max-height:70vh;overflow-y:auto}
   .table-scroll::-webkit-scrollbar{width:10px;height:10px}
@@ -92,6 +88,7 @@
   .badge.nvr{background:rgba(34,211,238,.15);color:#22d3ee}
   .badge.nob{background:rgba(250,204,21,.15);color:#facc15}
   .badge.srv{background:rgba(59,130,246,.15);color:#60a5fa}
+  .badge.dup{background:rgba(239,68,68,.2);color:#fca5a5;font-size:.7rem}
 
   .toggle{position:relative;width:48px;height:24px;background:#ef4444;border-radius:20px;cursor:pointer;transition:.3s;display:inline-block}
   .toggle.on{background:#22c55e}
@@ -101,18 +98,14 @@
   .offtime.long{color:#fbbf24}
   .offtime.critical{color:#ef4444;font-weight:800;animation:blink 2s infinite}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-  .btn-icon{background:transparent;border:1px solid rgba(148,163,184,.2);color:#94a3b8;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.72rem;margin-right:4px}
-  .btn-icon:hover{border-color:#3b82f6;color:#60a5fa}
-  .btn-icon.del:hover{border-color:#ef4444;color:#f87171}
   .empty{text-align:center;padding:40px;color:#64748b}
   .footer{text-align:center;padding:24px 0 12px;color:#64748b;font-size:.76rem;border-top:1px solid rgba(148,163,184,.1);margin-top:24px}
   .info-cell{font-size:.72rem;color:#64748b}
 
-  /* ============ EQUIPAMENTOS ============ */
   .locais-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:22px}
   .local-card{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;transition:.25s}
   .local-card:hover{border-color:rgba(96,165,250,.4);transform:translateY(-2px)}
-  .local-header{padding:14px 18px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.12));border-bottom:1px solid rgba(148,163,184,.1);display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+  .local-header{padding:14px 18px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.12));border-bottom:1px solid rgba(148,163,184,.1);display:flex;justify-content:space-between;align-items:center}
   .local-title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;color:#f1f5f9}
   .local-count{font-size:.7rem;background:rgba(0,0,0,.3);padding:3px 9px;border-radius:20px;color:#cbd5e1;font-weight:700}
   .local-body{padding:14px 18px 16px}
@@ -123,8 +116,7 @@
   .stat-box.ok .num{color:#4ade80}
   .stat-box.bad .num{color:#f87171}
   .equip-list{display:flex;flex-direction:column;gap:8px}
-  .equip-item{display:flex;align-items:center;gap:12px;padding:9px 11px;background:rgba(15,23,42,.4);border-radius:10px;border-left:3px solid #3b82f6;transition:.2s}
-  .equip-item:hover{background:rgba(15,23,42,.7)}
+  .equip-item{display:flex;align-items:center;gap:12px;padding:9px 11px;background:rgba(15,23,42,.4);border-radius:10px;border-left:3px solid #3b82f6}
   .equip-item.sw{border-left-color:#a78bfa}
   .equip-item.dvr{border-left-color:#f472b6}
   .equip-item.nvr{border-left-color:#22d3ee}
@@ -149,21 +141,31 @@
   .equip-tag.srv{background:rgba(59,130,246,.2);color:#60a5fa}
   .equip-tag.mon{background:rgba(148,163,184,.2);color:#cbd5e1}
 
-  .cam-list-mini{margin-top:10px;padding:10px;background:rgba(15,23,42,.5);border-radius:8px;border-left:2px solid #3b82f6}
-  .cam-list-mini .lbl{font-size:.65rem;color:#64748b;text-transform:uppercase;font-weight:600;letter-spacing:.05em;margin-bottom:6px}
-  .cam-list-mini .item{font-size:.72rem;color:#94a3b8;padding:2px 0;display:flex;justify-content:space-between;gap:8px}
-  .cam-list-mini .item .on{color:#4ade80}
-  .cam-list-mini .item .off{color:#f87171}
+  /* AUDITORIA */
+  .audit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:22px}
+  .audit-card{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden}
+  .audit-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(148,163,184,.1)}
+  .audit-header.red{background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(249,115,22,.1))}
+  .audit-header.amber{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(239,68,68,.1))}
+  .audit-header.blue{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1))}
+  .audit-title{font-weight:700;font-size:.92rem;color:#f1f5f9;display:flex;align-items:center;gap:8px}
+  .audit-count{background:rgba(0,0,0,.3);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;color:#fff}
+  .audit-body{padding:12px 16px;max-height:400px;overflow-y:auto}
+  .audit-body::-webkit-scrollbar{width:6px}
+  .audit-body::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:4px}
+  .audit-item{padding:10px 12px;background:rgba(15,23,42,.4);border-radius:10px;margin-bottom:8px;border-left:3px solid #3b82f6}
+  .audit-item.red{border-left-color:#ef4444}
+  .audit-item.amber{border-left-color:#f59e0b}
+  .audit-item-title{font-weight:600;font-size:.82rem;color:#e2e8f0;margin-bottom:4px}
+  .audit-item-detail{font-size:.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:2px}
+  .audit-item-detail span{padding:2px 0}
+  .audit-empty{padding:30px;text-align:center;color:#4ade80;font-size:.85rem}
 
   .toast{position:fixed;bottom:24px;right:24px;background:#1e293b;border:1px solid #22c55e;color:#4ade80;padding:14px 22px;border-radius:12px;font-weight:600;font-size:.85rem;z-index:200;display:none;max-width:340px}
   .toast.show{display:block}
   .toast.error{border-color:#ef4444;color:#f87171}
 
-  @media(max-width:700px){
-    body{padding:12px}h1{font-size:1.1rem}
-    .kpis{grid-template-columns:repeat(2,1fr)}
-    .locais-grid{grid-template-columns:1fr}
-  }
+  @media(max-width:700px){body{padding:12px}h1{font-size:1.1rem}.kpis{grid-template-columns:repeat(2,1fr)}.locais-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -183,9 +185,9 @@
   <div class="tabs">
     <button class="tab active" data-tab="cameras" onclick="setTab('cameras')">📋 Câmeras <span class="cnt" id="tab-cam-count">0</span></button>
     <button class="tab" data-tab="equipamentos" onclick="setTab('equipamentos')">🖥️ Equipamentos <span class="cnt" id="tab-equip-count">0</span></button>
+    <button class="tab" data-tab="auditoria" onclick="setTab('auditoria')">🔍 Auditoria <span class="cnt" id="tab-audit-count">0</span></button>
   </div>
 
-  <!-- ABA CÂMERAS -->
   <div id="tab-cameras-content">
     <div class="legend-box">
       <span class="legend-title">Legenda:</span>
@@ -209,9 +211,7 @@
         <button class="btn small active" data-filter="all" onclick="setFilter('all')">Todas</button>
         <button class="btn small" data-filter="online" onclick="setFilter('online')">🟢 Online</button>
         <button class="btn small" data-filter="offline" onclick="setFilter('offline')">🔴 Off-line</button>
-        <select class="search" id="floorFilter" style="max-width:170px">
-          <option value="all">Todos os pisos</option>
-        </select>
+        <select class="search" id="floorFilter" style="max-width:170px"><option value="all">Todos os pisos</option></select>
       </div>
     </div>
 
@@ -237,9 +237,12 @@
     </div>
   </div>
 
-  <!-- ABA EQUIPAMENTOS -->
   <div id="tab-equipamentos-content" style="display:none">
     <div class="locais-grid" id="equipGrid"></div>
+  </div>
+
+  <div id="tab-auditoria-content" style="display:none">
+    <div class="audit-grid" id="auditGrid"></div>
   </div>
 
   <div class="footer">
@@ -251,10 +254,9 @@
 
 <script>
 // ============================================================
-// EQUIPAMENTOS — Inventário do CFTV
+// EQUIPAMENTOS
 // ============================================================
 const EQUIPAMENTOS = [
-  // ============ SALA DE SEGURANÇA ============
   {local:"Sala de Segurança", tipo:"SW", nome:"Switch HP sem gerência", modelo:"HP V1910", status:"ok"},
   {local:"Sala de Segurança", tipo:"SW", nome:"Switch POE JG92CA", modelo:"JG92CA", status:"eol", obs:"Com defeito — trocar"},
   {local:"Sala de Segurança", tipo:"SW", nome:"Switch 48 portas HP", modelo:"HP 48P", status:"eol", obs:"Trocar"},
@@ -271,56 +273,36 @@ const EQUIPAMENTOS = [
   {local:"Sala de Segurança", tipo:"DVR", nome:"DVR Motorola", modelo:"MTR16A1080L", status:"ok"},
   {local:"Sala de Segurança", tipo:"MON", nome:"TV/Monitor LG", modelo:"LG", status:"ok", qtd:6},
   {local:"Sala de Segurança", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
-
-  // ============ SALA TI ============
   {local:"Sala TI", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"},
   {local:"Sala TI", tipo:"SW", nome:"Switch Ubiquiti", modelo:"UniFi", status:"ok"},
   {local:"Sala TI", tipo:"SRV", nome:"Servidor DELL montado", modelo:"DELL", status:"ok"},
-
-  // ============ SALA CPD ============
   {local:"Sala CPD", tipo:"SW", nome:"Switch Ubiquiti", modelo:"UniFi", status:"ok"},
   {local:"Sala CPD", tipo:"SRV", nome:"Servidor DELL montado", modelo:"DELL", status:"ok"},
-
-  // ============ SHAFT 1º ANDAR ============
   {local:"Shaft 1º Andar", tipo:"SW", nome:"Switch POE Geovision", modelo:"Geovision PoE", status:"eol", obs:"Trocar"},
   {local:"Shaft 1º Andar", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
   {local:"Shaft 1º Andar", tipo:"DVR", nome:"DVR Intelbras", modelo:"MHDX 1232", status:"ok"},
-
-  // ============ SHAFT 10º ANDAR ============
   {local:"Shaft 10º Andar", tipo:"SW", nome:"Switch POE Geovision", modelo:"Geovision PoE", status:"eol", obs:"Trocar"},
   {local:"Shaft 10º Andar", tipo:"SW", nome:"Switch HP POE 24 portas", modelo:"HP 1910-24G-PoE+", status:"ok"},
   {local:"Shaft 10º Andar", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
-
-  // ============ PISO C ============
   {local:"Piso C", tipo:"SW", nome:"Switch POE Intelbras #1", modelo:"Intelbras PoE", status:"ok"},
   {local:"Piso C", tipo:"SW", nome:"Switch POE Intelbras #2", modelo:"Intelbras PoE", status:"ok"},
   {local:"Piso C", tipo:"SW", nome:"Switch POE Netgear", modelo:"Netgear PoE", status:"eol", obs:"Trocar"},
   {local:"Piso C", tipo:"NOB", nome:"Nobreak APC 3000", modelo:"APC 3000", status:"ok"},
   {local:"Piso C", tipo:"NVR", nome:"NVR Motorola", modelo:"MTN322K0012", status:"ok"},
-
-  // ============ 3SUB2 ============
   {local:"3SUB2", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"},
-
-  // ============ PORTARIA ============
   {local:"Portaria", tipo:"SRV", nome:"Servidor DELL OptiPlex", modelo:"OptiPlex", status:"ok"},
   {local:"Portaria", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
-
-  // ============ DIRETORIA ============
   {local:"Sala da Diretoria", tipo:"SRV", nome:"Servidor DELL OptiPlex", modelo:"OptiPlex", status:"ok"},
   {local:"Sala da Gerência", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
-
-  // ============ DVR ANDARES (concentrador) ============
   {local:"DVR Andares", tipo:"DVR", nome:"DVR 40 câmeras", modelo:"DVR 40CH", status:"ok"},
   {local:"DVR Andares", tipo:"DVR", nome:"DVR 6º andar ao piso M", modelo:"DVR 20CH", status:"ok"},
-
-  // ============ DVR LAZER ============
   {local:"DVR Lazer", tipo:"DVR", nome:"DVR 192.168.1.139", modelo:"DVR 26 dias HD 6T", status:"ok"},
   {local:"DVR Lazer", tipo:"DVR", nome:"DVR 192.168.1.10", modelo:"8 canais HD 1T", status:"ok"},
   {local:"DVR Lazer", tipo:"SW", nome:"Switch GIGA", modelo:"Giga", status:"ok"}
 ];
 
 // ============================================================
-// CÂMERAS
+// CÂMERAS (base)
 // ============================================================
 const NOMES_IP = [
 ["C ELEV AMARELO","C","Sala de Segurança"],["141 HALL ELEV LOBY","L","Sala de Segurança"],
@@ -436,8 +418,7 @@ let search = '';
 let floorFilter = 'all';
 let legendFilters = {ip:false, analog:false, online:false, offline:false};
 let currentTab = 'cameras';
-
-const STORAGE_KEY = 'cftv_v16';
+const STORAGE_KEY = 'cftv_v17';
 const TOTAL_CAMERAS = 250;
 const TOTAL_OFF = 78;
 
@@ -457,13 +438,11 @@ function buildInitial(){
   while(cams.length < TOTAL_CAMERAS){
     const idx = cams.length + 1;
     const piso = ['C','M','L','G','T'][idx % 5];
-    cams.push({
-      id:id++, n:`Câmera Extra ${idx}`, ip:`192.168.1.${200 + (idx % 50)}`,
+    cams.push({id:id++, n:`Câmera Extra ${idx}`, ip:`192.168.1.${200 + (idx % 50)}`,
       t: idx % 3 === 0 ? 'Analogica' : 'IP', s:'ok', p:piso,
       mod: idx % 3 === 0 ? '' : 'ONVIF',
       local: piso === 'C' ? 'Piso C' : piso === 'L' ? 'Sala de Segurança' : 'Shaft 1º Andar',
-      statusSince: now
-    });
+      statusSince: now});
   }
   cams.splice(TOTAL_CAMERAS);
   const shuffled = [...cams].sort(()=>Math.random()-0.5);
@@ -498,6 +477,7 @@ function timeAgo(ts){
 function fmtDT(ts){ if(!ts) return '—'; return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
 function durH(ts){ return ts ? (Date.now()-ts)/3600000 : 0; }
 function escapeHtml(s){ return s==null ? '' : String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+function normalizeStr(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\s_\-\.]/g,''); }
 
 function toast(msg, type='success'){
   const el = document.getElementById('toast');
@@ -537,6 +517,7 @@ function setTab(t){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===t));
   document.getElementById('tab-cameras-content').style.display = t==='cameras' ? 'block' : 'none';
   document.getElementById('tab-equipamentos-content').style.display = t==='equipamentos' ? 'block' : 'none';
+  document.getElementById('tab-auditoria-content').style.display = t==='auditoria' ? 'block' : 'none';
 }
 
 function resetar(){
@@ -561,7 +542,57 @@ function exportarCSV(){
 }
 
 // ============================================================
-// FILTROS DE CÂMERAS
+// AUDITORIA
+// ============================================================
+function auditar(){
+  const duplicatasIP = {};   // {ip: [cams]}
+  const nomesNorm = {};      // {nomeNorm: [cams]}
+  const semIP = [];
+  const semPiso = [];
+  const semLocal = [];
+  const ipsInvalidos = [];
+
+  cameras.forEach(c => {
+    // IPs duplicados
+    if(c.ip && c.ip.trim()){
+      if(!duplicatasIP[c.ip]) duplicatasIP[c.ip] = [];
+      duplicatasIP[c.ip].push(c);
+
+      // IP mal formatado (não segue padrão 192.168.x.x)
+      if(!/^192\.168\.\d{1,3}\.\d{1,3}$/.test(c.ip)){
+        ipsInvalidos.push(c);
+      }
+    } else {
+      semIP.push(c);
+    }
+
+    // Nomes similares
+    const norm = normalizeStr(c.n);
+    if(!nomesNorm[norm]) nomesNorm[norm] = [];
+    nomesNorm[norm].push(c);
+
+    // Dados incompletos
+    if(!c.p || !c.p.trim()) semPiso.push(c);
+    if(!c.local || !c.local.trim()) semLocal.push(c);
+  });
+
+  // Filtra só os que têm mais de 1
+  const ipsDuplicados = Object.entries(duplicatasIP).filter(([k,v])=>v.length>1);
+  const nomesDuplicados = Object.entries(nomesNorm).filter(([k,v])=>v.length>1);
+
+  return {
+    ipsDuplicados,
+    nomesDuplicados,
+    semIP,
+    semPiso,
+    semLocal,
+    ipsInvalidos,
+    totalProblemas: ipsDuplicados.length + nomesDuplicados.length + semIP.length + semPiso.length + semLocal.length + ipsInvalidos.length
+  };
+}
+
+// ============================================================
+// FILTROS
 // ============================================================
 function getFiltered(){
   return cameras.filter(c => {
@@ -601,6 +632,7 @@ function render(){
   const dvrs = EQUIPAMENTOS.filter(e=>e.tipo==='DVR').length;
   const nvrs = EQUIPAMENTOS.filter(e=>e.tipo==='NVR').length;
   const servidores = EQUIPAMENTOS.filter(e=>e.tipo==='SRV').length;
+  const audit = auditar();
 
   document.getElementById('kpis').innerHTML = `
     <div class="kpi" onclick="setFilter('all');legendFilters={ip:false,analog:false,online:false,offline:false};document.querySelectorAll('[data-legend]').forEach(b=>b.classList.remove('active'));render();">
@@ -609,9 +641,9 @@ function render(){
       <div class="kpi-label">Online</div><div class="kpi-value">${online}</div><small>${((online/total)*100).toFixed(1)}%</small></div>
     <div class="kpi red" onclick="setFilter('offline');render();">
       <div class="kpi-label">Off-line</div><div class="kpi-value">${offline}</div><small>${((offline/total)*100).toFixed(1)}%</small></div>
-    <div class="kpi blue" onclick="setFilter('all');legendFilters={ip:true,analog:false,online:false,offline:false};document.querySelectorAll('[data-legend]').forEach(b=>b.classList.toggle('active',b.dataset.legend==='ip'));render();">
+    <div class="kpi blue">
       <div class="kpi-label">IP</div><div class="kpi-value">${ip}</div><small>Câmeras IP</small></div>
-    <div class="kpi purple" onclick="setFilter('all');legendFilters={ip:false,analog:true,online:false,offline:false};document.querySelectorAll('[data-legend]').forEach(b=>b.classList.toggle('active',b.dataset.legend==='analog'));render();">
+    <div class="kpi purple">
       <div class="kpi-label">Analógica</div><div class="kpi-value">${analog}</div><small>Câmeras analógicas</small></div>
     <div class="kpi cyan" onclick="setTab('equipamentos');">
       <div class="kpi-label">🔀 Switches</div><div class="kpi-value">${switches}</div><small>${eol} em fim de vida</small></div>
@@ -621,6 +653,8 @@ function render(){
       <div class="kpi-label">📼 DVR/NVR</div><div class="kpi-value">${dvrs+nvrs}</div><small>Gravadores</small></div>
     <div class="kpi blue" onclick="setTab('equipamentos');">
       <div class="kpi-label">🖥️ Servidores</div><div class="kpi-value">${servidores}</div><small>Gravação</small></div>
+    <div class="kpi red" onclick="setTab('auditoria');">
+      <div class="kpi-label">🔍 Problemas</div><div class="kpi-value">${audit.totalProblemas}</div><small>Ver auditoria</small></div>
   `;
 
   document.getElementById('count-ip').textContent = ip;
@@ -629,7 +663,9 @@ function render(){
   document.getElementById('count-offline').textContent = offline;
   document.getElementById('tab-cam-count').textContent = total;
   document.getElementById('tab-equip-count').textContent = EQUIPAMENTOS.length;
+  document.getElementById('tab-audit-count').textContent = audit.totalProblemas;
 
+  // CÂMERAS
   const filtered = getFiltered();
   const tbody = document.getElementById('tbody');
   if(filtered.length===0){
@@ -655,12 +691,9 @@ function render(){
     }).join('');
   }
 
-  // ============ RENDER EQUIPAMENTOS ============
+  // EQUIPAMENTOS
   const locais = {};
-  EQUIPAMENTOS.forEach(e => {
-    if(!locais[e.local]) locais[e.local] = [];
-    locais[e.local].push(e);
-  });
+  EQUIPAMENTOS.forEach(e => { (locais[e.local] = locais[e.local] || []).push(e); });
   const camPorLocal = {};
   cameras.forEach(c => {
     const loc = c.local || 'Sem local';
@@ -675,12 +708,8 @@ function render(){
 
   document.getElementById('equipGrid').innerHTML = Object.keys(locais).sort().map(local => {
     const equips = locais[local];
-    const sw = equips.filter(e=>e.tipo==='SW').length;
-    const dv = equips.filter(e=>e.tipo==='DVR').length;
-    const nv = equips.filter(e=>e.tipo==='NVR').length;
     const eol = equips.filter(e=>e.status==='eol').length;
     const cams = camPorLocal[local] || {total:0, online:0, offline:0};
-
     return `<div class="local-card">
       <div class="local-header">
         <div class="local-title">📍 ${escapeHtml(local)}</div>
@@ -690,46 +719,119 @@ function render(){
         </div>
       </div>
       <div class="local-body">
-        ${cams.total>0 ? `
-        <div class="local-stats">
+        ${cams.total>0 ? `<div class="local-stats">
           <div class="stat-box"><div class="num">${cams.total}</div><div class="lbl">Câmeras</div></div>
           <div class="stat-box ok"><div class="num">${cams.online}</div><div class="lbl">Online</div></div>
           <div class="stat-box bad"><div class="num">${cams.offline}</div><div class="lbl">Off-line</div></div>
           <div class="stat-box"><div class="num">${equips.length}</div><div class="lbl">Equip.</div></div>
         </div>` : ''}
         <div class="equip-list">
-          ${equips.map(e => `
-            <div class="equip-item ${e.tipo.toLowerCase()} ${e.status==='eol'?'eol':''}">
-              <div class="equip-icon"><i class="fas ${iconTipo(e.tipo)}"></i></div>
-              <div class="equip-info">
-                <div class="equip-name">${escapeHtml(e.nome)}${e.qtd?' <span style="color:#94a3b8">(x'+e.qtd+')</span>':''}</div>
-                <div class="equip-meta">
-                  <span>📦 ${escapeHtml(e.modelo)}</span>
-                  ${e.obs?'<span style="color:#fca5a5">⚠ '+escapeHtml(e.obs)+'</span>':''}
-                </div>
-              </div>
-              <span class="equip-tag ${e.tipo.toLowerCase()}">${nomeTipo(e.tipo)}</span>
+          ${equips.map(e => `<div class="equip-item ${e.tipo.toLowerCase()} ${e.status==='eol'?'eol':''}">
+            <div class="equip-icon"><i class="fas ${iconTipo(e.tipo)}"></i></div>
+            <div class="equip-info">
+              <div class="equip-name">${escapeHtml(e.nome)}${e.qtd?' <span style="color:#94a3b8">(x'+e.qtd+')</span>':''}</div>
+              <div class="equip-meta"><span>📦 ${escapeHtml(e.modelo)}</span>
+                ${e.obs?'<span style="color:#fca5a5">⚠ '+escapeHtml(e.obs)+'</span>':''}</div>
             </div>
-          `).join('')}
+            <span class="equip-tag ${e.tipo.toLowerCase()}">${nomeTipo(e.tipo)}</span>
+          </div>`).join('')}
         </div>
-        ${cams.total>0 ? `
-        <div class="cam-list-mini">
-          <div class="lbl">🎥 Câmeras atendidas por este local</div>
-          ${cameras.filter(c=>(c.local||'Sem local')===local).slice(0,8).map(c=>`
-            <div class="item">
-              <span class="${c.s.toLowerCase()==='ok'?'on':'off'}">${c.s.toLowerCase()==='ok'?'●':'○'} ${escapeHtml(c.n)}</span>
-              <span style="color:#64748b;font-size:.68rem">${escapeHtml(c.p||'—')}</span>
-            </div>
-          `).join('')}
-          ${cams.total>8?'<div class="item" style="color:#64748b;font-style:italic">... e mais '+(cams.total-8)+' câmeras</div>':''}
-        </div>` : ''}
       </div>
     </div>`;
   }).join('');
 
+  // AUDITORIA
+  renderAuditoria(audit);
+
   document.getElementById('totalCount').textContent = total;
   document.getElementById('offCount').textContent = offline;
   document.getElementById('equipCount').textContent = EQUIPAMENTOS.length;
+}
+
+function renderAuditoria(a){
+  const grid = document.getElementById('auditGrid');
+
+  const cardRed = (title, items, renderItem) => `
+    <div class="audit-card">
+      <div class="audit-header red">
+        <div class="audit-title">🔴 ${title}</div>
+        <div class="audit-count">${items.length}</div>
+      </div>
+      <div class="audit-body">
+        ${items.length===0 ? '<div class="audit-empty">✅ Nenhum problema</div>'
+          : items.map(renderItem).join('')}
+      </div>
+    </div>`;
+
+  const cardAmber = (title, items, renderItem) => `
+    <div class="audit-card">
+      <div class="audit-header amber">
+        <div class="audit-title">⚠️ ${title}</div>
+        <div class="audit-count">${items.length}</div>
+      </div>
+      <div class="audit-body">
+        ${items.length===0 ? '<div class="audit-empty">✅ Nenhum problema</div>'
+          : items.map(renderItem).join('')}
+      </div>
+    </div>`;
+
+  const cardBlue = (title, items, renderItem) => `
+    <div class="audit-card">
+      <div class="audit-header blue">
+        <div class="audit-title">📋 ${title}</div>
+        <div class="audit-count">${items.length}</div>
+      </div>
+      <div class="audit-body">
+        ${items.length===0 ? '<div class="audit-empty">✅ Nenhum problema</div>'
+          : items.map(renderItem).join('')}
+      </div>
+    </div>`;
+
+  grid.innerHTML =
+    cardRed('IPs Duplicados', a.ipsDuplicados, ([ip, cams]) => `
+      <div class="audit-item red">
+        <div class="audit-item-title">🌐 ${escapeHtml(ip)} <span class="badge dup">${cams.length}x</span></div>
+        <div class="audit-item-detail">
+          ${cams.map(c=>`<span>• ${escapeHtml(c.n)} <span style="color:#64748b">(${escapeHtml(c.p||'—')} • ${escapeHtml(c.local||'—')})</span></span>`).join('')}
+        </div>
+      </div>`)
+    +
+    cardRed('IPs Inválidos (formato errado)', a.ipsInvalidos, c => `
+      <div class="audit-item red">
+        <div class="audit-item-title">⚠️ ${escapeHtml(c.n)}</div>
+        <div class="audit-item-detail">
+          <span>IP atual: <b style="color:#fca5a5">${escapeHtml(c.ip)}</b></span>
+          <span>Esperado: 192.168.xxx.xxx</span>
+        </div>
+      </div>`)
+    +
+    cardAmber('Nomes Similares (possível duplicata)', a.nomesDuplicados, ([norm, cams]) => `
+      <div class="audit-item amber">
+        <div class="audit-item-title">📛 ${cams.length} câmeras parecidas</div>
+        <div class="audit-item-detail">
+          ${cams.map(c=>`<span>• ${escapeHtml(c.n)} <span style="color:#64748b">(IP: ${escapeHtml(c.ip||'—')})</span></span>`).join('')}
+        </div>
+      </div>`)
+    +
+    cardBlue('Sem IP cadastrado', a.semIP, c => `
+      <div class="audit-item">
+        <div class="audit-item-title">${escapeHtml(c.n)}</div>
+        <div class="audit-item-detail">
+          <span>Tipo: ${c.t} • Piso: ${escapeHtml(c.p||'—')}</span>
+        </div>
+      </div>`)
+    +
+    cardBlue('Sem Piso informado', a.semPiso, c => `
+      <div class="audit-item">
+        <div class="audit-item-title">${escapeHtml(c.n)}</div>
+        <div class="audit-item-detail"><span>Local: ${escapeHtml(c.local||'—')} • IP: ${escapeHtml(c.ip||'—')}</span></div>
+      </div>`)
+    +
+    cardBlue('Sem Local informado', a.semLocal, c => `
+      <div class="audit-item">
+        <div class="audit-item-title">${escapeHtml(c.n)}</div>
+        <div class="audit-item-detail"><span>Piso: ${escapeHtml(c.p||'—')} • IP: ${escapeHtml(c.ip||'—')}</span></div>
+      </div>`);
 }
 
 // ============================================================
