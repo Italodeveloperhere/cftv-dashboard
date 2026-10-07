@@ -6,7 +6,7 @@
 <title>CFTV • Monitoramento Operacional</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:24px}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:24px}
   .container{max-width:1650px;margin:0 auto}
   .top-block{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:20px;padding:18px 22px;margin-bottom:22px}
   .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
@@ -164,7 +164,7 @@
   </div>
 
   <div class="footer">
-    💾 Dados salvos no navegador • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line
+    💾 Dados salvos no navegador • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line • <span id="onCount">0</span> online
   </div>
 </div>
 
@@ -197,7 +197,7 @@
 
 <script>
 // ============================================================
-// BASE DE CÂMERAS
+// BASE DE CÂMERAS — 250 CÂMERAS
 // ============================================================
 const NOMES_IP = [
 ["C ELEV AMARELO","C","Sala de Segurança"],["141 HALL ELEV LOBY","L","Sala de Segurança"],
@@ -264,7 +264,20 @@ const NOMES_IP = [
 ["10 A1","10º","Shaft 10º Andar"],["M VOLP","M","Shaft 1º Andar"],
 ["M ESC ROLANTE","M","Shaft 1º Andar"],["M CHAGAL 1","M","Shaft 1º Andar"],
 ["PTZ GOLDEN","G","Shaft 1º Andar"],["M ACESS FORUM","M","Shaft 1º Andar"],
-["M AUX LIMPEZA","M","Shaft 1º Andar"]
+["M AUX LIMPEZA","M","Shaft 1º Andar"],["C HALL PRINCIPAL","C","Piso C"],
+["C ENTRADA PRINCIPAL","C","Piso C"],["M WC FEMININO","M","Shaft 1º Andar"],
+["M WC MASCULINO","M","Shaft 1º Andar"],["L HALL ELEVADORES","L","Sala de Segurança"],
+["L ESCADA SOCIAL","L","Sala de Segurança"],["G ESTACIONAMENTO","G","Sala de Segurança"],
+["G PORTARIA GARAGEM","G","Sala de Segurança"],["C DOCAS CARGA","C","Piso C"],
+["C DOCAS DESCARGA","C","Piso C"],["L VESTIARIO","L","Sala de Segurança"],
+["M VESTIARIO","M","Shaft 1º Andar"],["G DEPOSITO","G","Sala de Segurança"],
+["C LIXEIRA","C","Piso C"],["C SALA DE MAQUINAS","C","Piso C"],
+["L SALA CFTV","L","Sala TI"],["M CORREDOR SERVIDOR","M","Shaft 1º Andar"],
+["G CORREDOR PRINCIPAL","G","Sala de Segurança"],["C RACK SECUNDARIO","C","Piso C"],
+["M GERADOR","M","Shaft 1º Andar"],["G SUBESTACAO","G","Sala de Segurança"],
+["L CAIXA DAGUA","L","Sala de Segurança"],["C ESCADA EMERGENCIA 1","C","Piso C"],
+["C ESCADA EMERGENCIA 2","C","Piso C"],["M ESCADA EMERGENCIA","M","Shaft 1º Andar"],
+["G ESCADA EMERGENCIA","G","Sala de Segurança"],["L ESCADA EMERGENCIA","L","Sala de Segurança"]
 ];
 
 const NOMES_ANALOG = [
@@ -301,7 +314,11 @@ const NOMES_ANALOG = [
 ["S2 CONFEITARIA","S2","DVR Lazer"],["ADM MANUTENÇÃO","L","DVR Lazer"],
 ["S 2 WC MASC","S2","DVR Lazer"],["S2 AREA DESCANÇO","S2","DVR Lazer"],
 ["RELOGIO DE PONTO","L","DVR Lazer"],["LAVANDERIA 1","L","DVR Lazer"],
-["LAVANDERIA 2","L","DVR Lazer"],["ADM MANUTENCAO","L","DVR Lazer"]
+["LAVANDERIA 2","L","DVR Lazer"],["ADM MANUTENCAO","L","DVR Lazer"],
+["GARAGEM G1","S1","DVR Andares"],["GARAGEM G2","S1","DVR Andares"],
+["GARAGEM G3","S1","DVR Andares"],["GARAGEM G4","S1","DVR Andares"],
+["RECEPCAO FUNDOS","L","DVR Lazer"],["AREA TECNICA","M","DVR Andares"],
+["SALA GERADOR","S1","DVR Andares"],["DEPOSITO GERAL","S1","DVR Andares"]
 ];
 
 // ============================================================
@@ -314,7 +331,9 @@ let floorFilter = 'all';
 let legendFilters = {ip:false, analog:false, online:false, offline:false};
 let editando = null;
 
-const STORAGE_KEY = 'cftv_v14';
+const STORAGE_KEY = 'cftv_v15';
+const TOTAL_CAMERAS = 250;
+const TOTAL_OFF = 78;
 
 // ============================================================
 // HELPERS
@@ -323,26 +342,68 @@ function buildInitial(){
   const now = Date.now();
   const cams = [];
   let id = 1;
+
+  // Adiciona IPs
   NOMES_IP.forEach(([n,p,local],i) => {
     cams.push({id:id++, n, ip:`192.168.1.${20+i}`, t:'IP', s:'ok', p, mod:'ONVIF', local, statusSince:now});
   });
+
+  // Adiciona Analógicas
   NOMES_ANALOG.forEach(([n,p,local]) => {
     cams.push({id:id++, n, ip:'', t:'Analogica', s:'ok', p, mod:'', local, statusSince:now});
   });
+
+  // Garante exatamente 250 câmeras (adiciona genéricas se precisar)
+  while(cams.length < TOTAL_CAMERAS){
+    const idx = cams.length + 1;
+    const piso = ['C','M','L','G','T'][idx % 5];
+    cams.push({
+      id: id++,
+      n: `Câmera Extra ${idx}`,
+      ip: `192.168.1.${200 + (idx % 50)}`,
+      t: idx % 3 === 0 ? 'Analogica' : 'IP',
+      s: 'ok',
+      p: piso,
+      mod: idx % 3 === 0 ? '' : 'ONVIF',
+      local: piso === 'C' ? 'Piso C' : piso === 'L' ? 'Sala de Segurança' : 'Shaft 1º Andar',
+      statusSince: now
+    });
+  }
+
+  // Corta se passar (segurança)
+  cams.splice(TOTAL_CAMERAS);
+
+  // Força EXATAMENTE 78 off-line (aleatórias)
   const shuffled = [...cams].sort(()=>Math.random()-0.5);
-  shuffled.slice(0,78).forEach(c => {
+  shuffled.slice(0, TOTAL_OFF).forEach(c => {
     const idx = cams.findIndex(x=>x.id===c.id);
     cams[idx].s = 'Parada';
     cams[idx].statusSince = now - (Math.random()*72+1)*3600000;
   });
+
   return cams;
 }
 
 function carregar(){
   try{
     const s = localStorage.getItem(STORAGE_KEY);
-    cameras = s ? JSON.parse(s) : buildInitial();
-  }catch(e){ cameras = buildInitial(); }
+    if(s){
+      const parsed = JSON.parse(s);
+      // Se a versão antiga tinha quantidade diferente, recria
+      if(parsed.length !== TOTAL_CAMERAS){
+        cameras = buildInitial();
+        salvar();
+      } else {
+        cameras = parsed;
+      }
+    } else {
+      cameras = buildInitial();
+      salvar();
+    }
+  }catch(e){
+    cameras = buildInitial();
+    salvar();
+  }
 }
 function salvar(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(cameras)); }catch(e){}
@@ -398,14 +459,13 @@ function toggleLegend(key){
 function setFilter(f){
   filter = f;
   document.querySelectorAll('[data-filter]').forEach(b=>{
-    const isActive = b.dataset.filter === f;
-    b.classList.toggle('active', isActive);
+    b.classList.toggle('active', b.dataset.filter === f);
   });
   render();
 }
 
 function resetar(){
-  if(!confirm('Restaurar dados com 78 câmeras off-line?')) return;
+  if(!confirm('Restaurar dados com 250 câmeras (78 off-line)?')) return;
   cameras = buildInitial();
   salvar();
   render();
@@ -485,6 +545,11 @@ function deletarCamera(id){
   toast('Câmera removida');
 }
 
+function editarCamera(id){
+  const cam = cameras.find(c=>c.id===id);
+  if(cam) abrirModal(cam);
+}
+
 // ============================================================
 // FILTROS
 // ============================================================
@@ -554,13 +619,11 @@ function render(){
     </div>
   `;
 
-  // Contadores da legenda
   document.getElementById('count-ip').textContent = ip;
   document.getElementById('count-analog').textContent = analog;
   document.getElementById('count-online').textContent = online;
   document.getElementById('count-offline').textContent = offline;
 
-  // Tabela
   const tbody = document.getElementById('tbody');
   if(filtered.length===0){
     tbody.innerHTML = '<tr><td colspan="10" class="empty">Nenhuma câmera encontrada</td></tr>';
@@ -592,11 +655,7 @@ function render(){
 
   document.getElementById('totalCount').textContent = total;
   document.getElementById('offCount').textContent = offline;
-}
-
-function editarCamera(id){
-  const cam = cameras.find(c=>c.id===id);
-  if(cam) abrirModal(cam);
+  document.getElementById('onCount').textContent = online;
 }
 
 function escapeHtml(s){
@@ -620,20 +679,15 @@ floors.forEach(f => {
 sel.onchange = e => { floorFilter = e.target.value; render(); };
 
 document.getElementById('search').oninput = e => { search = e.target.value; render(); };
-
 document.getElementById('modalBg').onclick = fecharModal;
 
-// Relógio
 function atualizaRelogio(){
   document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR');
 }
 atualizaRelogio();
 setInterval(atualizaRelogio, 1000);
-
-// Re-renderiza a cada 30s (para atualizar os "há X min")
 setInterval(render, 30000);
 
-// Primeira renderização
 render();
 </script>
 </body>
