@@ -17,20 +17,17 @@
   .clock{background:rgba(30,41,59,.7);padding:9px 16px;border-radius:12px;font-weight:600;font-size:.85rem;border:1px solid rgba(148,163,184,.15);color:#cbd5e1}
   .pulse-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite;display:inline-block;margin-right:6px}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
-
   .btn{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);color:#cbd5e1;padding:9px 16px;border-radius:9px;font-weight:600;font-size:.83rem;cursor:pointer;transition:.2s;font-family:inherit}
   .btn:hover{border-color:#3b82f6;color:#fff}
   .btn.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-color:transparent;color:#fff}
   .btn.green{background:linear-gradient(135deg,#22c55e,#10b981);border:none;color:#fff}
   .btn.red{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171}
   .btn.small{padding:7px 12px;font-size:.76rem}
-
   .tabs{display:flex;gap:6px;background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:4px;margin-bottom:14px;overflow-x:auto}
   .tab{padding:11px 20px;background:transparent;border:none;color:#94a3b8;font-weight:600;font-size:.83rem;cursor:pointer;border-radius:10px;transition:.2s;font-family:inherit;white-space:nowrap}
   .tab.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff}
   .tab .cnt{background:rgba(0,0,0,.25);padding:1px 8px;border-radius:10px;font-size:.7rem;margin-left:6px}
   .tab.active .cnt{background:rgba(255,255,255,.2)}
-
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
   .kpi{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:14px;padding:12px 14px;position:relative;cursor:pointer;transition:.25s}
   .kpi:hover{transform:translateY(-2px);border-color:rgba(96,165,250,.5)}
@@ -47,7 +44,6 @@
   .kpi.green .kpi-value{color:#4ade80}
   .kpi.amber .kpi-value{color:#fbbf24}
   .kpi small{font-size:.66rem;color:#64748b;display:block;margin-top:3px}
-
   .legend-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:14px 18px;margin-bottom:14px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
   .legend-title{font-size:.72rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
   .legend-item{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(15,23,42,.5);border:1px solid rgba(148,163,184,.15);font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;color:#cbd5e1;font-family:inherit}
@@ -59,13 +55,11 @@
   .dot.online{background:#4ade80}
   .dot.offline{background:#f87171}
   .legend-item .count{background:rgba(0,0,0,.3);padding:1px 8px;border-radius:10px;font-size:.7rem;margin-left:2px;color:#94a3b8}
-
   .toolbar-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:12px 14px;margin-bottom:14px}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   input.search,select.search{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);padding:9px 13px;border-radius:9px;color:#e2e8f0;font-size:.83rem;outline:none;font-family:inherit}
   input.search:focus,select.search:focus{border-color:#3b82f6}
   input.search{flex:1;min-width:200px}
-
   .table-box{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;margin-bottom:22px}
   .table-scroll{overflow-x:auto;max-height:70vh;overflow-y:auto}
   .table-scroll::-webkit-scrollbar{width:10px;height:10px}
@@ -84,7 +78,6 @@
   .badge.analog{background:rgba(245,158,11,.15);color:#fbbf24}
   .badge.eol{background:rgba(239,68,68,.25);color:#fca5a5}
   .badge.dup{background:rgba(239,68,68,.2);color:#fca5a5;font-size:.7rem}
-
   .toggle{position:relative;width:48px;height:24px;background:#ef4444;border-radius:20px;cursor:pointer;transition:.3s;display:inline-block}
   .toggle.on{background:#22c55e}
   .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.3s}
@@ -96,7 +89,6 @@
   .empty{text-align:center;padding:40px;color:#64748b}
   .footer{text-align:center;padding:24px 0 12px;color:#64748b;font-size:.76rem;border-top:1px solid rgba(148,163,184,.1);margin-top:24px}
   .info-cell{font-size:.72rem;color:#64748b}
-
   .locais-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:22px}
   .local-card{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;transition:.25s}
   .local-card:hover{border-color:rgba(96,165,250,.4);transform:translateY(-2px)}
@@ -135,7 +127,6 @@
   .equip-tag.nob{background:rgba(250,204,21,.2);color:#facc15}
   .equip-tag.srv{background:rgba(59,130,246,.2);color:#60a5fa}
   .equip-tag.mon{background:rgba(148,163,184,.2);color:#cbd5e1}
-
   .audit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:22px}
   .audit-card{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden}
   .audit-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(148,163,184,.1)}
@@ -154,11 +145,9 @@
   .audit-item-detail{font-size:.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:2px}
   .audit-item-detail span{padding:2px 0}
   .audit-empty{padding:30px;text-align:center;color:#4ade80;font-size:.85rem}
-
   .toast{position:fixed;bottom:24px;right:24px;background:#1e293b;border:1px solid #22c55e;color:#4ade80;padding:14px 22px;border-radius:12px;font-weight:600;font-size:.85rem;z-index:200;display:none;max-width:340px}
   .toast.show{display:block}
   .toast.error{border-color:#ef4444;color:#f87171}
-
   @media(max-width:700px){body{padding:12px}h1{font-size:1.1rem}.kpis{grid-template-columns:repeat(2,1fr)}.locais-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -251,7 +240,7 @@
 // EQUIPAMENTOS
 // ============================================================
 const EQUIPAMENTOS = [
-  // ============ PISO L ============
+  // ============ PISO L — Central de Segurança ============
   {local:"Central de Segurança", tipo:"SW", nome:"Switch HP sem gerência", modelo:"HP V1910", status:"ok"},
   {local:"Central de Segurança", tipo:"SW", nome:"Switch POE JG92CA", modelo:"JG92CA", status:"eol", obs:"Com defeito — trocar"},
   {local:"Central de Segurança", tipo:"SW", nome:"Switch 48 portas HP", modelo:"HP 48P", status:"eol", obs:"Trocar"},
@@ -264,21 +253,25 @@ const EQUIPAMENTOS = [
   {local:"Central de Segurança", tipo:"SRV", nome:"Servidor montado #4", modelo:"—", status:"ok"},
   {local:"Central de Segurança", tipo:"NVR", nome:"NVR Motorola #1", modelo:"MTN322K0012", status:"ok"},
   {local:"Central de Segurança", tipo:"NVR", nome:"NVR Motorola #2", modelo:"MTN322K0012", status:"ok"},
-  {local:"Central de Segurança", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
-  {local:"Central de Segurança", tipo:"DVR", nome:"DVR Motorola", modelo:"MTR16A1080L", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR 40 câmeras (Andares)", modelo:"40CH • HD 6T • 46 dias", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR 6º andar ao Piso M", modelo:"20CH • HD 4T • 11 dias", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR Lazer (192.168.1.139)", modelo:"HD 6T • 26 dias", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR Lazer (192.168.1.10)", modelo:"8 canais • HD 1T • 22 dias", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR Motorola reserva", modelo:"MTD324UON12", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR Motorola reserva", modelo:"MTR16A1080L", status:"ok"},
   {local:"Central de Segurança", tipo:"MON", nome:"TV/Monitor LG", modelo:"LG", status:"ok", qtd:6},
   {local:"Central de Segurança", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
 
+  // ============ PISO L — Outros ============
   {local:"Sala TI", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"},
   {local:"Sala TI", tipo:"SW", nome:"Switch Ubiquiti", modelo:"UniFi", status:"ok"},
   {local:"Sala TI", tipo:"SRV", nome:"Servidor DELL montado", modelo:"DELL", status:"ok"},
-
   {local:"Sala da Diretoria", tipo:"SRV", nome:"Servidor DELL OptiPlex", modelo:"OptiPlex", status:"ok"},
   {local:"Sala da Gerência", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
   {local:"Portaria de Serviço", tipo:"SRV", nome:"Servidor DELL OptiPlex", modelo:"OptiPlex", status:"ok"},
   {local:"Portaria de Serviço", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
 
-  // ============ PISO C ============
+  // ============ PISO C — Sala Rio de Janeiro ============
   {local:"Sala Rio de Janeiro", tipo:"SW", nome:"Switch GV #1", modelo:"Geovision", status:"ok"},
   {local:"Sala Rio de Janeiro", tipo:"SW", nome:"Switch GV #2", modelo:"Geovision", status:"ok"},
   {local:"Sala Rio de Janeiro", tipo:"SW", nome:"Switch GV #3", modelo:"Geovision", status:"ok"},
@@ -297,14 +290,7 @@ const EQUIPAMENTOS = [
   {local:"Shaft 10º Andar", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
 
   // ============ SUBSOLO 1 ============
-  {local:"3SUB2", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"},
-
-  // ============ CONCENTRADORES DE DVR ============
-  {local:"DVR Andares", tipo:"DVR", nome:"DVR 40 câmeras", modelo:"DVR 40CH", status:"ok"},
-  {local:"DVR Andares", tipo:"DVR", nome:"DVR 6º andar ao piso M", modelo:"DVR 20CH", status:"ok"},
-  {local:"DVR Lazer", tipo:"DVR", nome:"DVR 192.168.1.139", modelo:"DVR 26 dias HD 6T", status:"ok"},
-  {local:"DVR Lazer", tipo:"DVR", nome:"DVR 192.168.1.10", modelo:"8 canais HD 1T", status:"ok"},
-  {local:"DVR Lazer", tipo:"SW", nome:"Switch GIGA", modelo:"Giga", status:"ok"}
+  {local:"3SUB2", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"}
 ];
 
 const ORDEM_LOCAIS = [
@@ -316,9 +302,7 @@ const ORDEM_LOCAIS = [
   "Sala Rio de Janeiro",
   "Shaft 1º Andar",
   "Shaft 10º Andar",
-  "3SUB2",
-  "DVR Andares",
-  "DVR Lazer"
+  "3SUB2"
 ];
 
 // ============================================================
@@ -438,7 +422,7 @@ let search = '';
 let floorFilter = 'all';
 let legendFilters = {ip:false, analog:false, online:false, offline:false};
 let currentTab = 'cameras';
-const STORAGE_KEY = 'cftv_v18';
+const STORAGE_KEY = 'cftv_v20';
 const TOTAL_CAMERAS = 250;
 const TOTAL_OFF = 78;
 
@@ -668,7 +652,6 @@ function render(){
   document.getElementById('tab-equip-count').textContent = EQUIPAMENTOS.length;
   document.getElementById('tab-audit-count').textContent = audit.totalProblemas;
 
-  // CÂMERAS
   const filtered = getFiltered();
   const tbody = document.getElementById('tbody');
   if(filtered.length===0){
@@ -711,12 +694,11 @@ function render(){
   const nomeTipo = t => t==='SW'?'Switch':t==='DVR'?'DVR':t==='NVR'?'NVR':t==='NOB'?'Nobreak':t==='SRV'?'Servidor':t==='MON'?'Monitor':'Equip';
 
   const andarDe = local => {
-    if(["Central de Segurança","Sala TI","Sala da Diretoria","Sala da Gerência","Portaria de Serviço"].includes(local)) return "Piso L";
+    if(local === "Central de Segurança" || local === "Sala TI" || local === "Sala da Diretoria" || local === "Sala da Gerência" || local === "Portaria de Serviço") return "Piso L";
     if(local === "Sala Rio de Janeiro") return "Piso C";
     if(local === "Shaft 1º Andar") return "1º Andar";
     if(local === "Shaft 10º Andar") return "10º Andar";
     if(local === "3SUB2") return "Subsolo 1";
-    if(local.startsWith("DVR")) return "Concentradores de DVR";
     return "Outros";
   };
 
@@ -774,7 +756,6 @@ function render(){
 
   document.getElementById('equipGrid').innerHTML = htmlEquip;
 
-  // AUDITORIA
   renderAuditoria(audit);
 
   document.getElementById('totalCount').textContent = total;
