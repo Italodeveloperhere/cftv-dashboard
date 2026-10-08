@@ -24,13 +24,10 @@
     --text:#0f172a; --text2:#1e293b; --text3:#475569; --text4:#64748b;
     --shadow:0 8px 24px -8px rgba(0,0,0,.08);
   }
-
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);
     min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
-
-  /* LAYOUT */
   .app{display:flex;min-height:100vh}
   .sidebar{width:250px;background:var(--card);border-right:1px solid var(--border);
     display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:100;
@@ -71,7 +68,6 @@
   .theme-toggle{width:38px;height:38px;border-radius:10px;background:rgba(59,130,246,.15);
     display:flex;align-items:center;justify-content:center;color:var(--blue2);font-size:1rem}
 
-  /* MAIN */
   .main{flex:1;margin-left:250px;transition:margin-left .3s;padding:24px;
     min-height:100vh;background:var(--bg)}
   .main.expanded{margin-left:70px}
@@ -105,7 +101,6 @@
   .pulse-dot.error{background:var(--red2);animation:none}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 
-  /* KPIs */
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
   .kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;
     padding:18px;position:relative;cursor:pointer;transition:all .3s;overflow:hidden;
@@ -116,10 +111,10 @@
   .kpi:nth-child(4){animation-delay:.2s}
   .kpi:nth-child(5){animation-delay:.25s}
   .kpi:nth-child(6){animation-delay:.3s}
+  .kpi:nth-child(7){animation-delay:.35s}
   @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
   .kpi:hover{transform:translateY(-4px);border-color:var(--blue);box-shadow:0 15px 30px -10px rgba(59,130,246,.3)}
-  .kpi::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%;
-    background:var(--grad1)}
+  .kpi::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%;background:var(--grad1)}
   .kpi.red::before{background:linear-gradient(180deg,var(--red),var(--amber))}
   .kpi.green::before{background:linear-gradient(180deg,var(--green),var(--green2))}
   .kpi.amber::before{background:linear-gradient(180deg,var(--amber),var(--red))}
@@ -127,8 +122,7 @@
   .kpi.blue::before{background:linear-gradient(180deg,var(--blue),var(--cyan))}
   .kpi.cyan::before{background:linear-gradient(180deg,var(--cyan),var(--blue))}
   .kpi-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-  .kpi-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;
-    color:var(--text3);font-weight:700}
+  .kpi-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:700}
   .kpi-icon{width:38px;height:38px;border-radius:10px;background:rgba(59,130,246,.15);
     display:flex;align-items:center;justify-content:center;color:var(--blue2);font-size:.9rem}
   .kpi.red .kpi-icon{background:rgba(239,68,68,.15);color:var(--red2)}
@@ -136,14 +130,12 @@
   .kpi.amber .kpi-icon{background:rgba(245,158,11,.15);color:var(--amber2)}
   .kpi.purple .kpi-icon{background:rgba(139,92,246,.15);color:var(--purple2)}
   .kpi.cyan .kpi-icon{background:rgba(6,182,212,.15);color:var(--cyan2)}
-  .kpi-value{font-size:2rem;font-weight:800;color:var(--text);line-height:1;
-    letter-spacing:-.02em}
+  .kpi-value{font-size:2rem;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.02em}
   .kpi.red .kpi-value{color:var(--red2)}
   .kpi.green .kpi-value{color:var(--green2)}
   .kpi.amber .kpi-value{color:var(--amber2)}
   .kpi small{font-size:.68rem;color:var(--text4);display:block;margin-top:6px;font-weight:500}
 
-  /* CHARTS */
   .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
     gap:16px;margin-bottom:24px;animation:fadeUp .5s ease backwards;animation-delay:.35s}
   .chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
@@ -153,30 +145,25 @@
   .chart-title i{color:var(--blue2)}
   .chart-box{position:relative;height:220px}
 
-  /* TABS/VIEWS */
   .view{display:none;animation:fadeUp .35s ease}
   .view.active{display:block}
 
-  /* TOOLBAR */
   .toolbar-box{background:var(--card);border:1px solid var(--border);border-radius:14px;
     padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   input.search,select.search{background:var(--bg2);border:1px solid var(--border2);
     padding:10px 14px;border-radius:10px;color:var(--text);font-size:.85rem;
     outline:none;font-family:inherit;transition:border .2s}
-  input.search:focus,select.search:focus{border-color:var(--blue);
-    box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+  input.search:focus,select.search:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
   input.search{flex:1;min-width:200px}
   .btn.small{padding:8px 14px;font-size:.78rem}
 
-  /* TABELA */
   .table-box{background:var(--card);border:1px solid var(--border);border-radius:16px;
     overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow)}
   .table-scroll{overflow-x:auto;max-height:70vh;overflow-y:auto}
   .table-scroll::-webkit-scrollbar{width:10px;height:10px}
   .table-scroll::-webkit-scrollbar-track{background:var(--bg2)}
   .table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:8px}
-  .table-scroll::-webkit-scrollbar-thumb:hover{background:var(--text4)}
   table{width:100%;border-collapse:collapse;font-size:.83rem}
   thead th{text-align:left;padding:14px 14px;font-size:.68rem;text-transform:uppercase;
     letter-spacing:.06em;color:var(--text3);background:var(--bg2);
@@ -201,11 +188,15 @@
   .badge.srv{background:rgba(59,130,246,.15);color:var(--blue2)}
 
   .toggle{position:relative;width:48px;height:24px;background:var(--red);border-radius:20px;
-    cursor:pointer;transition:.3s;display:inline-block}
+    cursor:pointer;transition:.3s;display:inline-block;flex-shrink:0}
   .toggle.on{background:var(--green)}
   .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;
     background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 6px rgba(0,0,0,.3)}
   .toggle.on::after{left:27px}
+
+  .toggle.small{width:38px;height:20px}
+  .toggle.small::after{width:14px;height:14px;top:3px;left:3px}
+  .toggle.small.on::after{left:21px}
 
   .offtime{font-size:.72rem;color:var(--red2);font-weight:600}
   .offtime.long{color:var(--amber2)}
@@ -214,7 +205,6 @@
   .empty{text-align:center;padding:40px;color:var(--text4)}
   .info-cell{font-size:.72rem;color:var(--text4)}
 
-  /* EQUIPAMENTOS */
   .locais-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
     gap:16px;margin-bottom:24px}
   .local-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
@@ -237,8 +227,7 @@
   .stat-box.bad .num{color:var(--red2)}
   .equip-list{display:flex;flex-direction:column;gap:8px}
   .equip-item{display:flex;align-items:center;gap:12px;padding:10px 12px;
-    background:var(--bg2);border-radius:10px;border-left:3px solid var(--blue);
-    transition:.2s;cursor:default}
+    background:var(--bg2);border-radius:10px;border-left:3px solid var(--blue);transition:.2s}
   .equip-item:hover{background:rgba(59,130,246,.08);transform:translateX(3px)}
   .equip-item.sw{border-left-color:var(--purple2)}
   .equip-item.dvr{border-left-color:var(--pink2)}
@@ -257,8 +246,7 @@
   .equip-item.eol .equip-icon{background:rgba(239,68,68,.2);color:#fca5a5}
   .equip-info{flex:1;min-width:0}
   .equip-name{font-weight:600;font-size:.83rem;color:var(--text)}
-  .equip-meta{font-size:.68rem;color:var(--text4);margin-top:3px;
-    display:flex;gap:10px;flex-wrap:wrap}
+  .equip-meta{font-size:.68rem;color:var(--text4);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
   .equip-tag{font-size:.6rem;padding:3px 8px;border-radius:6px;font-weight:700;
     text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
   .equip-tag.sw{background:rgba(139,92,246,.2);color:var(--purple2)}
@@ -283,8 +271,7 @@
   .grav-header:hover{filter:brightness(1.15)}
   .grav-title{font-weight:800;font-size:1rem;color:var(--text);
     display:flex;align-items:center;gap:10px;margin-bottom:6px}
-  .grav-subtitle{font-size:.78rem;color:var(--text3);
-    display:flex;flex-direction:column;gap:3px}
+  .grav-subtitle{font-size:.78rem;color:var(--text3);display:flex;flex-direction:column;gap:3px}
   .grav-subtitle code{font-family:'Courier New',monospace;color:var(--blue2);
     background:rgba(59,130,246,.1);padding:2px 8px;border-radius:5px;font-size:.75rem}
   .grav-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
@@ -298,21 +285,31 @@
   .grav-stat.bad .num{color:var(--red2)}
   .grav-cams{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease;padding:0 20px}
   .grav-card.expanded .grav-cams{max-height:800px;padding:14px 20px;overflow-y:auto}
-  .grav-cam{display:flex;align-items:center;gap:12px;padding:9px 12px;
-    border-radius:8px;background:var(--bg2);margin-bottom:6px;transition:.2s;
+
+  /* ⚡ NOVO: linha da câmera com toggle */
+  .grav-cam{display:flex;align-items:center;gap:10px;padding:10px 12px;
+    border-radius:10px;background:var(--bg2);margin-bottom:6px;transition:.2s;
     border-left:3px solid var(--green);font-size:.8rem}
   .grav-cam.off{border-left-color:var(--red);background:rgba(239,68,68,.05)}
   .grav-cam:hover{background:rgba(59,130,246,.08)}
   .grav-cam .ch{font-family:'Courier New',monospace;font-weight:700;
     color:var(--text3);font-size:.72rem;min-width:36px;text-align:center;
-    background:rgba(0,0,0,.2);padding:3px 7px;border-radius:5px}
+    background:rgba(0,0,0,.2);padding:3px 7px;border-radius:5px;flex-shrink:0}
   .grav-cam .name{flex:1;font-weight:600;color:var(--text);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .grav-cam .ip{font-family:'Courier New',monospace;font-size:.7rem;color:var(--text4)}
-  .grav-cam .status{font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:10px}
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .grav-cam .ip{font-family:'Courier New',monospace;font-size:.7rem;color:var(--text4);
+    flex-shrink:0;display:none}
+  .grav-cam .status{font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:10px;flex-shrink:0}
   .grav-cam .status.on{background:rgba(34,197,94,.15);color:var(--green2)}
   .grav-cam .status.off{background:rgba(239,68,68,.15);color:var(--red2)}
   .grav-cam .status.virtual{background:rgba(148,163,184,.15);color:var(--text3)}
+  .grav-cam .cam-toggle{flex-shrink:0}
+  .grav-cam .cam-actions{display:flex;gap:4px;flex-shrink:0}
+
+  @media(min-width:1100px){
+    .grav-cam .ip{display:inline}
+  }
+
   .grav-chevron{margin-left:auto;color:var(--text3);font-size:.9rem;
     transition:transform .3s;flex-shrink:0}
   .grav-card.expanded .grav-chevron{transform:rotate(180deg)}
@@ -320,7 +317,12 @@
     padding:8px 0;border-top:1px dashed var(--border);margin-top:8px}
   .grav-empty{padding:40px;text-align:center;color:var(--text4);font-size:.85rem}
 
-  /* AUDITORIA */
+  /* AÇÕES EM MASSA */
+  .grav-actions{display:flex;gap:8px;padding:10px 20px;background:var(--bg2);
+    border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
+  .grav-actions span{font-size:.72rem;color:var(--text4);font-weight:600}
+  .grav-actions .btn{padding:5px 10px;font-size:.72rem}
+
   .audit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
     gap:16px;margin-bottom:24px}
   .audit-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
@@ -342,16 +344,13 @@
   .audit-item.red{border-left-color:var(--red)}
   .audit-item.amber{border-left-color:var(--amber)}
   .audit-item-title{font-weight:600;font-size:.83rem;color:var(--text);margin-bottom:5px}
-  .audit-item-detail{font-size:.73rem;color:var(--text3);
-    display:flex;flex-direction:column;gap:3px}
+  .audit-item-detail{font-size:.73rem;color:var(--text3);display:flex;flex-direction:column;gap:3px}
   .audit-item-detail span{padding:2px 0}
   .audit-empty{padding:30px;text-align:center;color:var(--green2);font-size:.85rem}
 
-  /* FOOTER */
   .footer{text-align:center;padding:24px 0 12px;color:var(--text4);
     font-size:.76rem;border-top:1px solid var(--border);margin-top:24px}
 
-  /* TOAST */
   .toast{position:fixed;bottom:24px;right:24px;background:var(--card);
     border:1px solid var(--green);color:var(--green2);padding:14px 22px;
     border-radius:12px;font-weight:600;font-size:.85rem;z-index:9999;
@@ -361,7 +360,6 @@
   .toast.info{border-color:var(--blue);color:var(--blue2)}
   @keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
 
-  /* MOBILE */
   .menu-toggle{display:none;background:var(--card);border:1px solid var(--border2);
     color:var(--text);width:42px;height:42px;border-radius:10px;cursor:pointer;
     align-items:center;justify-content:center;font-size:1rem}
@@ -375,7 +373,6 @@
     .grav-grid,.locais-grid{grid-template-columns:1fr}
   }
 
-  /* NOTIFICAÇÃO DE ATALHO */
   .shortcut-hint{position:fixed;bottom:24px;left:24px;background:var(--card);
     border:1px solid var(--border2);padding:10px 14px;border-radius:10px;
     font-size:.75rem;color:var(--text3);box-shadow:var(--shadow);
@@ -390,62 +387,48 @@
 <body>
 
 <div class="app">
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="logo">
       <div class="logo-icon"><i class="fas fa-video"></i></div>
       <div class="logo-text">CFTV<small>MONITORAMENTO</small></div>
     </div>
-
     <nav class="nav">
       <button class="nav-item active" data-view="cameras" onclick="setView('cameras')">
-        <i class="fas fa-list"></i>
-        <span class="nav-label">Câmeras</span>
+        <i class="fas fa-list"></i><span class="nav-label">Câmeras</span>
         <span class="nav-count" id="nav-cam-count">0</span>
       </button>
       <button class="nav-item" data-view="gravadores" onclick="setView('gravadores')">
-        <i class="fas fa-film"></i>
-        <span class="nav-label">Gravadores</span>
+        <i class="fas fa-film"></i><span class="nav-label">Gravadores</span>
         <span class="nav-count" id="nav-grav-count">0</span>
       </button>
       <button class="nav-item" data-view="equipamentos" onclick="setView('equipamentos')">
-        <i class="fas fa-server"></i>
-        <span class="nav-label">Equipamentos</span>
+        <i class="fas fa-server"></i><span class="nav-label">Equipamentos</span>
         <span class="nav-count" id="nav-equip-count">0</span>
       </button>
       <button class="nav-item" data-view="auditoria" onclick="setView('auditoria')">
-        <i class="fas fa-search"></i>
-        <span class="nav-label">Auditoria</span>
+        <i class="fas fa-search"></i><span class="nav-label">Auditoria</span>
         <span class="nav-count" id="nav-audit-count">0</span>
       </button>
       <button class="nav-item" data-view="graficos" onclick="setView('graficos')">
-        <i class="fas fa-chart-pie"></i>
-        <span class="nav-label">Gráficos</span>
+        <i class="fas fa-chart-pie"></i><span class="nav-label">Gráficos</span>
       </button>
     </nav>
-
     <div class="sidebar-footer" onclick="toggleTheme()">
       <div class="theme-toggle"><i class="fas fa-moon" id="theme-icon"></i></div>
       <span class="sidebar-footer-text" style="font-size:.78rem;font-weight:600;color:var(--text3)">Modo claro/escuro</span>
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main" id="main">
-    <!-- TOPBAR -->
     <div class="topbar">
       <div style="display:flex;align-items:center;gap:16px">
-        <button class="menu-toggle" onclick="toggleSidebar()">
-          <i class="fas fa-bars"></i>
-        </button>
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
         <div class="breadcrumb">
-          <i class="fas fa-home"></i>
-          <span>CFTV</span>
+          <i class="fas fa-home"></i><span>CFTV</span>
           <i class="fas fa-chevron-right sep"></i>
           <span class="current" id="breadcrumb-current">Câmeras</span>
         </div>
       </div>
-
       <div class="topbar-actions">
         <div class="clock" id="syncStatus"><span class="pulse-dot"></span><span id="clock">--:--:--</span></div>
         <button class="btn" onclick="exportarCSV()"><i class="fas fa-download"></i> CSV</button>
@@ -454,14 +437,12 @@
       </div>
     </div>
 
-    <!-- KPIs (sempre visíveis) -->
     <div class="kpis" id="kpis"></div>
 
-    <!-- VIEW: CÂMERAS -->
     <div class="view active" id="view-cameras">
       <div class="toolbar-box">
         <div class="toolbar">
-          <input class="search" id="search" placeholder="🔍  Buscar câmera por nome, IP, modelo ou local... (Ctrl+K)">
+          <input class="search" id="search" placeholder="🔍  Buscar câmera... (Ctrl+K)">
           <button class="btn small active" data-filter="all" onclick="setFilter('all')">Todas</button>
           <button class="btn small" data-filter="online" onclick="setFilter('online')">🟢 Online</button>
           <button class="btn small" data-filter="offline" onclick="setFilter('offline')">🔴 Off-line</button>
@@ -473,14 +454,8 @@
           <table>
             <thead><tr>
               <th style="width:60px">Ligar</th>
-              <th>Nome da Câmera</th>
-              <th>Tipo</th>
-              <th>Piso</th>
-              <th>Local</th>
-              <th>IP</th>
-              <th>Status</th>
-              <th>Desde</th>
-              <th>Tempo</th>
+              <th>Nome da Câmera</th><th>Tipo</th><th>Piso</th><th>Local</th>
+              <th>IP</th><th>Status</th><th>Desde</th><th>Tempo</th>
             </tr></thead>
             <tbody id="tbody"></tbody>
           </table>
@@ -488,7 +463,6 @@
       </div>
     </div>
 
-    <!-- VIEW: GRAVADORES -->
     <div class="view" id="view-gravadores">
       <div class="toolbar-box">
         <div class="toolbar">
@@ -502,17 +476,9 @@
       <div class="grav-grid" id="gravGrid"></div>
     </div>
 
-    <!-- VIEW: EQUIPAMENTOS -->
-    <div class="view" id="view-equipamentos">
-      <div class="locais-grid" id="equipGrid"></div>
-    </div>
+    <div class="view" id="view-equipamentos"><div class="locais-grid" id="equipGrid"></div></div>
+    <div class="view" id="view-auditoria"><div class="audit-grid" id="auditGrid"></div></div>
 
-    <!-- VIEW: AUDITORIA -->
-    <div class="view" id="view-auditoria">
-      <div class="audit-grid" id="auditGrid"></div>
-    </div>
-
-    <!-- VIEW: GRÁFICOS -->
     <div class="view" id="view-graficos">
       <div class="charts-grid">
         <div class="chart-card">
@@ -546,9 +512,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-// MODO LOCAL — Servidor Python
-// ============================================================
 const LOCAL_JSON_URL = 'cameras.json';
 const LOCAL_SAVE_URL = '/salvar';
 const FALLBACK_KEY = 'cftv_fallback';
@@ -581,9 +544,6 @@ const GRAVADORES = [
    cameras:["10º HALL SOCIAL","10º A1","10º A2","10º A3","10º B1","10º B2","10º B3","10º HALL SERVIÇO","16º PRESIDENCIA","16º PRESID CORR. ASA B"]}
 ];
 
-// ============================================================
-// EQUIPAMENTOS
-// ============================================================
 const EQUIPAMENTOS = [
   {local:"Central de Segurança", tipo:"SW", nome:"Switch HP sem gerência", modelo:"HP V1910", status:"ok"},
   {local:"Central de Segurança", tipo:"SW", nome:"Switch POE JG92CA", modelo:"JG92CA", status:"eol", obs:"Com defeito — trocar"},
@@ -629,9 +589,6 @@ const EQUIPAMENTOS = [
 
 const ORDEM_LOCAIS = ["Central de Segurança","Sala TI","Sala da Diretoria","Sala da Gerência","Portaria de Serviço","Sala Rio de Janeiro","Shaft 1º Andar","Shaft 10º Andar","3SUB2"];
 
-// ============================================================
-// CÂMERAS
-// ============================================================
 const NOMES_IP = [
 ["C ELEV AMARELO","C","Sala de Segurança"],["141 HALL ELEV LOBY","L","Sala de Segurança"],
 ["G ESC ROL GOLDEN","G","Sala de Segurança"],["LIP 96 TERREO AMARELO","T","Sala de Segurança"],
@@ -737,14 +694,10 @@ const NOMES_ANALOG = [
 ["LAVANDERIA 2","L","DVR Lazer"],["ADM MANUTENCAO","L","DVR Lazer"]
 ];
 
-// ============================================================
-// ESTADO
-// ============================================================
 let cameras = [];
 let filter = 'all';
 let search = '';
 let floorFilter = 'all';
-let legendFilters = {ip:false, analog:false, online:false, offline:false};
 let currentView = 'cameras';
 let gravFilter = 'all';
 let gravSearch = '';
@@ -767,8 +720,6 @@ function toggleTheme(){
   document.getElementById('theme-icon').className = novo === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
   if(currentView === 'graficos') setTimeout(renderCharts, 100);
 }
-
-// Carrega tema salvo
 (function(){
   const tema = localStorage.getItem('cftv_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', tema);
@@ -793,7 +744,6 @@ const VIEW_NAMES = {
   cameras:'Câmeras', gravadores:'Gravadores',
   equipamentos:'Equipamentos', auditoria:'Auditoria', graficos:'Gráficos'
 };
-
 function setView(v){
   currentView = v;
   document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === v));
@@ -801,7 +751,6 @@ function setView(v){
   document.getElementById(`view-${v}`).classList.add('active');
   document.getElementById('breadcrumb-current').textContent = VIEW_NAMES[v];
   if(v === 'graficos') setTimeout(renderCharts, 150);
-  // Fecha sidebar no mobile
   if(window.innerWidth < 900) document.getElementById('sidebar').classList.remove('mobile-open');
 }
 
@@ -814,7 +763,6 @@ function setSyncStatus(s){
   if(s === 'syncing') dot.classList.add('syncing');
   else if(s === 'error') dot.classList.add('error');
 }
-
 async function carregarDoGitHub(){
   setSyncStatus('syncing');
   document.getElementById('syncInfo').textContent = '🔄 Carregando cameras.json...';
@@ -823,34 +771,28 @@ async function carregarDoGitHub(){
     if(res.ok){
       cameras = await res.json();
       if(!Array.isArray(cameras) || cameras.length === 0){
-        cameras = buildInitial();
-        await salvarNoGitHub();
+        cameras = buildInitial(); await salvarNoGitHub();
       }
       lastSyncTime = new Date();
       setSyncStatus('ok');
       document.getElementById('syncInfo').textContent = `✅ Carregado (${lastSyncTime.toLocaleTimeString('pt-BR')})`;
       return;
     }
-    cameras = buildInitial();
-    await salvarNoGitHub();
+    cameras = buildInitial(); await salvarNoGitHub();
     setSyncStatus('ok');
     document.getElementById('syncInfo').textContent = '✅ Arquivo criado';
   }catch(e){
-    console.error(e);
-    carregarLocal();
+    console.error(e); carregarLocal();
     setSyncStatus('error');
     document.getElementById('syncInfo').textContent = '⚠️ Usando cópia local';
   }
 }
-
 async function salvarNoGitHub(){
   if(syncing) return;
-  syncing = true;
-  setSyncStatus('syncing');
+  syncing = true; setSyncStatus('syncing');
   try{
     const res = await fetch(LOCAL_SAVE_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+      method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify(cameras)
     });
     if(!res.ok) throw new Error(`Servidor ${res.status}`);
@@ -865,7 +807,6 @@ async function salvarNoGitHub(){
     salvarLocal();
   }finally{ syncing = false; }
 }
-
 function salvarLocal(){ try{ localStorage.setItem(FALLBACK_KEY, JSON.stringify(cameras)); }catch(e){} }
 function carregarLocal(){
   try{
@@ -884,8 +825,7 @@ async function sincronizarManual(){
 // ============================================================
 function buildInitial(){
   const now = Date.now();
-  const cams = [];
-  let id = 1;
+  const cams = []; let id = 1;
   NOMES_IP.forEach(([n,p,local],i) => {
     cams.push({id:id++, n, ip:`192.168.1.${20+i}`, t:'IP', s:'ok', p, mod:'ONVIF', local, statusSince:now});
   });
@@ -945,6 +885,33 @@ function toggleCamera(id){
   salvarNoGitHub();
   toast(`${cam.n} → ${novo==='ok'?'Ligada':'Desligada'}`, novo==='ok'?'success':'error');
 }
+function toggleCameraPorNome(nome){
+  const cam = cameras.find(c=>c.n.toLowerCase() === nome.toLowerCase());
+  if(!cam){ toast(`Câmera "${nome}" não encontrada`, 'error'); return; }
+  toggleCamera(cam.id);
+}
+function ligarTodasGravador(gravId){
+  const g = GRAVADORES.find(x=>x.id===gravId);
+  if(!g) return;
+  let count = 0;
+  g.cameras.forEach(nome => {
+    const cam = cameras.find(c=>c.n.toLowerCase() === nome.toLowerCase());
+    if(cam && cam.s.toLowerCase() !== 'ok'){ cam.s = 'ok'; cam.statusSince = Date.now(); count++; }
+  });
+  if(count > 0){ render(); salvarNoGitHub(); toast(`${count} câmera(s) ligada(s)`); }
+  else toast('Todas já estavam ligadas', 'info');
+}
+function desligarTodasGravador(gravId){
+  const g = GRAVADORES.find(x=>x.id===gravId);
+  if(!g) return;
+  let count = 0;
+  g.cameras.forEach(nome => {
+    const cam = cameras.find(c=>c.n.toLowerCase() === nome.toLowerCase());
+    if(cam && cam.s.toLowerCase() === 'ok'){ cam.s = 'Parada'; cam.statusSince = Date.now(); count++; }
+  });
+  if(count > 0){ render(); salvarNoGitHub(); toast(`${count} câmera(s) desligada(s)`, 'error'); }
+  else toast('Todas já estavam desligadas', 'info');
+}
 function setFilter(f){
   filter = f;
   document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active', b.dataset.filter === f));
@@ -999,10 +966,6 @@ function auditar(){
     totalProblemas: ipsDuplicados.length + nomesDuplicados.length + semIP.length + semPiso.length + semLocal.length + ipsInvalidos.length
   };
 }
-
-// ============================================================
-// RENDER CAMERAS
-// ============================================================
 function getFiltered(){
   return cameras.filter(c => {
     if(filter==='offline' && c.s.toLowerCase()!=='parada') return false;
@@ -1019,7 +982,7 @@ function getFiltered(){
 }
 
 // ============================================================
-// RENDER GRAVADORES
+// RENDER GRAVADORES (COM TOGGLES)
 // ============================================================
 function renderGravadores(){
   const grid = document.getElementById('gravGrid');
@@ -1051,6 +1014,7 @@ function renderGravadores(){
     const tipoClass = g.tipo.toLowerCase();
     const iconTipo = g.tipo === 'NVR' ? 'fa-hdd' : g.tipo === 'DVR' ? 'fa-video' : 'fa-server';
     const isExpanded = forceExpand || gravExpanded[g.id] === true;
+
     return `<div class="grav-card ${isExpanded?'expanded':''}" data-grav-id="${g.id}">
       <div class="grav-header ${tipoClass}" onclick="toggleGravCard('${g.id}')">
         <div>
@@ -1072,14 +1036,23 @@ function renderGravadores(){
         <div class="grav-stat bad"><div class="num">${offCount}</div><div class="lbl">Off-line</div></div>
       </div>
       <div class="grav-cams">
+        <div class="grav-actions" onclick="event.stopPropagation()">
+          <span>⚡ Ações em massa:</span>
+          <button class="btn" onclick="ligarTodasGravador('${g.id}')">🟢 Ligar todas</button>
+          <button class="btn" onclick="desligarTodasGravador('${g.id}')">🔴 Desligar todas</button>
+        </div>
         ${camList.map(c => {
           const status = c.cam ? (c.isOn ? '<span class="status on">● Online</span>' : '<span class="status off">● Off-line</span>')
             : '<span class="status virtual">— Não catalogada</span>';
+          const toggleHtml = c.cam
+            ? `<div class="toggle small ${c.isOn?'on':''} cam-toggle" onclick="event.stopPropagation();toggleCameraPorNome('${escapeHtml(c.nome).replace(/'/g,"\\'")}')" title="Ligar/Desligar"></div>`
+            : '';
           return `<div class="grav-cam ${c.cam && !c.isOn ? 'off' : ''}">
             <span class="ch">CH${String(c.ch).padStart(2,'0')}</span>
             <span class="name">${escapeHtml(c.nome)}</span>
             <span class="ip">${c.cam && c.cam.ip ? escapeHtml(c.cam.ip) : '—'}</span>
             ${status}
+            ${toggleHtml}
           </div>`;
         }).join('')}
         <div class="grav-hint">👆 Clique no cabeçalho para recolher</div>
@@ -1089,7 +1062,6 @@ function renderGravadores(){
 
   document.getElementById('nav-grav-count').textContent = GRAVADORES.length;
 }
-
 function toggleGravCard(gravId){
   const card = document.querySelector(`.grav-card[data-grav-id="${gravId}"]`);
   if(!card) return;
@@ -1149,7 +1121,6 @@ function render(){
   document.getElementById('nav-audit-count').textContent = audit.totalProblemas;
   document.getElementById('nav-grav-count').textContent = GRAVADORES.length;
 
-  // TABELA CÂMERAS
   const filtered = getFiltered();
   const tbody = document.getElementById('tbody');
   if(filtered.length === 0){
@@ -1175,7 +1146,6 @@ function render(){
     }).join('');
   }
 
-  // EQUIPAMENTOS
   const locais = {};
   EQUIPAMENTOS.forEach(e => { (locais[e.local] = locais[e.local] || []).push(e); });
   const camPorLocal = {};
@@ -1293,57 +1263,30 @@ function renderCharts(){
   const ip = cameras.filter(c=>c.t==='IP').length;
   const analog = total - ip;
 
-  // Status doughnut
   if(charts.status) charts.status.destroy();
   charts.status = new Chart(document.getElementById('chartStatus'), {
     type:'doughnut',
-    data:{
-      labels:['Online','Off-line'],
-      datasets:[{
-        data:[online,offline],
-        backgroundColor:['#22c55e','#ef4444'],
-        borderColor: isDark ? '#0f172a' : '#fff',
-        borderWidth:4, hoverOffset:10
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false, cutout:'68%',
-      plugins:{
-        legend:{position:'bottom', labels:{padding:14,usePointStyle:true,pointStyle:'circle'}},
-        tooltip:{
-          backgroundColor:'#1e293b', padding:12, cornerRadius:10,
-          callbacks:{label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}
-        }
-      }
-    }
+    data:{labels:['Online','Off-line'],
+      datasets:[{data:[online,offline],backgroundColor:['#22c55e','#ef4444'],
+        borderColor: isDark ? '#0f172a' : '#fff', borderWidth:4, hoverOffset:10}]},
+    options:{responsive:true, maintainAspectRatio:false, cutout:'68%',
+      plugins:{legend:{position:'bottom', labels:{padding:14,usePointStyle:true,pointStyle:'circle'}},
+        tooltip:{backgroundColor:'#1e293b', padding:12, cornerRadius:10,
+          callbacks:{label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
   });
 
-  // Tipo doughnut
   if(charts.tipo) charts.tipo.destroy();
   charts.tipo = new Chart(document.getElementById('chartTipo'), {
     type:'doughnut',
-    data:{
-      labels:['IP','Analógica'],
-      datasets:[{
-        data:[ip,analog],
-        backgroundColor:['#3b82f6','#f59e0b'],
-        borderColor: isDark ? '#0f172a' : '#fff',
-        borderWidth:4, hoverOffset:10
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false, cutout:'68%',
-      plugins:{
-        legend:{position:'bottom', labels:{padding:14,usePointStyle:true,pointStyle:'circle'}},
-        tooltip:{
-          backgroundColor:'#1e293b', padding:12, cornerRadius:10,
-          callbacks:{label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}
-        }
-      }
-    }
+    data:{labels:['IP','Analógica'],
+      datasets:[{data:[ip,analog],backgroundColor:['#3b82f6','#f59e0b'],
+        borderColor: isDark ? '#0f172a' : '#fff', borderWidth:4, hoverOffset:10}]},
+    options:{responsive:true, maintainAspectRatio:false, cutout:'68%',
+      plugins:{legend:{position:'bottom', labels:{padding:14,usePointStyle:true,pointStyle:'circle'}},
+        tooltip:{backgroundColor:'#1e293b', padding:12, cornerRadius:10,
+          callbacks:{label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
   });
 
-  // Piso barras
   const porPiso = {};
   cameras.forEach(c => {
     const p = c.p || 'Sem piso';
@@ -1356,50 +1299,32 @@ function renderCharts(){
   if(charts.piso) charts.piso.destroy();
   charts.piso = new Chart(document.getElementById('chartPiso'), {
     type:'bar',
-    data:{
-      labels: topPisos.map(([p])=>p),
+    data:{labels: topPisos.map(([p])=>p),
       datasets:[
         {label:'Online', data: topPisos.map(([,d])=>d.online), backgroundColor:'#22c55e', borderRadius:6, stack:'s'},
         {label:'Off-line', data: topPisos.map(([,d])=>d.offline), backgroundColor:'#ef4444', borderRadius:6, stack:'s'}
-      ]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false, indexAxis:'y',
-      scales:{
-        x:{stacked:true, grid:{color: isDark ? 'rgba(148,163,184,.08)' : 'rgba(15,23,42,.08)'}},
-        y:{stacked:true, grid:{display:false}}
-      },
-      plugins:{
-        legend:{position:'bottom', labels:{padding:14,usePointStyle:true,pointStyle:'circle'}}
-      }
-    }
+      ]},
+    options:{responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      scales:{x:{stacked:true, grid:{color: isDark ? 'rgba(148,163,184,.08)' : 'rgba(15,23,42,.08)'}},
+        y:{stacked:true, grid:{display:false}}},
+      plugins:{legend:{position:'bottom', labels:{padding:14,usePointStyle:true,pointStyle:'circle'}}}}
   });
 
-  // EOL
-  const eolData = {
-    labels:['Switches EOL','DVRs','NVRs','Servidores','Nobreaks'],
-    datasets:[{
-      data:[
+  if(charts.eol) charts.eol.destroy();
+  charts.eol = new Chart(document.getElementById('chartEOL'), {
+    type:'bar',
+    data:{labels:['Switches EOL','DVRs','NVRs','Servidores','Nobreaks'],
+      datasets:[{data:[
         EQUIPAMENTOS.filter(e=>e.status==='eol').length,
         EQUIPAMENTOS.filter(e=>e.tipo==='DVR').length,
         EQUIPAMENTOS.filter(e=>e.tipo==='NVR').length,
         EQUIPAMENTOS.filter(e=>e.tipo==='SRV').length,
         EQUIPAMENTOS.filter(e=>e.tipo==='NOB').length
-      ],
-      backgroundColor:['#ef4444','#ec4899','#06b6d4','#3b82f6','#f59e0b'],
-      borderRadius:8
-    }]
-  };
-  if(charts.eol) charts.eol.destroy();
-  charts.eol = new Chart(document.getElementById('chartEOL'), {
-    type:'bar',
-    data: eolData,
-    options:{
-      responsive:true, maintainAspectRatio:false,
+      ], backgroundColor:['#ef4444','#ec4899','#06b6d4','#3b82f6','#f59e0b'], borderRadius:8}]},
+    options:{responsive:true, maintainAspectRatio:false,
       scales:{y:{beginAtZero:true, ticks:{stepSize:1}, grid:{color: isDark ? 'rgba(148,163,184,.08)' : 'rgba(15,23,42,.08)'}},
         x:{grid:{display:false}}},
-      plugins:{legend:{display:false}}
-    }
+      plugins:{legend:{display:false}}}
   });
 }
 
@@ -1420,7 +1345,6 @@ async function init(){
   document.getElementById('search').oninput = e => { search = e.target.value; render(); };
   document.getElementById('gravSearch').oninput = e => { gravSearch = e.target.value; renderGravadores(); };
 
-  // Relógio
   function atualizaRelogio(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR'); }
   atualizaRelogio();
   setInterval(atualizaRelogio, 1000);
@@ -1428,11 +1352,7 @@ async function init(){
   render();
 }
 
-// ============================================================
-// ATALHOS DE TECLADO
-// ============================================================
 document.addEventListener('keydown', e => {
-  // Ctrl+K → busca
   if((e.ctrlKey || e.metaKey) && e.key === 'k'){
     e.preventDefault();
     setView('cameras');
@@ -1441,13 +1361,11 @@ document.addEventListener('keydown', e => {
     hint.classList.add('show');
     setTimeout(() => hint.classList.remove('show'), 1500);
   }
-  // Esc → limpa busca
   if(e.key === 'Escape'){
     document.getElementById('search').value = '';
     document.getElementById('gravSearch').value = '';
     search = ''; gravSearch = '';
-    render();
-    renderGravadores();
+    render(); renderGravadores();
   }
 });
 
