@@ -16,6 +16,8 @@
   .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .clock{background:rgba(30,41,59,.7);padding:9px 16px;border-radius:12px;font-weight:600;font-size:.85rem;border:1px solid rgba(148,163,184,.15);color:#cbd5e1}
   .pulse-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite;display:inline-block;margin-right:6px}
+  .pulse-dot.syncing{background:#fbbf24;animation:pulse 0.8s infinite}
+  .pulse-dot.error{background:#ef4444}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
   .btn{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);color:#cbd5e1;padding:9px 16px;border-radius:9px;font-weight:600;font-size:.83rem;cursor:pointer;transition:.2s;font-family:inherit}
   .btn:hover{border-color:#3b82f6;color:#fff}
@@ -148,6 +150,7 @@
   .toast{position:fixed;bottom:24px;right:24px;background:#1e293b;border:1px solid #22c55e;color:#4ade80;padding:14px 22px;border-radius:12px;font-weight:600;font-size:.85rem;z-index:200;display:none;max-width:340px}
   .toast.show{display:block}
   .toast.error{border-color:#ef4444;color:#f87171}
+  .toast.info{border-color:#3b82f6;color:#60a5fa}
   @media(max-width:700px){body{padding:12px}h1{font-size:1.1rem}.kpis{grid-template-columns:repeat(2,1fr)}.locais-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -157,8 +160,9 @@
     <div class="header">
       <h1><span class="badge">🎥</span> CFTV • Monitoramento Operacional</h1>
       <div class="actions">
-        <div class="clock"><span class="pulse-dot"></span><span id="clock">--:--:--</span></div>
+        <div class="clock" id="syncStatus"><span class="pulse-dot"></span><span id="clock">--:--:--</span></div>
         <button class="btn green" onclick="exportarCSV()">⬇ CSV</button>
+        <button class="btn" onclick="sincronizarManual()">🔄 Sincronizar</button>
         <button class="btn red" onclick="resetar()">↺ Restaurar</button>
       </div>
     </div>
@@ -229,7 +233,7 @@
   </div>
 
   <div class="footer">
-    💾 Dados salvos no navegador • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line • <span id="equipCount">0</span> equipamentos
+    💾 <span id="syncInfo">Carregando dados do GitHub...</span> • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line • <span id="equipCount">0</span> equipamentos
   </div>
 </div>
 
@@ -237,10 +241,26 @@
 
 <script>
 // ============================================================
+// ⚠️⚠️ CONFIGURE AQUI ⚠️⚠️
+// ============================================================
+const GITHUB_OWNER = 'SEU-USUARIO';           // Ex: 'developerhere'
+const GITHUB_REPO = 'NOME-DO-REPOSITORIO';    // Ex: 'cftv-dashboard'
+const GITHUB_BRANCH = 'main';                 // 'main' ou 'master'
+const GITHUB_FILE_PATH = 'cameras.json';
+const GITHUB_TOKEN = 'SEU_TOKEN_AQUI';        // Cole aqui o token
+
+// ============================================================
+// URLs do GitHub
+// ============================================================
+const API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
+const RAW_URL = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_FILE_PATH}`;
+const FALLBACK_KEY = 'cftv_fallback';
+
+// ============================================================
 // EQUIPAMENTOS
 // ============================================================
 const EQUIPAMENTOS = [
-  // ============ PISO L — Central de Segurança ============
+  // ============ PISO L ============
   {local:"Central de Segurança", tipo:"SW", nome:"Switch HP sem gerência", modelo:"HP V1910", status:"ok"},
   {local:"Central de Segurança", tipo:"SW", nome:"Switch POE JG92CA", modelo:"JG92CA", status:"eol", obs:"Com defeito — trocar"},
   {local:"Central de Segurança", tipo:"SW", nome:"Switch 48 portas HP", modelo:"HP 48P", status:"eol", obs:"Trocar"},
@@ -261,8 +281,6 @@ const EQUIPAMENTOS = [
   {local:"Central de Segurança", tipo:"DVR", nome:"DVR Motorola reserva", modelo:"MTR16A1080L", status:"ok"},
   {local:"Central de Segurança", tipo:"MON", nome:"TV/Monitor LG", modelo:"LG", status:"ok", qtd:6},
   {local:"Central de Segurança", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
-
-  // ============ PISO L — Outros ============
   {local:"Sala TI", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"},
   {local:"Sala TI", tipo:"SW", nome:"Switch Ubiquiti", modelo:"UniFi", status:"ok"},
   {local:"Sala TI", tipo:"SRV", nome:"Servidor DELL montado", modelo:"DELL", status:"ok"},
@@ -270,39 +288,28 @@ const EQUIPAMENTOS = [
   {local:"Sala da Gerência", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
   {local:"Portaria de Serviço", tipo:"SRV", nome:"Servidor DELL OptiPlex", modelo:"OptiPlex", status:"ok"},
   {local:"Portaria de Serviço", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
-
-  // ============ PISO C — Sala Rio de Janeiro ============
+  // ============ PISO C ============
   {local:"Sala Rio de Janeiro", tipo:"SW", nome:"Switch GV #1", modelo:"Geovision", status:"ok"},
   {local:"Sala Rio de Janeiro", tipo:"SW", nome:"Switch GV #2", modelo:"Geovision", status:"ok"},
   {local:"Sala Rio de Janeiro", tipo:"SW", nome:"Switch GV #3", modelo:"Geovision", status:"ok"},
   {local:"Sala Rio de Janeiro", tipo:"DVR", nome:"DVR Motorola #1", modelo:"MTD324UON12", status:"ok"},
   {local:"Sala Rio de Janeiro", tipo:"DVR", nome:"DVR Motorola #2", modelo:"MTD324UON12", status:"ok"},
   {local:"Sala Rio de Janeiro", tipo:"DVR", nome:"DVR Motorola #3", modelo:"MTD324UON12", status:"ok"},
-
   // ============ 1º ANDAR ============
   {local:"Shaft 1º Andar", tipo:"SW", nome:"Switch POE Geovision", modelo:"Geovision PoE", status:"eol", obs:"Trocar"},
   {local:"Shaft 1º Andar", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
   {local:"Shaft 1º Andar", tipo:"DVR", nome:"DVR Intelbras", modelo:"MHDX 1232", status:"ok"},
-
   // ============ 10º ANDAR ============
   {local:"Shaft 10º Andar", tipo:"SW", nome:"Switch POE Geovision", modelo:"Geovision PoE", status:"eol", obs:"Trocar"},
   {local:"Shaft 10º Andar", tipo:"SW", nome:"Switch HP POE 24 portas", modelo:"HP 1910-24G-PoE+", status:"ok"},
   {local:"Shaft 10º Andar", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
-
   // ============ SUBSOLO 1 ============
   {local:"3SUB2", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"}
 ];
 
 const ORDEM_LOCAIS = [
-  "Central de Segurança",
-  "Sala TI",
-  "Sala da Diretoria",
-  "Sala da Gerência",
-  "Portaria de Serviço",
-  "Sala Rio de Janeiro",
-  "Shaft 1º Andar",
-  "Shaft 10º Andar",
-  "3SUB2"
+  "Central de Segurança","Sala TI","Sala da Diretoria","Sala da Gerência","Portaria de Serviço",
+  "Sala Rio de Janeiro","Shaft 1º Andar","Shaft 10º Andar","3SUB2"
 ];
 
 // ============================================================
@@ -422,12 +429,133 @@ let search = '';
 let floorFilter = 'all';
 let legendFilters = {ip:false, analog:false, online:false, offline:false};
 let currentTab = 'cameras';
-const STORAGE_KEY = 'cftv_v20';
+let syncing = false;
+let lastSyncTime = null;
+
 const TOTAL_CAMERAS = 250;
 const TOTAL_OFF = 78;
 
 // ============================================================
-// HELPERS
+// GITHUB SYNC
+// ============================================================
+function setSyncStatus(status){
+  const el = document.getElementById('syncStatus');
+  const dot = el.querySelector('.pulse-dot');
+  dot.classList.remove('syncing','error');
+  if(status === 'syncing'){ dot.classList.add('syncing'); }
+  else if(status === 'error'){ dot.classList.add('error'); }
+}
+
+async function carregarDoGitHub(){
+  setSyncStatus('syncing');
+  document.getElementById('syncInfo').textContent = '🔄 Carregando do GitHub...';
+  try{
+    const res = await fetch(`${RAW_URL}?t=${Date.now()}`);
+    if(res.ok){
+      const data = await res.json();
+      cameras = Array.isArray(data) ? data : (data.cameras || []);
+      if(cameras.length === 0){
+        cameras = buildInitial();
+        await salvarNoGitHub();
+      }
+      lastSyncTime = new Date();
+      setSyncStatus('ok');
+      document.getElementById('syncInfo').textContent = `✅ Sincronizado com GitHub (${lastSyncTime.toLocaleTimeString('pt-BR')})`;
+      render();
+      return;
+    }
+    // Arquivo ainda não existe → cria
+    cameras = buildInitial();
+    await salvarNoGitHub();
+    setSyncStatus('ok');
+    document.getElementById('syncInfo').textContent = '✅ Arquivo criado no GitHub';
+    render();
+  }catch(e){
+    console.error('Erro ao carregar:', e);
+    carregarLocal();
+    setSyncStatus('error');
+    document.getElementById('syncInfo').textContent = '⚠️ Usando cópia local (GitHub offline)';
+    render();
+  }
+}
+
+async function salvarNoGitHub(){
+  if(syncing) return;
+  syncing = true;
+  setSyncStatus('syncing');
+
+  try{
+    // 1. Pega o SHA atual
+    let sha = null;
+    try{
+      const getRes = await fetch(API_URL, {
+        headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }
+      });
+      if(getRes.ok){
+        const data = await getRes.json();
+        sha = data.sha;
+      }
+    }catch(e){ /* ignora */ }
+
+    // 2. Prepara o conteúdo (Base64 seguro)
+    const jsonStr = JSON.stringify(cameras, null, 2);
+    const content = btoa(unescape(encodeURIComponent(jsonStr)));
+
+    // 3. Envia para o GitHub
+    const body = {
+      message: `CFTV sync - ${new Date().toLocaleString('pt-BR')}`,
+      content,
+      branch: GITHUB_BRANCH
+    };
+    if(sha) body.sha = sha;
+
+    const putRes = await fetch(API_URL, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if(!putRes.ok){
+      const err = await putRes.json();
+      throw new Error(err.message || 'Erro ao salvar');
+    }
+
+    lastSyncTime = new Date();
+    setSyncStatus('ok');
+    document.getElementById('syncInfo').textContent = `✅ Salvo no GitHub (${lastSyncTime.toLocaleTimeString('pt-BR')})`;
+    salvarLocal(); // backup paralelo
+  }catch(e){
+    console.error('Erro ao salvar no GitHub:', e);
+    setSyncStatus('error');
+    document.getElementById('syncInfo').textContent = `⚠️ Erro ao salvar (${e.message}). Dados no navegador.`;
+    salvarLocal();
+  }finally{
+    syncing = false;
+  }
+}
+
+// Backup local (fallback)
+function salvarLocal(){
+  try{ localStorage.setItem(FALLBACK_KEY, JSON.stringify(cameras)); }catch(e){}
+}
+function carregarLocal(){
+  try{
+    const s = localStorage.getItem(FALLBACK_KEY);
+    cameras = s ? JSON.parse(s) : buildInitial();
+  }catch(e){ cameras = buildInitial(); }
+}
+
+async function sincronizarManual(){
+  toast('Sincronizando...', 'info');
+  await salvarNoGitHub();
+  await carregarDoGitHub();
+}
+
+// ============================================================
+// BUILD INITIAL
 // ============================================================
 function buildInitial(){
   const now = Date.now();
@@ -458,18 +586,9 @@ function buildInitial(){
   return cams;
 }
 
-function carregar(){
-  try{
-    const s = localStorage.getItem(STORAGE_KEY);
-    if(s){
-      const p = JSON.parse(s);
-      if(p.length !== TOTAL_CAMERAS){ cameras = buildInitial(); salvar(); }
-      else cameras = p;
-    } else { cameras = buildInitial(); salvar(); }
-  }catch(e){ cameras = buildInitial(); salvar(); }
-}
-function salvar(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(cameras)); }catch(e){} }
-
+// ============================================================
+// HELPERS
+// ============================================================
 function timeAgo(ts){
   if(!ts) return '';
   const d = Date.now()-ts, m = Math.floor(d/60000), h = Math.floor(m/60), dy = Math.floor(h/24);
@@ -498,7 +617,8 @@ function toggleCamera(id){
   const cam = cameras.find(c=>c.id===id);
   const novo = cam.s.toLowerCase()==='ok' ? 'Parada' : 'ok';
   cam.s = novo; cam.statusSince = Date.now();
-  salvar(); render();
+  render();
+  salvarNoGitHub();
   toast(`${cam.n} → ${novo==='ok'?'Ligada':'Desligada'}`, novo==='ok'?'success':'error');
 }
 
@@ -525,9 +645,11 @@ function setTab(t){
 }
 
 function resetar(){
-  if(!confirm('Restaurar dados com 250 câmeras (78 off-line)?')) return;
-  cameras = buildInitial(); salvar(); render();
-  toast('Dados restaurados!');
+  if(!confirm('Restaurar dados com 250 câmeras (78 off-line)?\n\nIsso vai sobrescrever o GitHub.')) return;
+  cameras = buildInitial();
+  render();
+  salvarNoGitHub();
+  toast('Dados restaurados e enviados ao GitHub!');
 }
 
 function exportarCSV(){
@@ -680,7 +802,6 @@ function render(){
   // EQUIPAMENTOS
   const locais = {};
   EQUIPAMENTOS.forEach(e => { (locais[e.local] = locais[e.local] || []).push(e); });
-
   const camPorLocal = {};
   cameras.forEach(c => {
     const loc = c.local || 'Sem local';
@@ -689,10 +810,8 @@ function render(){
     if(c.s.toLowerCase()==='ok') camPorLocal[loc].online++;
     else camPorLocal[loc].offline++;
   });
-
   const iconTipo = t => t==='SW'?'fa-network-wired':t==='DVR'?'fa-video':t==='NVR'?'fa-hdd':t==='NOB'?'fa-battery-full':t==='SRV'?'fa-server':t==='MON'?'fa-tv':'fa-microchip';
   const nomeTipo = t => t==='SW'?'Switch':t==='DVR'?'DVR':t==='NVR'?'NVR':t==='NOB'?'Nobreak':t==='SRV'?'Servidor':t==='MON'?'Monitor':'Equip';
-
   const andarDe = local => {
     if(local === "Central de Segurança" || local === "Sala TI" || local === "Sala da Diretoria" || local === "Sala da Gerência" || local === "Portaria de Serviço") return "Piso L";
     if(local === "Sala Rio de Janeiro") return "Piso C";
@@ -701,29 +820,22 @@ function render(){
     if(local === "3SUB2") return "Subsolo 1";
     return "Outros";
   };
-
   const locaisOrdenados = Object.keys(locais).sort((a, b) => {
-    const ia = ORDEM_LOCAIS.indexOf(a);
-    const ib = ORDEM_LOCAIS.indexOf(b);
+    const ia = ORDEM_LOCAIS.indexOf(a), ib = ORDEM_LOCAIS.indexOf(b);
     if(ia === -1 && ib === -1) return a.localeCompare(b);
-    if(ia === -1) return 1;
-    if(ib === -1) return -1;
+    if(ia === -1) return 1; if(ib === -1) return -1;
     return ia - ib;
   });
-
-  let htmlEquip = '';
-  let andarAtual = '';
+  let htmlEquip = '', andarAtual = '';
   locaisOrdenados.forEach(local => {
     const andar = andarDe(local);
     if(andar !== andarAtual){
       andarAtual = andar;
       htmlEquip += `<div style="grid-column:1/-1;margin-top:${htmlEquip?'20px':'0'};margin-bottom:6px;padding:10px 16px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1));border-radius:12px;border-left:4px solid #3b82f6;font-weight:800;font-size:1rem;color:#93c5fd;letter-spacing:.05em">🏢 ${andar}</div>`;
     }
-
     const equips = locais[local];
     const eolLocal = equips.filter(e=>e.status==='eol').length;
     const cams = camPorLocal[local] || {total:0, online:0, offline:0};
-
     htmlEquip += `<div class="local-card">
       <div class="local-header">
         <div class="local-title">📍 ${escapeHtml(local)}</div>
@@ -753,11 +865,9 @@ function render(){
       </div>
     </div>`;
   });
-
   document.getElementById('equipGrid').innerHTML = htmlEquip;
 
   renderAuditoria(audit);
-
   document.getElementById('totalCount').textContent = total;
   document.getElementById('offCount').textContent = offline;
   document.getElementById('equipCount').textContent = EQUIPAMENTOS.length;
@@ -765,87 +875,70 @@ function render(){
 
 function renderAuditoria(a){
   const grid = document.getElementById('auditGrid');
-
-  const cardRed = (title, items, renderItem) => `
+  const card = (color, title, items, renderItem) => `
     <div class="audit-card">
-      <div class="audit-header red"><div class="audit-title">🔴 ${title}</div><div class="audit-count">${items.length}</div></div>
+      <div class="audit-header ${color}"><div class="audit-title">${title}</div><div class="audit-count">${items.length}</div></div>
       <div class="audit-body">${items.length===0 ? '<div class="audit-empty">✅ Nenhum problema</div>' : items.map(renderItem).join('')}</div>
     </div>`;
-
-  const cardAmber = (title, items, renderItem) => `
-    <div class="audit-card">
-      <div class="audit-header amber"><div class="audit-title">⚠️ ${title}</div><div class="audit-count">${items.length}</div></div>
-      <div class="audit-body">${items.length===0 ? '<div class="audit-empty">✅ Nenhum problema</div>' : items.map(renderItem).join('')}</div>
-    </div>`;
-
-  const cardBlue = (title, items, renderItem) => `
-    <div class="audit-card">
-      <div class="audit-header blue"><div class="audit-title">📋 ${title}</div><div class="audit-count">${items.length}</div></div>
-      <div class="audit-body">${items.length===0 ? '<div class="audit-empty">✅ Nenhum problema</div>' : items.map(renderItem).join('')}</div>
-    </div>`;
-
   grid.innerHTML =
-    cardRed('IPs Duplicados', a.ipsDuplicados, ([ip, cams]) => `
+    card('red','🔴 IPs Duplicados', a.ipsDuplicados, ([ip, cams]) => `
       <div class="audit-item red">
         <div class="audit-item-title">🌐 ${escapeHtml(ip)} <span class="badge dup">${cams.length}x</span></div>
         <div class="audit-item-detail">${cams.map(c=>`<span>• ${escapeHtml(c.n)} <span style="color:#64748b">(${escapeHtml(c.p||'—')} • ${escapeHtml(c.local||'—')})</span></span>`).join('')}</div>
       </div>`)
-    +
-    cardRed('IPs Inválidos', a.ipsInvalidos, c => `
+    + card('red','🔴 IPs Inválidos', a.ipsInvalidos, c => `
       <div class="audit-item red">
         <div class="audit-item-title">⚠️ ${escapeHtml(c.n)}</div>
-        <div class="audit-item-detail">
-          <span>IP atual: <b style="color:#fca5a5">${escapeHtml(c.ip)}</b></span>
-          <span>Esperado: 192.168.xxx.xxx</span>
-        </div>
+        <div class="audit-item-detail"><span>IP: <b style="color:#fca5a5">${escapeHtml(c.ip)}</b></span></div>
       </div>`)
-    +
-    cardAmber('Nomes Similares', a.nomesDuplicados, ([norm, cams]) => `
+    + card('amber','⚠️ Nomes Similares', a.nomesDuplicados, ([norm, cams]) => `
       <div class="audit-item amber">
         <div class="audit-item-title">📛 ${cams.length} câmeras parecidas</div>
         <div class="audit-item-detail">${cams.map(c=>`<span>• ${escapeHtml(c.n)} <span style="color:#64748b">(IP: ${escapeHtml(c.ip||'—')})</span></span>`).join('')}</div>
       </div>`)
-    +
-    cardBlue('Sem IP cadastrado', a.semIP, c => `
-      <div class="audit-item">
-        <div class="audit-item-title">${escapeHtml(c.n)}</div>
+    + card('blue','📋 Sem IP', a.semIP, c => `
+      <div class="audit-item"><div class="audit-item-title">${escapeHtml(c.n)}</div>
         <div class="audit-item-detail"><span>Tipo: ${c.t} • Piso: ${escapeHtml(c.p||'—')}</span></div>
       </div>`)
-    +
-    cardBlue('Sem Piso informado', a.semPiso, c => `
-      <div class="audit-item">
-        <div class="audit-item-title">${escapeHtml(c.n)}</div>
-        <div class="audit-item-detail"><span>Local: ${escapeHtml(c.local||'—')} • IP: ${escapeHtml(c.ip||'—')}</span></div>
+    + card('blue','📋 Sem Piso', a.semPiso, c => `
+      <div class="audit-item"><div class="audit-item-title">${escapeHtml(c.n)}</div>
+        <div class="audit-item-detail"><span>Local: ${escapeHtml(c.local||'—')}</span></div>
       </div>`)
-    +
-    cardBlue('Sem Local informado', a.semLocal, c => `
-      <div class="audit-item">
-        <div class="audit-item-title">${escapeHtml(c.n)}</div>
-        <div class="audit-item-detail"><span>Piso: ${escapeHtml(c.p||'—')} • IP: ${escapeHtml(c.ip||'—')}</span></div>
+    + card('blue','📋 Sem Local', a.semLocal, c => `
+      <div class="audit-item"><div class="audit-item-title">${escapeHtml(c.n)}</div>
+        <div class="audit-item-detail"><span>Piso: ${escapeHtml(c.p||'—')}</span></div>
       </div>`);
 }
 
 // ============================================================
 // INICIALIZAÇÃO
 // ============================================================
-carregar();
+async function init(){
+  // Carrega dados
+  await carregarDoGitHub();
 
-const floors = [...new Set(cameras.map(c=>c.p||'Sem piso'))].sort();
-const sel = document.getElementById('floorFilter');
-floors.forEach(f => {
-  const opt = document.createElement('option');
-  opt.value = f; opt.textContent = f;
-  sel.appendChild(opt);
-});
-sel.onchange = e => { floorFilter = e.target.value; render(); };
-document.getElementById('search').oninput = e => { search = e.target.value; render(); };
+  // Popula select de pisos
+  const floors = [...new Set(cameras.map(c=>c.p||'Sem piso'))].sort();
+  const sel = document.getElementById('floorFilter');
+  sel.innerHTML = '<option value="all">Todos os pisos</option>';
+  floors.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f; opt.textContent = f;
+    sel.appendChild(opt);
+  });
+  sel.onchange = e => { floorFilter = e.target.value; render(); };
+  document.getElementById('search').oninput = e => { search = e.target.value; render(); };
 
-function atualizaRelogio(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR'); }
-atualizaRelogio();
-setInterval(atualizaRelogio, 1000);
-setInterval(render, 30000);
+  // Relógio
+  function atualizaRelogio(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR'); }
+  atualizaRelogio();
+  setInterval(atualizaRelogio, 1000);
+  setInterval(render, 30000);
 
-render();
+  render();
+}
+
+init();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 </body>
