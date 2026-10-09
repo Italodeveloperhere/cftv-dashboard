@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerenciamento de Departamentos</title>
+
+  <style>
+    /* ============================================================
+       RESET E VARIÁVEIS
+    ============================================================ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #f5f5f7;
+      --ink: #1a1a1a;
+      --muted: #888;
+      --line: #ececec;
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px 24px;
+    }
+
+    /* ---------- Título ---------- */
+    .header {
+      text-align: center;
+      max-width: 720px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .header h1 {
+      font-size: clamp(22px, 3.5vw, 34px);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.6px;
+    }
+
+    .header h1 span { color: var(--muted); font-weight: 700; }
+
+    /* ---------- Busca ---------- */
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 380px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 40px;
+      padding: 10px 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+      transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .search-box:focus-within {
+      border-color: #1a1a1a;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.10);
+    }
+
+    .search-box svg { color: var(--muted); flex-shrink: 0; }
+
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--ink);
+      background: transparent;
+    }
+
+    .search-box input::placeholder { color: #bbb; }
+
+    .search-clear {
+      border: none;
+      background: #eee;
+      color: #666;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .search-clear:hover { background: #ddd; }
+    .search-clear.visible { display: flex; }
+
+    /* ---------- Avatares de departamentos ---------- */
+    .dept-selector {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: clamp(16px, 5vw, 56px);
+      padding: 48px 0 16px;
+      position: relative;
+      z-index: 10;
+      flex-wrap: wrap;
+    }
+
+    .dept-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transform: translateY(var(--y, 0));
+      transition: transform 0.35s var(--ease-spring);
+      font-family: inherit;
+    }
+
+    .dept-item:hover { transform: translateY(calc(var(--y, 0) - 6px)); }
+
+    .dept-item img {
+      width: clamp(56px, 8vw, 80px);
+      height: clamp(56px, 8vw, 80px);
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.14);
+      transition: all 0.35s var(--ease-spring);
+    }
+
+    .dept-item.active img {
+      border-color: var(--dept-color);
+      box-shadow:
+        0 0 0 4px color-mix(in srgb, var(--dept-color) 25%, transparent),
+        0 10px 30px rgba(0,0,0,0.2);
+      transform: scale(1.1);
+    }
+
+    .dept-label {
+      background: var(--ink);
+      color: #fff;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.25s ease;
+    }
+
+    .dept-item.active .dept-label { background: var(--dept-color); }
+
+    /* ---------- Leque ---------- */
+    .stack-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding: 20px 0 40px;
+      min-height: 460px;
+    }
+
+    .card-stack {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: 420px;
+    }
+
+    .empty-state {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* ---------- Cartas ---------- */
+    .card {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 200px;
+      height: 280px;
+      margin-left: -100px;
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow:
+        0 8px 32px rgba(0,0,0,0.10),
+        0 2px 8px rgba(0,0,0,0.05);
+      transform-origin: bottom center;
+      transition:
+        transform 0.55s var(--ease-spring),
+        opacity 0.35s ease,
+        box-shadow 0.3s ease;
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 26px 16px 16px;
+      will-change: transform;
+      outline: none;
+    }
+
+    .card:hover,
+    .card:focus-visible {
+      box-shadow: 0 20px 48px rgba(0,0,0,0.18);
+    }
+
+    .card:focus-visible {
+      box-shadow:
+        0 0 0 3px var(--accent),
+        0 20px 48px rgba(0,0,0,0.18);
+    }
+
+    .card-accent {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: var(--accent);
+    }
+
+    .card-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-top: 8px;
+      border: 3px solid #f0f0f0;
+      background: #eee;
+    }
+
+    .card-name {
+      margin: 14px 0 2px;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .card-role {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .card-dept-tag {
+      margin-top: 10px;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-contact {
+      margin-top: auto;
+      width: 100%;
+      padding-top: 12px;
+      border-top: 1px solid #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 10px;
+      color: #999;
+      text-align: center;
+    }
+
+    /* ---------- Barra de status ---------- */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 8px 0 24px;
+      min-height: 40px;
+    }
+
+    .clear-btn {
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .clear-btn:hover { background: #333; }
+    .clear-btn:active { transform: scale(0.96); }
+
+    /* ---------- Modal ---------- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 24px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal {
+      background: #fff;
+      border-radius: 24px;
+      padding: 36px 32px 28px;
+      width: 100%;
+      max-width: 360px;
+      position: relative;
+      text-align: center;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+      animation: popIn 0.35s var(--ease-spring);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 26px;
+      color: #999;
+      cursor: pointer;
+      line-height: 1;
+      font-family: inherit;
+    }
+
+    .modal-close:hover { color: var(--ink); }
+
+    .modal-avatar {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #f0f0f0;
+      margin-bottom: 12px;
+    }
+
+    .modal h2 { font-size: 20px; font-weight: 700; }
+    .modal-role { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    .modal-dept {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+    }
+
+    .modal-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 13px;
+      color: #555;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      text-align: left;
+    }
+
+    .modal-info > div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .modal-info strong {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #aaa;
+      font-weight: 700;
+    }
+
+    /* ---------- Responsivo ---------- */
+    @media (max-width: 640px) {
+      .app { padding: 32px 16px 16px; }
+      .card-stack { height: 340px; }
+      .card {
+        width: 150px;
+        height: 230px;
+        margin-left: -75px;
+        padding: 18px 12px 12px;
+      }
+      .card-avatar { width: 52px; height: 52px; }
+      .card-name { font-size: 12px; }
+      .card-role { font-size: 10px; }
+      .card-contact { display: none; }
+      .dept-selector { gap: 10px; padding: 32px 0 8px; }
+      .stack-container { min-height: 380px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>
+        Um cartão para cada área.<br />
+        <span>Uma única plataforma para controlar tudo.</span>
+      </h1>
+
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Buscar por nome, cargo ou email..."
+          autocomplete="off"
+        />
+        <button id="searchClear" class="search-clear" aria-label="Limpar busca">×</button>
+      </div>
+    </header>
+
+    <!-- Avatares de departamentos -->
+    <div class="dept-selector" id="deptSelector"></div>
+
+    <!-- Leque de cartas -->
+    <div class="stack-container">
+      <div class="card-stack" id="cardStack"></div>
+      <div class="empty-state" id="emptyState" style="display:none">
+        Nenhum contato encontrado.
+      </div>
+    </div>
+
+    <!-- Barra de status -->
+    <div class="status-bar">
+      <span id="statusText">0 contatos</span>
+      <button class="clear-btn" id="clearBtn" style="display:none">Ver todos</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal" style="display:none">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modalClose" aria-label="Fechar">×</button>
+      <img class="modal-avatar" id="modalAvatar" src="" alt="" />
+      <h2 id="modalName"></h2>
+      <p class="modal-role" id="modalRole"></p>
+      <span class="modal-dept" id="modalDept"></span>
+      <div class="modal-info">
+        <div><strong>Email</strong><span id="modalEmail"></span></div>
+        <div><strong>Telefone</strong><span id="modalPhone"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================
+       DADOS
+    ============================================================ */
+    const departments = [
+      { id: 'rh',        name: 'RH',        color: '#6366f1', avatar: 'https://i.pravatar.cc/150?img=47', yOffset: 20 },
+      { id: 'juridico',  name: 'Jurídico',  color: '#0ea5e9', avatar: 'https://i.pravatar.cc/150?img=32', yOffset: -40 },
+      { id: 'vendas',    name: 'Vendas',    color: '#f59e0b', avatar: 'https://i.pravatar.cc/150?img=44', yOffset: 0 },
+      { id: 'marketing', name: 'Marketing', color: '#10b981', avatar: 'https://i.pravatar.cc/150?img=12', yOffset: 30 },
+    ];
+
+    const contacts = [
+      { id: 1, name: 'Ana Souza',     role: 'Gerente de RH',        department: 'rh',        avatar: 'https://i.pravatar.cc/150?img=47', email: 'ana@empresa.com',      phone: '+55 11 99999-0001' },
+      { id: 2, name: 'Bruno Lima',    role: 'Analista de RH',       department: 'rh',        avatar: 'https://i.pravatar.cc/150?img=68', email: 'bruno@empresa.com',    phone: '+55 11 99999-0002' },
+      { id: 3, name: 'Carla Mendes',  role: 'Advogada',             department: 'juridico',  avatar: 'https://i.pravatar.cc/150?img=32', email: 'carla@empresa.com',    phone: '+55 11 99999-0003' },
+      { id: 4, name: 'Diego Rocha',   role: 'Advogado',             department: 'juridico',  avatar: 'https://i.pravatar.cc/150?img=59', email: 'diego@empresa.com',    phone: '+55 11 99999-0004' },
+      { id: 5, name: 'Elisa Prado',   role: 'Executiva de Vendas',  department: 'vendas',    avatar: 'https://i.pravatar.cc/150?img=44', email: 'elisa@empresa.com',    phone: '+55 11 99999-0005' },
+      { id: 6, name: 'Felipe Nunes',  role: 'Consultor de Vendas',  department: 'vendas',    avatar: 'https://i.pravatar.cc/150?img=15', email: 'felipe@empresa.com',   phone: '+55 11 99999-0006' },
+      { id: 7, name: 'Gabi Torres',   role: 'Gerente de Marketing', department: 'marketing', avatar: 'https://i.pravatar.cc/150?img=12', email: 'gabi@empresa.com',     phone: '+55 11 99999-0007' },
+      { id: 8, name: 'Henrique Dias', role: 'Designer',             department: 'marketing', avatar: 'https://i.pravatar.cc/150?img=33', email: 'henrique@empresa.com', phone: '+55 11 99999-0008' },
+    ];
+
+    /* ============================================================
+       ESTADO
+    ============================================================ */
+    const state = {
+      activeDept: null,
+      query: '',
+      cardEls: new Map(),
+    };
+
+    const deptSelector = document.getElementById('deptSelector');
+    const cardStack    = document.getElementById('cardStack');
+    const emptyState   = document.getElementById('emptyState');
+    const statusText   = document.getElementById('statusText');
+    const clearBtn     = document.getElementById('clearBtn');
+    const modal        = document.getElementById('modal');
+    const searchInput  = document.getElementById('searchInput');
+    const searchClear  = document.getElementById('searchClear');
+
+    /* ============================================================
+       HELPERS
+    ============================================================ */
+    const getDept = (id) => departments.find(d => d.id === id);
+
+    function getVisibleContacts() {
+      const q = state.query.trim().toLowerCase();
+      return contacts.filter(c => {
+        if (state.activeDept && c.department !== state.activeDept) return false;
+        if (!q) return true;
+        return (
+          c.name.toLowerCase().includes(q) ||
+          c.role.toLowerCase().includes(q) ||
+          c.email.toLowerCase().includes(q)
+        );
+      });
+    }
+
+    /* ============================================================
+       RENDER: avatares de departamento
+    ============================================================ */
+    function renderDeptSelector() {
+      departments.forEach(dept => {
+        const btn = document.createElement('button');
+        btn.className = 'dept-item';
+        btn.dataset.dept = dept.id;
+        btn.style.setProperty('--dept-color', dept.color);
+        btn.style.setProperty('--y', dept.yOffset + 'px');
+        btn.setAttribute('aria-label', 'Filtrar por ' + dept.name);
+
+        btn.innerHTML =
+          '<img src="' + dept.avatar + '" alt="" />' +
+          '<span class="dept-label">' + dept.name + '</span>';
+
+        btn.addEventListener('click', () => {
+          state.activeDept = state.activeDept === dept.id ? null : dept.id;
+          updateActiveDeptButtons();
+          updateLayout();
+        });
+
+        deptSelector.appendChild(btn);
+      });
+    }
+
+    function updateActiveDeptButtons() {
+      document.querySelectorAll('.dept-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.dept === state.activeDept);
+      });
+    }
+
+    /* ============================================================
+       RENDER: todos os cards (uma vez)
+    ============================================================ */
+    function renderAllCards() {
+      contacts.forEach(contact => {
+        const dept = getDept(contact.department);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.id = contact.id;
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', contact.name + ', ' + contact.role);
+        card.style.setProperty('--accent', dept ? dept.color : '#1a1a1a');
+
+        card.innerHTML =
+          '<div class="card-accent"></div>' +
+          '<img class="card-avatar" src="' + contact.avatar + '" alt="" />' +
+          '<h3 class="card-name">' + contact.name + '</h3>' +
+          '<p class="card-role">' + contact.role + '</p>' +
+          '<span class="card-dept-tag" style="background:' + (dept ? dept.color : '#1a1a1a') + '">' + (dept ? dept.name : '') + '</span>' +
+          '<div class="card-contact">' +
+            '<span>' + contact.email + '</span>' +
+            '<span>' + contact.phone + '</span>' +
+          '</div>';
+
+        card.addEventListener('mouseenter', () => onCardEnter(contact.id));
+        card.addEventListener('mouseleave', () => onCardLeave(contact.id));
+        card.addEventListener('focus', () => onCardEnter(contact.id));
+        card.addEventListener('blur',  () => onCardLeave(contact.id));
+
+        card.addEventListener('click', () => openModal(contact));
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openModal(contact);
+          }
+        });
+
+        card.addEventListener('touchstart', () => onCardEnter(contact.id), { passive: true });
+        card.addEventListener('touchend',   () => onCardLeave(contact.id), { passive: true });
+
+        cardStack.appendChild(card);
+        state.cardEls.set(contact.id, card);
+      });
+    }
+
+    /* ============================================================
+       LAYOUT: recálculo do leque
+    ============================================================ */
+    function updateLayout() {
+      const visible = getVisibleContacts();
+      const total   = visible.length;
+      const center  = (total - 1) / 2;
+
+      const maxAngle  = 28;
+      const angleStep = total > 1 ? Math.min(20, (maxAngle * 2) / (total - 1)) : 0;
+      const spacingX  = total > 1 ? Math.min(120, 300 / (total - 1)) : 0;
+
+      contacts.forEach(contact => {
+        const el = state.cardEls.get(contact.id);
+        const visIndex = visible.findIndex(c => c.id === contact.id);
+
+        if (visIndex === -1) {
+          el.style.transform     = 'translateX(0) translateY(60px) scale(0.5)';
+          el.style.opacity       = '0';
+          el.style.pointerEvents = 'none';
+          el.style.zIndex        = '0';
+          el.dataset.baseTransform = el.style.transform;
+          el.dataset.baseZ         = '0';
+          el.tabIndex              = -1;
+          return;
+        }
+
+        const offset   = visIndex - center;
+        const rotation = offset * angleStep;
+        const tx       = offset * spacingX;
+        const scale    = 1 - Math.abs(offset) * 0.035;
+        const zIndex   = Math.round(total - Math.abs(offset));
+
+        const transform = 'translateX(' + tx + 'px) rotate(' + rotation + 'deg) scale(' + scale + ')';
+
+        el.style.transform     = transform;
+        el.style.opacity       = '1';
+        el.style.pointerEvents = 'auto';
+        el.style.zIndex        = zIndex;
+        el.tabIndex            = 0;
+
+        el.dataset.baseTransform = transform;
+        el.dataset.baseZ         = zIndex;
+        el.dataset.tx            = tx;
+      });
+
+      emptyState.style.display = total === 0 ? 'flex' : 'none';
+
+      const deptName = state.activeDept ? (getDept(state.activeDept) || {}).name : null;
+      let label = total + ' contato' + (total !== 1 ? 's' : '');
+      if (deptName) label += ' em ' + deptName;
+      if (state.query) label += ' • busca "' + state.query + '"';
+      statusText.textContent = label;
+
+      clearBtn.style.display = (state.activeDept || state.query) ? 'inline-block' : 'none';
+    }
+
+    /* ============================================================
+       HOVER / FOCO
+    ============================================================ */
+    function onCardEnter(id) {
+      const el = state.cardEls.get(id);
+      if (!el || el.style.opacity === '0') return;
+
+      const tx = el.dataset.tx || 0;
+      el.style.transform = 'translateX(' + tx + 'px) translateY(-30px) rotate(0deg) scale(1.08)';
+      el.style.zIndex    = '999';
+    }
+
+    function onCardLeave(id) {
+      const el = state.cardEls.get(id);
+      if (!el) return;
+
+      el.style.transform = el.dataset.baseTransform;
+      el.style.zIndex    = el.dataset.baseZ;
+    }
+
+    /* ============================================================
+       MODAL
+    ============================================================ */
+    function openModal(contact) {
+      const dept = getDept(contact.department);
+
+      document.getElementById('modalAvatar').src = contact.avatar;
+      document.getElementById('modalName').textContent = contact.name;
+      document.getElementById('modalRole').textContent = contact.role;
+      const deptEl = document.getElementById('modalDept');
+      deptEl.textContent = dept ? dept.name : '';
+      deptEl.style.background = dept ? dept.color : '#1a1a1a';
+      document.getElementById('modalEmail').textContent = contact.email;
+      document.getElementById('modalPhone').textContent = contact.phone;
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    /* ============================================================
+       BUSCA
+    ============================================================ */
+    let searchDebounce;
+    searchInput.addEventListener('input', (e) => {
+      const value = e.target.value;
+      searchClear.classList.toggle('visible', value.length > 0);
+
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        state.query = value;
+        updateLayout();
+      }, 120);
+    });
+
+    searchClear.addEventListener('click', () => {
+      searchInput.value = '';
+      searchClear.classList.remove('visible');
+      state.query = '';
+      updateLayout();
+      searchInput.focus();
+    });
+
+    /* ============================================================
+       BOTÃO "VER TODOS"
+    ============================================================ */
+    clearBtn.addEventListener('click', () => {
+      state.activeDept = null;
+      state.query = '';
+      searchInput.value = '';
+      searchClear.classList.remove('visible');
+      updateActiveDeptButtons();
+      updateLayout();
+    });
+
+    /* ============================================================
+       INIT
+    ============================================================ */
+    renderDeptSelector();
+    renderAllCards();
+    updateLayout();
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updateLayout, 150);
+    });
+  </script>
+</body>
+</html>
