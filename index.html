@@ -176,17 +176,18 @@
 
   .eq-stack-container{position:relative;display:flex;justify-content:center;width:100%;padding:20px 0 40px;min-height:440px}
   .eq-card-stack{position:relative;width:100%;max-width:900px;height:400px}
-  .eq-empty-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:14px;font-weight:500}
+  .eq-empty-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:14px;font-weight:500;text-align:center;padding:0 20px}
 
   .eq-card{position:absolute;bottom:0;left:50%;width:200px;height:280px;margin-left:-100px;background:linear-gradient(180deg,rgba(30,41,59,.95),rgba(15,23,42,.95));border:1px solid rgba(148,163,184,.15);border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.35),0 2px 8px rgba(0,0,0,.2);transform-origin:bottom center;transition:transform .55s cubic-bezier(.34,1.56,.64,1),opacity .35s ease,box-shadow .3s ease;cursor:pointer;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:26px 16px 16px;will-change:transform;outline:none}
   .eq-card:hover,.eq-card:focus-visible{box-shadow:0 20px 48px rgba(0,0,0,.5),0 0 0 1px rgba(96,165,250,.3)}
   .eq-card:focus-visible{box-shadow:0 0 0 3px var(--accent),0 20px 48px rgba(0,0,0,.5)}
   .eq-card-accent{position:absolute;top:0;left:0;right:0;height:6px;background:var(--accent)}
   .eq-card-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;margin-top:8px;border:3px solid rgba(148,163,184,.2);background:rgba(15,23,42,.5)}
-  .eq-card-name{margin:14px 0 2px;font-size:15px;font-weight:700;text-align:center;line-height:1.2;color:#f1f5f9}
-  .eq-card-role{font-size:11px;color:#94a3b8;text-align:center;line-height:1.3}
+  .eq-card-name{margin:14px 0 2px;font-size:14px;font-weight:700;text-align:center;line-height:1.2;color:#f1f5f9;padding:0 4px}
+  .eq-card-role{font-size:11px;color:#94a3b8;text-align:center;line-height:1.3;padding:0 4px}
   .eq-card-dept-tag{margin-top:10px;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px}
-  .eq-card-contact{margin-top:auto;width:100%;padding-top:12px;border-top:1px solid rgba(148,163,184,.1);display:flex;flex-direction:column;gap:3px;font-size:10px;color:#64748b;text-align:center;word-break:break-all}
+  .eq-card-contact{margin-top:auto;width:100%;padding-top:12px;border-top:1px solid rgba(148,163,184,.1);display:flex;flex-direction:column;gap:3px;font-size:11px;color:#cbd5e1;text-align:center;word-break:break-word}
+  .eq-card-contact .eq-phone{color:#60a5fa;font-weight:600}
 
   .eq-status-bar{display:flex;align-items:center;justify-content:center;gap:16px;font-size:13px;color:#94a3b8;padding:8px 0 16px;min-height:40px}
   .eq-clear-btn{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s}
@@ -206,6 +207,12 @@
   .eq-modal-info{display:flex;flex-direction:column;gap:10px;font-size:13px;color:#cbd5e1;padding-top:16px;border-top:1px solid rgba(148,163,184,.15);text-align:left}
   .eq-modal-info>div{display:flex;flex-direction:column;gap:2px}
   .eq-modal-info strong{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:700}
+  .eq-modal-actions{display:flex;gap:10px;margin-top:20px}
+  .eq-modal-actions a{flex:1;padding:12px;border-radius:10px;font-weight:700;font-size:.82rem;text-decoration:none;text-align:center;transition:.2s;font-family:inherit;border:none;cursor:pointer}
+  .eq-modal-actions .eq-call{background:linear-gradient(135deg,#22c55e,#10b981);color:#fff}
+  .eq-modal-actions .eq-call:hover{filter:brightness(1.1)}
+  .eq-modal-actions .eq-close{background:rgba(148,163,184,.15);color:#cbd5e1;border:1px solid rgba(148,163,184,.2)}
+  .eq-modal-actions .eq-close:hover{background:rgba(148,163,184,.25)}
 
   @media(max-width:640px){
     .eq-card-stack{height:320px}
@@ -287,7 +294,7 @@
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
         </svg>
-        <input type="text" id="eqSearchInput" placeholder="Buscar por nome, cargo ou email..." autocomplete="off" />
+        <input type="text" id="eqSearchInput" placeholder="Buscar por nome, cargo ou ramal..." autocomplete="off" />
         <button id="eqSearchClear" class="eq-search-clear" aria-label="Limpar busca">×</button>
       </div>
 
@@ -321,8 +328,12 @@
     <p class="eq-modal-role" id="eqModalRole"></p>
     <span class="eq-modal-dept" id="eqModalDept"></span>
     <div class="eq-modal-info">
-      <div><strong>Email</strong><span id="eqModalEmail"></span></div>
-      <div><strong>Telefone</strong><span id="eqModalPhone"></span></div>
+      <div><strong>Ramal / Celular</strong><span id="eqModalPhone"></span></div>
+      <div><strong>Departamento</strong><span id="eqModalDeptName"></span></div>
+    </div>
+    <div class="eq-modal-actions">
+      <a class="eq-call" id="eqModalCall" href="#" target="_blank">📞 Ligar</a>
+      <button class="eq-close" onclick="document.getElementById('eqModal').style.display='none'">Fechar</button>
     </div>
   </div>
 </div>
@@ -928,23 +939,191 @@ function renderAuditoria(a){
 // ABA EQUIPE — lógica isolada em IIFE
 // ============================================================
 (function(){
+  // ------------------------------------------------------------
+  // DEPARTAMENTOS REAIS (baseado na Lista de Ramais 05/01/2026)
+  // ------------------------------------------------------------
   const eqDepartments = [
-    { id: 'rh',        name: 'RH',        color: '#6366f1', avatar: 'https://i.pravatar.cc/150?img=47', yOffset: 20 },
-    { id: 'juridico',  name: 'Jurídico',  color: '#0ea5e9', avatar: 'https://i.pravatar.cc/150?img=32', yOffset: -40 },
-    { id: 'vendas',    name: 'Vendas',    color: '#f59e0b', avatar: 'https://i.pravatar.cc/150?img=44', yOffset: 0 },
-    { id: 'marketing', name: 'Marketing', color: '#10b981', avatar: 'https://i.pravatar.cc/150?img=12', yOffset: 30 },
+    { id: 'diretoria',   name: 'Diretoria',        color: '#6366f1', avatar: 'https://i.pravatar.cc/150?img=47', yOffset: 20 },
+    { id: 'frontoffice', name: 'Front Office',     color: '#0ea5e9', avatar: 'https://i.pravatar.cc/150?img=32', yOffset: -40 },
+    { id: 'governanca',  name: 'Governança',       color: '#10b981', avatar: 'https://i.pravatar.cc/150?img=44', yOffset: 0 },
+    { id: 'comercial',   name: 'Comercial',        color: '#f59e0b', avatar: 'https://i.pravatar.cc/150?img=12', yOffset: 30 },
+    { id: 'eventos',     name: 'Eventos',          color: '#ec4899', avatar: 'https://i.pravatar.cc/150?img=25', yOffset: -20 },
+    { id: 'hospedagem',  name: 'Hospedagem',       color: '#8b5cf6', avatar: 'https://i.pravatar.cc/150?img=33', yOffset: 10 },
+    { id: 'seguranca',   name: 'Segurança',        color: '#ef4444', avatar: 'https://i.pravatar.cc/150?img=15', yOffset: -10 },
+    { id: 'manutencao',  name: 'Manutenção',       color: '#64748b', avatar: 'https://i.pravatar.cc/150?img=60', yOffset: 15 },
+    { id: 'financeiro',  name: 'Financeiro',       color: '#0891b2', avatar: 'https://i.pravatar.cc/150?img=8',  yOffset: -25 },
+    { id: 'rh',          name: 'RH & Jurídico',    color: '#f97316', avatar: 'https://i.pravatar.cc/150?img=68', yOffset: 5 },
+    { id: 'marketing',   name: 'Marketing',        color: '#a855f7', avatar: 'https://i.pravatar.cc/150?img=45', yOffset: 25 },
+    { id: 'ab',          name: 'A&B / GRSA',       color: '#eab308', avatar: 'https://i.pravatar.cc/150?img=5',  yOffset: -15 },
+    { id: 'servicos',    name: 'Serviços Internos',color: '#14b8a6', avatar: 'https://i.pravatar.cc/150?img=55', yOffset: 0 },
+    { id: 'parceiros',   name: 'Parceiros',        color: '#94a3b8', avatar: 'https://i.pravatar.cc/150?img=22', yOffset: 20 },
   ];
 
-  const eqContacts = [
-    { id: 1, name: 'Ana Souza',     role: 'Gerente de RH',        department: 'rh',        avatar: 'https://i.pravatar.cc/150?img=47', email: 'ana@empresa.com',      phone: '+55 11 99999-0001' },
-    { id: 2, name: 'Bruno Lima',    role: 'Analista de RH',       department: 'rh',        avatar: 'https://i.pravatar.cc/150?img=68', email: 'bruno@empresa.com',    phone: '+55 11 99999-0002' },
-    { id: 3, name: 'Carla Mendes',  role: 'Advogada',             department: 'juridico',  avatar: 'https://i.pravatar.cc/150?img=32', email: 'carla@empresa.com',    phone: '+55 11 99999-0003' },
-    { id: 4, name: 'Diego Rocha',   role: 'Advogado',             department: 'juridico',  avatar: 'https://i.pravatar.cc/150?img=59', email: 'diego@empresa.com',    phone: '+55 11 99999-0004' },
-    { id: 5, name: 'Elisa Prado',   role: 'Executiva de Vendas',  department: 'vendas',    avatar: 'https://i.pravatar.cc/150?img=44', email: 'elisa@empresa.com',    phone: '+55 11 99999-0005' },
-    { id: 6, name: 'Felipe Nunes',  role: 'Consultor de Vendas',  department: 'vendas',    avatar: 'https://i.pravatar.cc/150?img=15', email: 'felipe@empresa.com',   phone: '+55 11 99999-0006' },
-    { id: 7, name: 'Gabi Torres',   role: 'Gerente de Marketing', department: 'marketing', avatar: 'https://i.pravatar.cc/150?img=12', email: 'gabi@empresa.com',     phone: '+55 11 99999-0007' },
-    { id: 8, name: 'Henrique Dias', role: 'Designer',             department: 'marketing', avatar: 'https://i.pravatar.cc/150?img=33', email: 'henrique@empresa.com', phone: '+55 11 99999-0008' },
+  // ------------------------------------------------------------
+  // CONTATOS — formato compacto: [dept, nome, cargo, ramal, celular]
+  // Fonte: Lista de Ramais atualizada em 05/01/2026
+  // ------------------------------------------------------------
+  const _eqRaw = [
+    ['diretoria', 'Fernando Guinato', 'Diretor de Hotelaria WTC', '8012', '99185-0804'],
+    ['diretoria', 'Fabio Bolsaneli / Aaron Kauan', 'Especialista em Qualidade', '8026', '98843-0645'],
+    ['diretoria', 'Herve Boyomo', 'Guest Relations', '8100', '99431-9262'],
+
+    ['frontoffice', 'Fabrizio / Marcelo', 'Supervisor de Recepção', '8146', ''],
+    ['frontoffice', 'Lindoval Bernardo', 'Gerente de Recepção', '8700', '98266-3984'],
+    ['frontoffice', 'Mensageria', 'Mensageria', '1709', ''],
+    ['frontoffice', 'Recepção (Geral)', 'Recepção', '1771', ''],
+    ['frontoffice', 'Recepção (Mesas)', 'Recepção', '1670 / 1671 / 1673', ''],
+    ['frontoffice', 'Conciergeria', 'Conciergerie', '8813', ''],
+    ['frontoffice', 'Copa 15º Andar', 'Copa', '1735', ''],
+    ['frontoffice', 'Sala de TV 15º Andar', 'Sala de TV', '1502', ''],
+    ['frontoffice', 'Central de Serviços (Geral)', 'Central de Serviços', '8000', ''],
+    ['frontoffice', 'Central de Serviços (Mesas)', 'Central de Serviços', '8999 / 8009 / 8007', ''],
+
+    ['governanca', 'Elaine Carvalho', 'Governanta Executiva', '8017', '99408-6697'],
+    ['governanca', 'Governança (Geral)', 'Governança', '1703 / 1769 / 1760', ''],
+    ['governanca', 'Arlene / Tereza', 'Rouparia', '1732', ''],
+    ['governanca', 'Marcelo', 'Lavanderia', '8078', ''],
+    ['governanca', 'Mini Bar Anserve', 'Mini Bar', '1756', '99116-5044'],
+
+    ['seguranca', 'Julio Cezar', 'Coordenador de Segurança', '8563', '97667-0437'],
+    ['seguranca', 'Italo', 'Analista de Segurança', '8962', '99414-3358'],
+    ['seguranca', 'Thiago', 'Central de Segurança', '8889', '91554-4035'],
+    ['seguranca', 'Portaria de Serviços', 'Segurança', '1726 / 1911', ''],
+    ['seguranca', 'Rosana', 'Bombeiro', '1578', ''],
+
+    ['rh', 'Cristina Mantovani', 'Gerente de RH', '8138', '99375-4532'],
+    ['rh', 'Analista de RH', 'Analista de RH', '8070', ''],
+    ['rh', 'Rafaela Pagnussat', 'Advogada', '5+9067', ''],
+    ['rh', 'Victoria Marinaro', 'Advogada', '5+7044', ''],
+    ['rh', 'Fabricio Cepollina', 'Estagiário Jurídico', '5+9025', ''],
+
+    ['manutencao', 'Jane Santana', 'Gerente de Manutenção', '8200', '98845-1774'],
+    ['manutencao', 'Supervisor de Manutenção', 'Supervisor', '1724', '99116-7759'],
+    ['manutencao', 'Operacional de Manutenção', 'Operacional', '8013 / 8650 / 1727', ''],
+
+    ['financeiro', 'Kerton Pereira', 'Gerente Financeiro', '8040', '97600-8552'],
+    ['financeiro', 'Paulo Caires', 'Gerente Contábil / Controller', '8071', ''],
+    ['financeiro', 'Rafael de Jesus', 'Analista Financeiro', '8142', ''],
+    ['financeiro', 'Kleber Nascimento', 'Contas a Pagar', '8021', ''],
+    ['financeiro', 'Greice Kelly', 'Assistente Financeiro', '8036', ''],
+    ['financeiro', 'Ricardo Santos', 'Auditor', '8035', ''],
+    ['financeiro', 'Sidney', 'Compras', '8149', ''],
+    ['financeiro', 'Danilo', 'Almoxarifado', '8975', ''],
+
+    ['comercial', 'Luciana Lentini', 'Diretora Comercial', '8044', '99447-0567'],
+    ['comercial', 'Aline Lima', 'Gerente Comercial', '8057', '97621-9071'],
+    ['comercial', 'Andrea Batista', 'Gerente de Vendas', '8053', '99195-6103'],
+    ['comercial', 'Andrea Oliveira', 'Gerente de Vendas', '8856', '99316-9355'],
+    ['comercial', 'Thais Coelho', 'Gerente de Congressos', '8024', '98951-3954'],
+    ['comercial', 'Paula Milos', 'Gerente Internacional', '8213', '98936-2254'],
+    ['comercial', 'Fernanda Belaunde', 'Inside Sales Closer', '8922', '99366-8155'],
+    ['comercial', 'Isabela Foschi', 'Gerente Contas Hosp.', '8031', '99253-5263'],
+    ['comercial', 'Wallace Honorio', 'Executivo de Contas', '8134', '98954-9869'],
+    ['comercial', 'Marta Turelli', 'Especialista de Vendas – B.I.', '8032', '96639-6274'],
+
+    ['eventos', 'Mariana Mangabeira', 'Gerente Operacional', '8077', '99194-3338'],
+    ['eventos', 'Olavo Furlan', 'Coordenador Geral de Eventos', '8082', '98955-3840'],
+    ['eventos', 'Nathalia Pires', 'Coordenadora de Eventos', '8022', '97620-2023'],
+    ['eventos', 'Eveline Rocha', 'Coordenadora de Eventos', '8136', '97610-5580'],
+    ['eventos', 'Mayara Mendes', 'Analista de Eventos Operacionais', '8080', '99355-5884'],
+    ['eventos', 'Denis Augusto', 'Auxiliar de Eventos', '8888', '91110-2802'],
+    ['eventos', 'Isabela Damasceno', 'Especialista de Eventos', '8949', '99364-5442'],
+    ['eventos', 'Paula Macedo', 'Especialista de Eventos', '8051', '92109-0095'],
+    ['eventos', 'Carolina Martins', 'Especialista de Eventos', '8130', '99316-3541'],
+    ['eventos', 'Rita Soares', 'Especialista de Eventos', '8058', '99465-6302'],
+    ['eventos', 'Camila Ribeiro', 'Especialista Operacional de Eventos', '8034', '98843-7259'],
+    ['eventos', 'Melyssa Sateles', 'Especialista Operacional de Eventos', '8952', '99463-1384'],
+    ['eventos', 'Denise Souza', 'Especialista Operacional de Eventos', '8974', '97622-4815'],
+    ['eventos', 'Luana Rodrigues', 'Especialista Operacional de Eventos', '8045', '99414-3358'],
+    ['eventos', 'Coord. Operacional / Piso C', 'Coordenação Operacional', '8072', '97649-7079'],
+    ['eventos', 'Coord. Operacional / Piso M', 'Coordenação Operacional', '8637 / 8042', '99385-2957'],
+    ['eventos', 'Coord. Operacional / Piso C1', 'Coordenação Operacional', '8978', ''],
+    ['eventos', 'Supervisores de Limpeza', 'Supervisão', '8978', '99156-9345'],
+
+    ['hospedagem', 'Tamires Ribeiro', 'Gerente de Receitas e Vendas', '8055', '99430-3227'],
+    ['hospedagem', 'Victor Almeida', 'Assistente de RM', '8141', '99783-8162'],
+    ['hospedagem', 'Milena Feijó', 'Supervisora de Reservas e Grupos', '8972', '99313-4448'],
+    ['hospedagem', 'Beatriz Viana', 'Coordenadora de Grupos', '8016', '99197-6579'],
+    ['hospedagem', 'Dérik Martins', 'Executivo de Vendas Corporativo', '8073', '96649-5270'],
+    ['hospedagem', 'João Oliveira', 'Agente de Grupos', '8128', '99374-9741'],
+    ['hospedagem', 'Priscila Ribeiro', 'Rooms Controller', '8064', ''],
+    ['hospedagem', 'Luiza Lourenço', 'Agente de Reservas', '8008', '95595-5234'],
+    ['hospedagem', 'Fernanda Sabbadin', 'Agente de Reservas', '8089', '95595-5234'],
+
+    ['marketing', 'Juliana Gutierre', 'Gerente de Marketing', '8069', '99230-6517'],
+
+    ['ab', 'Fernanda Toscano', 'Gerência de Operações (GRSA)', '2928-8185', ''],
+    ['ab', 'Laís Moraes', 'Gerência A&B', '94276-0780', '97369-8239'],
+    ['ab', 'Fabiano Pombo', 'Financeiro GRSA', '2928-8183', ''],
+    ['ab', 'Mariana Nascimento', 'Comercial Atta', '2928-8182', '97140-4365'],
+    ['ab', 'Amanda', 'Analista A&B', '2928-8184', ''],
+    ['ab', 'Larissa Souza', 'Comercial Atta', '97148-6499', ''],
+    ['ab', 'Fabricia / Amanda', 'Operacional Atta', '97504-1406', ''],
+    ['ab', 'RH GRSA', 'Recursos Humanos GRSA', '2928-8190', '96559-3153'],
+    ['ab', 'Ramon', 'Estoque GRSA', '928-8180', '96036-296'],
+    ['ab', 'Wagner', 'Maitria', '928-8191', '99529-467'],
+    ['ab', 'Marcelo', 'Maitria', '928-8191', '99129-070'],
+    ['ab', 'Alan', 'Compras GRSA', '928-8181', '98049-697'],
+    ['ab', 'Ada', 'Gerente Refeitório', '2928-8186', '94210-8517'],
+    ['ab', 'Bruna Faustino', 'Qualidade GRSA', '928-8188', '98560-167'],
+    ['ab', 'Confeitaria', 'Confeitaria GRSA', '8193', ''],
+    ['ab', 'Pré-preparo', 'Pré-preparo GRSA', '8194', ''],
+    ['ab', 'Cozinha Vivaldi', 'Cozinha GRSA', '8195', ''],
+    ['ab', 'Cesar', 'Cozinha C GRSA', '8196', ''],
+    ['ab', 'Everaldo', 'Refeitório GRSA', '8192', ''],
+
+    ['servicos', 'Expotelecom (Geral)', 'Telefonia / TI', '8890 / 4210-6363', ''],
+    ['servicos', 'Gerson Santos', 'Expotelecom', '', '99775-0655'],
+    ['servicos', 'Eudes', 'Expotelecom', '', '97049-9515'],
+    ['servicos', 'Eduardo Souza', 'Expotelecom', '8030', '93428-0109'],
+    ['servicos', 'Reinaldo', 'Expotelecom', '', '96877-9337'],
+    ['servicos', 'Felipe / Fabiola', 'R1 – Audio Visual', '8099', ''],
+    ['servicos', 'Ana Claudia', 'Diretora Eventos Business Club', '5+7023', '97964-0834'],
+    ['servicos', 'Luiza Pilar', 'Coordenadora Eventos Business Club', '5+7102', ''],
+    ['servicos', 'Academia', 'Academia', '2891', ''],
+    ['servicos', 'Bar da Piscina', 'Bar da Piscina', '4302-9051', ''],
+
+    ['parceiros', 'Estapar', 'Estacionamento', '5+7132 / 5+7134', ''],
+    ['parceiros', 'Ambulatório Médico', 'Ambulatório', '5+1970', ''],
+    ['parceiros', 'JP Salva', 'Salva-vidas', '5543-3388 / 7838-8897', ''],
+    ['parceiros', 'Bombeiro / Segurança D&D', 'Bombeiro / Segurança', '5+7070 / 5+7080', ''],
+    ['parceiros', 'IMC – Limpeza Shopping', 'Limpeza', '5+7068 / 5+7131', ''],
+    ['parceiros', 'Rafael Torquatro', 'Heliponto – Helicenter', '', '99329-5016'],
+    ['parceiros', 'Heliponto – Torre Oeste', 'Heliponto', '3506-8080', ''],
+    ['parceiros', 'Hotel Gran Estanplaza', 'Hotel parceiro', '2162-3500', ''],
+    ['parceiros', 'Hotel Grand Hyatt', 'Hotel parceiro', '2838-1234', ''],
+    ['parceiros', 'Hotel Hilton', 'Fitness – Day Use', '2845-0033 / 0099', ''],
+    ['parceiros', 'JW Marriott', 'Hotel parceiro', '2526-0100', ''],
+    ['parceiros', 'Fazane (CENU)', 'Loja CENU', '5509-1938 / 1928', ''],
+    ['parceiros', 'Jacques Janine (CENU)', 'Loja CENU', '2845-0364', ''],
+    ['parceiros', 'Anju Beauty', 'Gran Estanplaza', '', '93939-2424'],
+    ['parceiros', 'Concierge D&D', 'Concierge', '5+7000 / +9000', '3043-7117'],
+    ['parceiros', 'Recepção CENU', 'Recepção CENU', '2928-8100', ''],
+    ['parceiros', 'Restaurante DOK', 'Restaurante SIG', '5+6000', ''],
+    ['parceiros', 'Room Service', 'SIG', '', '97339-4092'],
+    ['parceiros', 'DEK', 'SIG', '5+6366', ''],
+    ['parceiros', 'Fabricio Simões', 'Eventos SIG', '5+8339', '98207-2369'],
+    ['parceiros', 'Bianca', 'Assistente de Eventos SIG', '5+8001', ''],
+    ['parceiros', 'Silvio Lopes', 'Espaço L\'atelier', '5+8332', ''],
+    ['parceiros', 'Maculan / Thales', 'Compras SIG', '5+6368', ''],
   ];
+
+  // Converte o formato compacto em objetos completos
+  let _eqIdCounter = 0;
+  const eqContacts = _eqRaw.map(([dept, name, role, ramal, celular]) => {
+    _eqIdCounter++;
+    const phone = (ramal && celular) ? (ramal + ' / ' + celular)
+                : (ramal || celular || '—');
+    return {
+      id: _eqIdCounter,
+      department: dept,
+      name: name,
+      role: role,
+      phone: phone,
+      email: '',
+      avatar: 'https://i.pravatar.cc/150?img=' + ((_eqIdCounter * 13) % 70 + 1)
+    };
+  });
 
   const eqState = {
     activeDept: null,
@@ -966,13 +1145,19 @@ function renderAuditoria(a){
 
   function getVisibleContacts() {
     const q = eqState.query.trim().toLowerCase();
+
+    // Se não há filtro de dept e a base é grande, evita empilhar tudo
+    if (!eqState.activeDept && !q && eqContacts.length > 30) {
+      return [];
+    }
+
     return eqContacts.filter(c => {
       if (eqState.activeDept && c.department !== eqState.activeDept) return false;
       if (!q) return true;
       return (
         c.name.toLowerCase().includes(q) ||
         c.role.toLowerCase().includes(q) ||
-        c.email.toLowerCase().includes(q)
+        (c.phone || '').toLowerCase().includes(q)
       );
     });
   }
@@ -1027,8 +1212,7 @@ function renderAuditoria(a){
         '<p class="eq-card-role">' + contact.role + '</p>' +
         '<span class="eq-card-dept-tag" style="background:' + (dept ? dept.color : '#1a1a1a') + '">' + (dept ? dept.name : '') + '</span>' +
         '<div class="eq-card-contact">' +
-          '<span>' + contact.email + '</span>' +
-          '<span>' + contact.phone + '</span>' +
+          '<span class="eq-phone">📞 ' + contact.phone + '</span>' +
         '</div>';
 
       card.addEventListener('mouseenter', () => onCardEnter(contact.id));
@@ -1093,7 +1277,16 @@ function renderAuditoria(a){
       el.dataset.tx            = tx;
     });
 
-    emptyState.style.display = total === 0 ? 'flex' : 'none';
+    if (total === 0) {
+      emptyState.style.display = 'flex';
+      if (!eqState.activeDept && !eqState.query) {
+        emptyState.textContent = '👆 Selecione um departamento para visualizar os contatos';
+      } else {
+        emptyState.textContent = 'Nenhum contato encontrado.';
+      }
+    } else {
+      emptyState.style.display = 'none';
+    }
 
     const deptName = eqState.activeDept ? (getDept(eqState.activeDept) || {}).name : null;
     let label = total + ' contato' + (total !== 1 ? 's' : '');
@@ -1127,8 +1320,20 @@ function renderAuditoria(a){
     const deptEl = document.getElementById('eqModalDept');
     deptEl.textContent = dept ? dept.name : '';
     deptEl.style.background = dept ? dept.color : '#1a1a1a';
-    document.getElementById('eqModalEmail').textContent = contact.email;
     document.getElementById('eqModalPhone').textContent = contact.phone;
+    document.getElementById('eqModalDeptName').textContent = dept ? dept.name : '—';
+
+    // Botão "Ligar" — pega o primeiro ramal ou celular numérico
+    const callBtn = document.getElementById('eqModalCall');
+    const numeros = (contact.phone || '').replace(/[^\d\/ ]/g, '').split('/');
+    const primeiro = numeros[0].trim().replace(/\D/g, '');
+    if (primeiro) {
+      callBtn.href = 'tel:' + primeiro;
+      callBtn.style.display = '';
+    } else {
+      callBtn.style.display = 'none';
+    }
+
     modal.style.display = 'flex';
   }
 
