@@ -214,6 +214,105 @@
   .eq-modal-actions .eq-close{background:rgba(148,163,184,.15);color:#cbd5e1;border:1px solid rgba(148,163,184,.2)}
   .eq-modal-actions .eq-close:hover{background:rgba(148,163,184,.25)}
 
+  /* ============================================================
+     MODO GRID — departamento selecionado
+  ============================================================ */
+  .eq-card-stack.eq-grid-mode {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) !important;
+    gap: 14px;
+    position: relative !important;
+    height: auto !important;
+    max-width: 100% !important;
+    padding: 8px !important;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card {
+    position: relative !important;
+    left: auto !important;
+    bottom: auto !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: 210px !important;
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: auto !important;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    padding: 16px 10px 12px !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(148,163,184,.18);
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 16px 36px rgba(0,0,0,.5), 0 0 0 2px rgba(96,165,250,.5) !important;
+    border-color: rgba(96,165,250,.6);
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card-accent {
+    height: 5px !important;
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card-avatar {
+    width: 78px !important;
+    height: 78px !important;
+    margin-top: 4px !important;
+    border-width: 3px !important;
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card-name {
+    font-size: 13px !important;
+    margin: 10px 0 2px !important;
+    line-height: 1.2 !important;
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card-role {
+    font-size: 10px !important;
+    line-height: 1.25 !important;
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card-dept-tag {
+    font-size: 9px !important;
+    padding: 2px 10px !important;
+    margin-top: 6px !important;
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card-contact {
+    display: none !important;
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card:hover .eq-card-contact {
+    display: flex !important;
+    padding-top: 6px !important;
+    font-size: 10px !important;
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card.eq-card-manager {
+    border: 2px solid #22c55e !important;
+    box-shadow: 0 0 0 2px rgba(34,197,94,.35), 0 12px 32px rgba(34,197,94,.25) !important;
+  }
+
+  .eq-card-stack.eq-grid-mode .eq-card.eq-card-manager::before {
+    content: '👑 GERENTE';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg,#22c55e,#10b981);
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(34,197,94,.4);
+    white-space: nowrap;
+  }
+
   @media(max-width:640px){
     .eq-card-stack{height:320px}
     .eq-card{width:150px;height:230px;margin-left:-75px;padding:18px 12px 12px}
@@ -223,6 +322,11 @@
     .eq-card-contact{display:none}
     .eq-dept-selector{gap:10px;padding:24px 0 4px}
     .eq-stack-container{min-height:360px}
+    .eq-card-stack.eq-grid-mode{grid-template-columns:repeat(2,1fr) !important;gap:10px}
+    .eq-card-stack.eq-grid-mode .eq-card{height:180px !important;padding:12px 8px 10px !important}
+    .eq-card-stack.eq-grid-mode .eq-card-avatar{width:60px !important;height:60px !important}
+    .eq-card-stack.eq-grid-mode .eq-card-name{font-size:11px !important}
+    .eq-card-stack.eq-grid-mode .eq-card-role{font-size:9px !important}
   }
 </style>
 </head>
@@ -939,9 +1043,6 @@ function renderAuditoria(a){
 // ABA EQUIPE — lógica isolada em IIFE
 // ============================================================
 (function(){
-  // ------------------------------------------------------------
-  // DEPARTAMENTOS REAIS (baseado na Lista de Ramais 05/01/2026)
-  // ------------------------------------------------------------
   const eqDepartments = [
     { id: 'diretoria',   name: 'Diretoria',        color: '#6366f1', avatar: 'https://i.pravatar.cc/150?img=47', yOffset: 20 },
     { id: 'frontoffice', name: 'Front Office',     color: '#0ea5e9', avatar: 'https://i.pravatar.cc/150?img=32', yOffset: -40 },
@@ -959,10 +1060,6 @@ function renderAuditoria(a){
     { id: 'parceiros',   name: 'Parceiros',        color: '#94a3b8', avatar: 'https://i.pravatar.cc/150?img=22', yOffset: 20 },
   ];
 
-  // ------------------------------------------------------------
-  // CONTATOS — formato compacto: [dept, nome, cargo, ramal, celular]
-  // Fonte: Lista de Ramais atualizada em 05/01/2026
-  // ------------------------------------------------------------
   const _eqRaw = [
     ['diretoria', 'Fernando Guinato', 'Diretor de Hotelaria WTC', '8012', '99185-0804'],
     ['diretoria', 'Fabio Bolsaneli / Aaron Kauan', 'Especialista em Qualidade', '8026', '98843-0645'],
@@ -1108,7 +1205,6 @@ function renderAuditoria(a){
     ['parceiros', 'Maculan / Thales', 'Compras SIG', '5+6368', ''],
   ];
 
-  // Converte o formato compacto em objetos completos
   let _eqIdCounter = 0;
   const eqContacts = _eqRaw.map(([dept, name, role, ramal, celular]) => {
     _eqIdCounter++;
@@ -1146,7 +1242,6 @@ function renderAuditoria(a){
   function getVisibleContacts() {
     const q = eqState.query.trim().toLowerCase();
 
-    // Se não há filtro de dept e a base é grande, evita empilhar tudo
     if (!eqState.activeDept && !q && eqContacts.length > 30) {
       return [];
     }
@@ -1237,8 +1332,59 @@ function renderAuditoria(a){
   function updateLayout() {
     const visible = getVisibleContacts();
     const total   = visible.length;
-    const center  = (total - 1) / 2;
 
+    // ============================================================
+    // MODO GRID — departamento selecionado
+    // ============================================================
+    if (eqState.activeDept && total > 0) {
+      cardStack.classList.add('eq-grid-mode');
+
+      eqContacts.forEach(contact => {
+        const el = eqState.cardEls.get(contact.id);
+        const visIndex = visible.findIndex(c => c.id === contact.id);
+
+        if (visIndex === -1) {
+          el.style.display = 'none';
+          el.classList.remove('eq-card-manager');
+          return;
+        }
+
+        el.style.display = '';
+        el.style.transform = '';
+        el.style.opacity = '';
+        el.style.pointerEvents = '';
+        el.style.zIndex = '';
+        el.style.left = '';
+        el.style.bottom = '';
+        el.style.margin = '';
+        el.tabIndex = 0;
+
+        el.classList.toggle('eq-card-manager', visIndex === 0);
+      });
+
+      emptyState.style.display = 'none';
+
+      const deptName = (getDept(eqState.activeDept) || {}).name;
+      let label = total + ' contato' + (total !== 1 ? 's' : '');
+      if (deptName) label += ' em ' + deptName;
+      if (eqState.query) label += ' • busca "' + eqState.query + '"';
+      statusText.textContent = label;
+      clearBtn.style.display = 'inline-block';
+      return;
+    }
+
+    // ============================================================
+    // MODO LEQUE — sem departamento selecionado
+    // ============================================================
+    cardStack.classList.remove('eq-grid-mode');
+
+    eqContacts.forEach(contact => {
+      const el = eqState.cardEls.get(contact.id);
+      el.style.display = '';
+      el.classList.remove('eq-card-manager');
+    });
+
+    const center  = (total - 1) / 2;
     const maxAngle  = 28;
     const angleStep = total > 1 ? Math.min(20, (maxAngle * 2) / (total - 1)) : 0;
     const spacingX  = total > 1 ? Math.min(120, 300 / (total - 1)) : 0;
@@ -1293,13 +1439,13 @@ function renderAuditoria(a){
     if (deptName) label += ' em ' + deptName;
     if (eqState.query) label += ' • busca "' + eqState.query + '"';
     statusText.textContent = label;
-
     clearBtn.style.display = (eqState.activeDept || eqState.query) ? 'inline-block' : 'none';
   }
 
   function onCardEnter(id) {
     const el = eqState.cardEls.get(id);
     if (!el || el.style.opacity === '0') return;
+    if (cardStack.classList.contains('eq-grid-mode')) return;
     const tx = el.dataset.tx || 0;
     el.style.transform = 'translateX(' + tx + 'px) translateY(-30px) rotate(0deg) scale(1.08)';
     el.style.zIndex    = '999';
@@ -1308,6 +1454,7 @@ function renderAuditoria(a){
   function onCardLeave(id) {
     const el = eqState.cardEls.get(id);
     if (!el) return;
+    if (cardStack.classList.contains('eq-grid-mode')) return;
     el.style.transform = el.dataset.baseTransform;
     el.style.zIndex    = el.dataset.baseZ;
   }
@@ -1323,7 +1470,6 @@ function renderAuditoria(a){
     document.getElementById('eqModalPhone').textContent = contact.phone;
     document.getElementById('eqModalDeptName').textContent = dept ? dept.name : '—';
 
-    // Botão "Ligar" — pega o primeiro ramal ou celular numérico
     const callBtn = document.getElementById('eqModalCall');
     const numeros = (contact.phone || '').replace(/[^\d\/ ]/g, '').split('/');
     const primeiro = numeros[0].trim().replace(/\D/g, '');
@@ -1381,11 +1527,9 @@ function renderAuditoria(a){
   renderAllCards();
   eqState.initialized = true;
 
-  // Atualiza o count da aba
   const cnt = document.getElementById('tab-equipe-count');
   if (cnt) cnt.textContent = eqContacts.length;
 
-  // Expõe função global pro setTab chamar quando a aba ficar visível
   window.eqRecalc = function(){
     updateLayout();
   };
