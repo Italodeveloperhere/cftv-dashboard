@@ -1,549 +1,247 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CFTV • Monitoramento Operacional</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  :root{
-    --bg:#0a0f1a; --bg2:#0f172a; --card:#1e293b; --card2:#1e293bcc;
-    --border:rgba(148,163,184,.12); --border2:rgba(148,163,184,.2);
-    --text:#f1f5f9; --text2:#cbd5e1; --text3:#94a3b8; --text4:#64748b;
-    --blue:#3b82f6; --blue2:#60a5fa; --purple:#8b5cf6; --purple2:#a78bfa;
-    --green:#22c55e; --green2:#4ade80; --red:#ef4444; --red2:#f87171;
-    --amber:#f59e0b; --amber2:#fbbf24; --cyan:#06b6d4; --cyan2:#22d3ee;
-    --pink:#ec4899; --pink2:#f472b6;
-    --grad1:linear-gradient(135deg,#3b82f6,#8b5cf6);
-    --shadow:0 8px 24px -8px rgba(0,0,0,.3);
-  }
-  [data-theme="light"]{
-    --bg:#f1f5f9; --bg2:#e2e8f0; --card:#ffffff; --card2:#ffffffdd;
-    --border:rgba(15,23,42,.08); --border2:rgba(15,23,42,.15);
-    --text:#0f172a; --text2:#1e293b; --text3:#475569; --text4:#64748b;
-    --shadow:0 8px 24px -8px rgba(0,0,0,.08);
-  }
   *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);
-    min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
-  .app{display:flex;min-height:100vh}
-  .sidebar{width:250px;background:var(--card);border-right:1px solid var(--border);
-    display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:100;
-    transition:width .3s, transform .3s, background .3s}
-  .sidebar.collapsed{width:70px}
-  .sidebar.collapsed .nav-label,
-  .sidebar.collapsed .logo-text,
-  .sidebar.collapsed .sidebar-footer-text{display:none}
-  .sidebar.collapsed .nav-item{justify-content:center;padding:12px 0}
-  .sidebar.collapsed .nav-item i{font-size:1.2rem;margin:0}
-
-  .logo{display:flex;align-items:center;gap:12px;padding:20px;border-bottom:1px solid var(--border)}
-  .logo-icon{width:42px;height:42px;background:var(--grad1);border-radius:12px;
-    display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;flex-shrink:0;
-    box-shadow:0 8px 20px -6px rgba(59,130,246,.5)}
-  .logo-text{font-weight:800;font-size:1rem;
-    background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    background-clip:text;line-height:1.2}
-  .logo-text small{display:block;font-size:.62rem;color:var(--text3);
-    -webkit-text-fill-color:var(--text3);font-weight:600;letter-spacing:.1em;margin-top:2px}
-
-  .nav{flex:1;padding:16px 12px;overflow-y:auto}
-  .nav-item{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:12px;
-    color:var(--text3);font-weight:600;font-size:.88rem;cursor:pointer;
-    transition:all .2s;margin-bottom:4px;font-family:inherit;background:none;border:none;width:100%;text-align:left}
-  .nav-item:hover{background:rgba(59,130,246,.1);color:var(--text)}
-  .nav-item.active{background:var(--grad1);color:#fff;
-    box-shadow:0 8px 20px -6px rgba(59,130,246,.5)}
-  .nav-item i{width:20px;text-align:center;font-size:1rem}
-  .nav-label{flex:1}
-  .nav-count{background:rgba(0,0,0,.3);padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700}
-  .nav-item.active .nav-count{background:rgba(255,255,255,.25)}
-
-  .sidebar-footer{padding:12px;border-top:1px solid var(--border);
-    display:flex;align-items:center;gap:10px;cursor:pointer;
-    border-radius:12px;margin:6px;transition:background .2s}
-  .sidebar-footer:hover{background:rgba(59,130,246,.1)}
-  .theme-toggle{width:38px;height:38px;border-radius:10px;background:rgba(59,130,246,.15);
-    display:flex;align-items:center;justify-content:center;color:var(--blue2);font-size:1rem}
-
-  .main{flex:1;margin-left:250px;transition:margin-left .3s;padding:24px;
-    min-height:100vh;background:var(--bg)}
-  .main.expanded{margin-left:70px}
-
-  .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;
-    flex-wrap:wrap;margin-bottom:24px;animation:slideDown .4s ease}
-  @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-
-  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--text3);
-    font-weight:600}
-  .breadcrumb .sep{color:var(--text4);font-size:.7rem}
-  .breadcrumb .current{color:var(--blue2)}
-
-  .topbar-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .btn{background:var(--card);border:1px solid var(--border2);color:var(--text2);
-    padding:9px 16px;border-radius:10px;font-weight:600;font-size:.83rem;cursor:pointer;
-    transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:8px;
-    box-shadow:var(--shadow)}
-  .btn:hover{border-color:var(--blue);color:var(--blue2);transform:translateY(-1px)}
-  .btn.primary{background:var(--grad1);border-color:transparent;color:#fff}
-  .btn.primary:hover{color:#fff;transform:translateY(-2px);box-shadow:0 10px 24px -8px rgba(59,130,246,.6)}
-  .btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:var(--red2)}
-  .btn.danger:hover{border-color:var(--red);color:#fff;background:var(--red)}
-
-  .clock{background:var(--card);padding:10px 16px;border-radius:10px;font-weight:600;
-    font-size:.85rem;border:1px solid var(--border2);color:var(--text2);
-    display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)}
-  .pulse-dot{width:8px;height:8px;background:var(--green2);border-radius:50%;
-    animation:pulse 2s infinite;flex-shrink:0}
-  .pulse-dot.syncing{background:var(--amber2);animation:pulse .8s infinite}
-  .pulse-dot.error{background:var(--red2);animation:none}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:20px}
+  .container{max-width:1650px;margin:0 auto}
+  .top-block{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:20px;padding:18px 22px;margin-bottom:18px}
+  .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  h1.title{font-size:1.5rem;font-weight:800;display:flex;align-items:center;gap:12px;
+    background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  h1.title .badge{background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-text-fill-color:white;padding:9px 13px;border-radius:12px;font-size:1rem}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .clock{background:rgba(30,41,59,.7);padding:9px 16px;border-radius:12px;font-weight:600;font-size:.85rem;border:1px solid rgba(148,163,184,.15);color:#cbd5e1}
+  .pulse-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite;display:inline-block;margin-right:6px}
+  .pulse-dot.syncing{background:#fbbf24;animation:pulse 0.8s infinite}
+  .pulse-dot.error{background:#ef4444;animation:none}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
-
-  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
-  .kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;
-    padding:18px;position:relative;cursor:pointer;transition:all .3s;overflow:hidden;
-    animation:fadeUp .4s ease backwards}
-  .kpi:nth-child(1){animation-delay:.05s}
-  .kpi:nth-child(2){animation-delay:.1s}
-  .kpi:nth-child(3){animation-delay:.15s}
-  .kpi:nth-child(4){animation-delay:.2s}
-  .kpi:nth-child(5){animation-delay:.25s}
-  .kpi:nth-child(6){animation-delay:.3s}
-  .kpi:nth-child(7){animation-delay:.35s}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-  .kpi:hover{transform:translateY(-4px);border-color:var(--blue);box-shadow:0 15px 30px -10px rgba(59,130,246,.3)}
-  .kpi::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%;background:var(--grad1)}
-  .kpi.red::before{background:linear-gradient(180deg,var(--red),var(--amber))}
-  .kpi.green::before{background:linear-gradient(180deg,var(--green),var(--green2))}
-  .kpi.amber::before{background:linear-gradient(180deg,var(--amber),var(--red))}
-  .kpi.purple::before{background:linear-gradient(180deg,var(--purple),var(--pink))}
-  .kpi.blue::before{background:linear-gradient(180deg,var(--blue),var(--cyan))}
-  .kpi.cyan::before{background:linear-gradient(180deg,var(--cyan),var(--blue))}
-  .kpi-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-  .kpi-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:700}
-  .kpi-icon{width:38px;height:38px;border-radius:10px;background:rgba(59,130,246,.15);
-    display:flex;align-items:center;justify-content:center;color:var(--blue2);font-size:.9rem}
-  .kpi.red .kpi-icon{background:rgba(239,68,68,.15);color:var(--red2)}
-  .kpi.green .kpi-icon{background:rgba(34,197,94,.15);color:var(--green2)}
-  .kpi.amber .kpi-icon{background:rgba(245,158,11,.15);color:var(--amber2)}
-  .kpi.purple .kpi-icon{background:rgba(139,92,246,.15);color:var(--purple2)}
-  .kpi.cyan .kpi-icon{background:rgba(6,182,212,.15);color:var(--cyan2)}
-  .kpi-value{font-size:2rem;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.02em}
-  .kpi.red .kpi-value{color:var(--red2)}
-  .kpi.green .kpi-value{color:var(--green2)}
-  .kpi.amber .kpi-value{color:var(--amber2)}
-  .kpi small{font-size:.68rem;color:var(--text4);display:block;margin-top:6px;font-weight:500}
-
-  .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-    gap:16px;margin-bottom:24px;animation:fadeUp .5s ease backwards;animation-delay:.35s}
-  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
-    padding:20px;box-shadow:var(--shadow)}
-  .chart-title{font-weight:700;font-size:.95rem;margin-bottom:16px;color:var(--text);
-    display:flex;align-items:center;gap:10px}
-  .chart-title i{color:var(--blue2)}
-  .chart-box{position:relative;height:220px}
-
-  .view{display:none;animation:fadeUp .35s ease}
-  .view.active{display:block}
-
-  .toolbar-box{background:var(--card);border:1px solid var(--border);border-radius:14px;
-    padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
-  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  input.search,select.search{background:var(--bg2);border:1px solid var(--border2);
-    padding:10px 14px;border-radius:10px;color:var(--text);font-size:.85rem;
-    outline:none;font-family:inherit;transition:border .2s}
-  input.search:focus,select.search:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+  .btn{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);color:#cbd5e1;padding:9px 16px;border-radius:9px;font-weight:600;font-size:.83rem;cursor:pointer;transition:.2s;font-family:inherit}
+  .btn:hover{border-color:#3b82f6;color:#fff}
+  .btn.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-color:transparent;color:#fff}
+  .btn.green{background:linear-gradient(135deg,#22c55e,#10b981);border:none;color:#fff}
+  .btn.red{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171}
+  .btn.small{padding:7px 12px;font-size:.76rem}
+  .tabs{display:flex;gap:6px;background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:4px;margin-bottom:14px;overflow-x:auto}
+  .tab{padding:11px 20px;background:transparent;border:none;color:#94a3b8;font-weight:600;font-size:.83rem;cursor:pointer;border-radius:10px;transition:.2s;font-family:inherit;white-space:nowrap}
+  .tab.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff}
+  .tab .cnt{background:rgba(0,0,0,.25);padding:1px 8px;border-radius:10px;font-size:.7rem;margin-left:6px}
+  .tab.active .cnt{background:rgba(255,255,255,.2)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+  .kpi{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:14px;padding:12px 14px;position:relative;cursor:pointer;transition:.25s}
+  .kpi:hover{transform:translateY(-2px);border-color:rgba(96,165,250,.5)}
+  .kpi::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;border-radius:4px 0 0 4px;background:linear-gradient(180deg,#3b82f6,#8b5cf6)}
+  .kpi.red::before{background:linear-gradient(180deg,#ef4444,#f97316)}
+  .kpi.green::before{background:linear-gradient(180deg,#22c55e,#10b981)}
+  .kpi.amber::before{background:linear-gradient(180deg,#f59e0b,#ef4444)}
+  .kpi.purple::before{background:linear-gradient(180deg,#8b5cf6,#d946ef)}
+  .kpi.blue::before{background:linear-gradient(180deg,#3b82f6,#06b6d4)}
+  .kpi.cyan::before{background:linear-gradient(180deg,#06b6d4,#0ea5e9)}
+  .kpi-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;font-weight:600;margin-bottom:4px}
+  .kpi-value{font-size:1.5rem;font-weight:800;color:#f1f5f9;line-height:1}
+  .kpi.red .kpi-value{color:#f87171}
+  .kpi.green .kpi-value{color:#4ade80}
+  .kpi.amber .kpi-value{color:#fbbf24}
+  .kpi small{font-size:.66rem;color:#64748b;display:block;margin-top:3px}
+  .legend-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:14px 18px;margin-bottom:14px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+  .legend-title{font-size:.72rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+  .legend-item{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(15,23,42,.5);border:1px solid rgba(148,163,184,.15);font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;color:#cbd5e1;font-family:inherit}
+  .legend-item:hover{border-color:#3b82f6}
+  .legend-item.active{background:rgba(59,130,246,.2);border-color:#3b82f6;color:#fff}
+  .legend-item .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .dot.ip{background:#60a5fa}
+  .dot.analog{background:#fbbf24}
+  .dot.online{background:#4ade80}
+  .dot.offline{background:#f87171}
+  .legend-item .count{background:rgba(0,0,0,.3);padding:1px 8px;border-radius:10px;font-size:.7rem;margin-left:2px;color:#94a3b8}
+  .toolbar-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  input.search,select.search{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);padding:9px 13px;border-radius:9px;color:#e2e8f0;font-size:.83rem;outline:none;font-family:inherit}
+  input.search:focus,select.search:focus{border-color:#3b82f6}
   input.search{flex:1;min-width:200px}
-  .btn.small{padding:8px 14px;font-size:.78rem}
-
-  .table-box{background:var(--card);border:1px solid var(--border);border-radius:16px;
-    overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow)}
+  .table-box{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;margin-bottom:22px}
   .table-scroll{overflow-x:auto;max-height:70vh;overflow-y:auto}
   .table-scroll::-webkit-scrollbar{width:10px;height:10px}
-  .table-scroll::-webkit-scrollbar-track{background:var(--bg2)}
-  .table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:8px}
-  table{width:100%;border-collapse:collapse;font-size:.83rem}
-  thead th{text-align:left;padding:14px 14px;font-size:.68rem;text-transform:uppercase;
-    letter-spacing:.06em;color:var(--text3);background:var(--bg2);
-    border-bottom:2px solid rgba(96,165,250,.2);white-space:nowrap;
-    position:sticky;top:0;z-index:10;font-weight:700}
-  tbody td{padding:12px 14px;border-bottom:1px solid var(--border);color:var(--text2)}
-  tbody tr{transition:background .15s}
+  .table-scroll::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:8px}
+  table{width:100%;border-collapse:collapse;font-size:.82rem}
+  thead th{text-align:left;padding:12px;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;background:#1a2234;border-bottom:2px solid rgba(96,165,250,.2);white-space:nowrap;position:sticky;top:0;z-index:10}
+  tbody td{padding:10px 12px;border-bottom:1px solid rgba(148,163,184,.06);color:#e2e8f0;vertical-align:middle}
   tbody tr:hover td{background:rgba(59,130,246,.05)}
+  tbody tr:nth-child(even){background:rgba(15,23,42,.2)}
   .row-alert{background:rgba(239,68,68,.06)!important}
-  .piso{background:rgba(59,130,246,.15);color:var(--blue2);padding:4px 10px;
-    border-radius:8px;font-weight:700;font-size:.72rem;display:inline-block}
-  .badge{padding:4px 10px;border-radius:20px;font-size:.68rem;font-weight:700;
-    display:inline-flex;align-items:center;gap:5px}
-  .badge.ok{background:rgba(34,197,94,.15);color:var(--green2)}
-  .badge.bad{background:rgba(239,68,68,.15);color:var(--red2)}
-  .badge.ip{background:rgba(59,130,246,.15);color:var(--blue2)}
-  .badge.analog{background:rgba(245,158,11,.15);color:var(--amber2)}
+  .piso{background:rgba(59,130,246,.2);color:#93c5fd;padding:3px 10px;border-radius:8px;font-weight:700;font-size:.72rem;display:inline-block}
+  .badge{padding:4px 10px;border-radius:20px;font-size:.68rem;font-weight:700;display:inline-flex;align-items:center;gap:5px}
+  .badge.ok{background:rgba(34,197,94,.15);color:#4ade80}
+  .badge.bad{background:rgba(239,68,68,.15);color:#f87171}
+  .badge.ip{background:rgba(59,130,246,.15);color:#60a5fa}
+  .badge.analog{background:rgba(245,158,11,.15);color:#fbbf24}
   .badge.eol{background:rgba(239,68,68,.25);color:#fca5a5}
   .badge.dup{background:rgba(239,68,68,.2);color:#fca5a5;font-size:.7rem}
-  .badge.dvr{background:rgba(236,72,153,.15);color:var(--pink2)}
-  .badge.nvr{background:rgba(34,211,238,.15);color:var(--cyan2)}
-  .badge.srv{background:rgba(59,130,246,.15);color:var(--blue2)}
-
-  .toggle{position:relative;width:48px;height:24px;background:var(--red);border-radius:20px;
-    cursor:pointer;transition:.3s;display:inline-block;flex-shrink:0}
-  .toggle.on{background:var(--green)}
-  .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;
-    background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+  .toggle{position:relative;width:48px;height:24px;background:#ef4444;border-radius:20px;cursor:pointer;transition:.3s;display:inline-block}
+  .toggle.on{background:#22c55e}
+  .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.3s}
   .toggle.on::after{left:27px}
-
-  .toggle.small{width:38px;height:20px}
-  .toggle.small::after{width:14px;height:14px;top:3px;left:3px}
-  .toggle.small.on::after{left:21px}
-
-  .offtime{font-size:.72rem;color:var(--red2);font-weight:600}
-  .offtime.long{color:var(--amber2)}
-  .offtime.critical{color:var(--red2);font-weight:800;animation:blink 2s infinite}
+  .offtime{font-size:.7rem;color:#f87171;font-weight:600}
+  .offtime.long{color:#fbbf24}
+  .offtime.critical{color:#ef4444;font-weight:800;animation:blink 2s infinite}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-  .empty{text-align:center;padding:40px;color:var(--text4)}
-  .info-cell{font-size:.72rem;color:var(--text4)}
-
-  .locais-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
-    gap:16px;margin-bottom:24px}
-  .local-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
-    overflow:hidden;transition:.3s;box-shadow:var(--shadow);animation:fadeUp .4s ease backwards}
-  .local-card:hover{border-color:var(--blue);transform:translateY(-3px);
-    box-shadow:0 15px 35px -12px rgba(59,130,246,.3)}
-  .local-header{padding:16px 20px;background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(139,92,246,.08));
-    border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-  .local-title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;color:var(--text)}
-  .local-count{font-size:.7rem;background:rgba(0,0,0,.25);padding:4px 10px;
-    border-radius:20px;color:var(--text2);font-weight:700}
-  .local-body{padding:16px 20px 18px}
-  .local-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;
-    padding-bottom:16px;border-bottom:1px solid var(--border)}
+  .empty{text-align:center;padding:40px;color:#64748b}
+  .footer{text-align:center;padding:24px 0 12px;color:#64748b;font-size:.76rem;border-top:1px solid rgba(148,163,184,.1);margin-top:24px}
+  .info-cell{font-size:.72rem;color:#64748b}
+  .locais-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:22px}
+  .local-card{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;transition:.25s}
+  .local-card:hover{border-color:rgba(96,165,250,.4);transform:translateY(-2px)}
+  .local-header{padding:14px 18px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.12));border-bottom:1px solid rgba(148,163,184,.1);display:flex;justify-content:space-between;align-items:center}
+  .local-title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;color:#f1f5f9}
+  .local-count{font-size:.7rem;background:rgba(0,0,0,.3);padding:3px 9px;border-radius:20px;color:#cbd5e1;font-weight:700}
+  .local-body{padding:14px 18px 16px}
+  .local-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(148,163,184,.08)}
   .stat-box{text-align:center}
-  .stat-box .num{font-size:1.2rem;font-weight:800;color:var(--text);line-height:1}
-  .stat-box .lbl{font-size:.6rem;text-transform:uppercase;color:var(--text4);
-    font-weight:700;letter-spacing:.05em;margin-top:4px}
-  .stat-box.ok .num{color:var(--green2)}
-  .stat-box.bad .num{color:var(--red2)}
+  .stat-box .num{font-size:1.15rem;font-weight:800;color:#f1f5f9}
+  .stat-box .lbl{font-size:.6rem;text-transform:uppercase;color:#64748b;font-weight:600;letter-spacing:.05em;margin-top:2px}
+  .stat-box.ok .num{color:#4ade80}
+  .stat-box.bad .num{color:#f87171}
   .equip-list{display:flex;flex-direction:column;gap:8px}
-  .equip-item{display:flex;align-items:center;gap:12px;padding:10px 12px;
-    background:var(--bg2);border-radius:10px;border-left:3px solid var(--blue);transition:.2s}
-  .equip-item:hover{background:rgba(59,130,246,.08);transform:translateX(3px)}
-  .equip-item.sw{border-left-color:var(--purple2)}
-  .equip-item.dvr{border-left-color:var(--pink2)}
-  .equip-item.nvr{border-left-color:var(--cyan2)}
+  .equip-item{display:flex;align-items:center;gap:12px;padding:9px 11px;background:rgba(15,23,42,.4);border-radius:10px;border-left:3px solid #3b82f6}
+  .equip-item.sw{border-left-color:#a78bfa}
+  .equip-item.dvr{border-left-color:#f472b6}
+  .equip-item.nvr{border-left-color:#22d3ee}
   .equip-item.nob{border-left-color:#facc15}
-  .equip-item.srv{border-left-color:var(--blue2)}
-  .equip-item.mon{border-left-color:var(--text3)}
-  .equip-item.eol{border-left-color:var(--red);background:rgba(239,68,68,.06)}
-  .equip-icon{width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,.15);
-    display:flex;align-items:center;justify-content:center;color:var(--blue2);
-    font-size:.85rem;flex-shrink:0}
-  .equip-item.sw .equip-icon{background:rgba(139,92,246,.15);color:var(--purple2)}
-  .equip-item.dvr .equip-icon{background:rgba(236,72,153,.15);color:var(--pink2)}
-  .equip-item.nvr .equip-icon{background:rgba(34,211,238,.15);color:var(--cyan2)}
+  .equip-item.srv{border-left-color:#60a5fa}
+  .equip-item.mon{border-left-color:#94a3b8}
+  .equip-item.eol{border-left-color:#ef4444;background:rgba(239,68,68,.06)}
+  .equip-icon{width:30px;height:30px;border-radius:8px;background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;color:#60a5fa;font-size:.8rem;flex-shrink:0}
+  .equip-item.sw .equip-icon{background:rgba(139,92,246,.15);color:#a78bfa}
+  .equip-item.dvr .equip-icon{background:rgba(236,72,153,.15);color:#f472b6}
+  .equip-item.nvr .equip-icon{background:rgba(34,211,238,.15);color:#22d3ee}
   .equip-item.nob .equip-icon{background:rgba(250,204,21,.15);color:#facc15}
   .equip-item.eol .equip-icon{background:rgba(239,68,68,.2);color:#fca5a5}
   .equip-info{flex:1;min-width:0}
-  .equip-name{font-weight:600;font-size:.83rem;color:var(--text)}
-  .equip-meta{font-size:.68rem;color:var(--text4);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
-  .equip-tag{font-size:.6rem;padding:3px 8px;border-radius:6px;font-weight:700;
-    text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
-  .equip-tag.sw{background:rgba(139,92,246,.2);color:var(--purple2)}
-  .equip-tag.dvr{background:rgba(236,72,153,.2);color:var(--pink2)}
-  .equip-tag.nvr{background:rgba(34,211,238,.2);color:var(--cyan2)}
+  .equip-name{font-weight:600;font-size:.82rem;color:#e2e8f0}
+  .equip-meta{font-size:.68rem;color:#64748b;margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
+  .equip-tag{font-size:.6rem;padding:2px 7px;border-radius:6px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+  .equip-tag.sw{background:rgba(139,92,246,.2);color:#a78bfa}
+  .equip-tag.dvr{background:rgba(236,72,153,.2);color:#f472b6}
+  .equip-tag.nvr{background:rgba(34,211,238,.2);color:#22d3ee}
   .equip-tag.nob{background:rgba(250,204,21,.2);color:#facc15}
-  .equip-tag.srv{background:rgba(59,130,246,.2);color:var(--blue2)}
-  .equip-tag.mon{background:rgba(148,163,184,.2);color:var(--text2)}
-
-  /* GRAVADORES */
-  .grav-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
-    gap:16px;margin-bottom:24px}
-  .grav-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
-    overflow:hidden;transition:.3s;box-shadow:var(--shadow);animation:fadeUp .4s ease backwards}
-  .grav-card:hover{border-color:var(--blue);box-shadow:0 15px 35px -12px rgba(59,130,246,.3)}
-  .grav-header{padding:18px 22px;border-bottom:1px solid var(--border);
-    display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
-    cursor:pointer;user-select:none;transition:filter .2s}
-  .grav-header.nvr{background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(59,130,246,.1))}
-  .grav-header.dvr{background:linear-gradient(135deg,rgba(236,72,153,.15),rgba(139,92,246,.1))}
-  .grav-header.srv{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1))}
-  .grav-header:hover{filter:brightness(1.15)}
-  .grav-title{font-weight:800;font-size:1rem;color:var(--text);
-    display:flex;align-items:center;gap:10px;margin-bottom:6px}
-  .grav-subtitle{font-size:.78rem;color:var(--text3);display:flex;flex-direction:column;gap:3px}
-  .grav-subtitle code{font-family:'Courier New',monospace;color:var(--blue2);
-    background:rgba(59,130,246,.1);padding:2px 8px;border-radius:5px;font-size:.75rem}
-  .grav-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
-    padding:14px 22px;border-bottom:1px solid var(--border);
-    background:var(--bg2);cursor:pointer;user-select:none}
-  .grav-stat{text-align:center}
-  .grav-stat .num{font-size:1.4rem;font-weight:800;color:var(--text);line-height:1}
-  .grav-stat .lbl{font-size:.6rem;text-transform:uppercase;color:var(--text4);
-    font-weight:700;letter-spacing:.05em;margin-top:4px}
-  .grav-stat.ok .num{color:var(--green2)}
-  .grav-stat.bad .num{color:var(--red2)}
-  .grav-cams{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease;padding:0 20px}
-  .grav-card.expanded .grav-cams{max-height:800px;padding:14px 20px;overflow-y:auto}
-
-  /* ⚡ NOVO: linha da câmera com toggle */
-  .grav-cam{display:flex;align-items:center;gap:10px;padding:10px 12px;
-    border-radius:10px;background:var(--bg2);margin-bottom:6px;transition:.2s;
-    border-left:3px solid var(--green);font-size:.8rem}
-  .grav-cam.off{border-left-color:var(--red);background:rgba(239,68,68,.05)}
-  .grav-cam:hover{background:rgba(59,130,246,.08)}
-  .grav-cam .ch{font-family:'Courier New',monospace;font-weight:700;
-    color:var(--text3);font-size:.72rem;min-width:36px;text-align:center;
-    background:rgba(0,0,0,.2);padding:3px 7px;border-radius:5px;flex-shrink:0}
-  .grav-cam .name{flex:1;font-weight:600;color:var(--text);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-  .grav-cam .ip{font-family:'Courier New',monospace;font-size:.7rem;color:var(--text4);
-    flex-shrink:0;display:none}
-  .grav-cam .status{font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:10px;flex-shrink:0}
-  .grav-cam .status.on{background:rgba(34,197,94,.15);color:var(--green2)}
-  .grav-cam .status.off{background:rgba(239,68,68,.15);color:var(--red2)}
-  .grav-cam .status.virtual{background:rgba(148,163,184,.15);color:var(--text3)}
-  .grav-cam .cam-toggle{flex-shrink:0}
-  .grav-cam .cam-actions{display:flex;gap:4px;flex-shrink:0}
-
-  @media(min-width:1100px){
-    .grav-cam .ip{display:inline}
-  }
-
-  .grav-chevron{margin-left:auto;color:var(--text3);font-size:.9rem;
-    transition:transform .3s;flex-shrink:0}
-  .grav-card.expanded .grav-chevron{transform:rotate(180deg)}
-  .grav-hint{font-size:.68rem;color:var(--text4);text-align:center;
-    padding:8px 0;border-top:1px dashed var(--border);margin-top:8px}
-  .grav-empty{padding:40px;text-align:center;color:var(--text4);font-size:.85rem}
-
-  /* AÇÕES EM MASSA */
-  .grav-actions{display:flex;gap:8px;padding:10px 20px;background:var(--bg2);
-    border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
-  .grav-actions span{font-size:.72rem;color:var(--text4);font-weight:600}
-  .grav-actions .btn{padding:5px 10px;font-size:.72rem}
-
-  .audit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-    gap:16px;margin-bottom:24px}
-  .audit-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
-    overflow:hidden;box-shadow:var(--shadow);animation:fadeUp .4s ease backwards}
-  .audit-header{padding:16px 20px;display:flex;justify-content:space-between;
-    align-items:center;border-bottom:1px solid var(--border)}
+  .equip-tag.srv{background:rgba(59,130,246,.2);color:#60a5fa}
+  .equip-tag.mon{background:rgba(148,163,184,.2);color:#cbd5e1}
+  .audit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:22px}
+  .audit-card{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden}
+  .audit-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(148,163,184,.1)}
   .audit-header.red{background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(249,115,22,.1))}
   .audit-header.amber{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(239,68,68,.1))}
   .audit-header.blue{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1))}
-  .audit-title{font-weight:700;font-size:.92rem;color:var(--text);
-    display:flex;align-items:center;gap:8px}
-  .audit-count{background:rgba(0,0,0,.3);padding:4px 12px;border-radius:20px;
-    font-size:.72rem;font-weight:700;color:#fff}
-  .audit-body{padding:14px 18px;max-height:400px;overflow-y:auto}
+  .audit-title{font-weight:700;font-size:.92rem;color:#f1f5f9;display:flex;align-items:center;gap:8px}
+  .audit-count{background:rgba(0,0,0,.3);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;color:#fff}
+  .audit-body{padding:12px 16px;max-height:400px;overflow-y:auto}
   .audit-body::-webkit-scrollbar{width:6px}
-  .audit-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
-  .audit-item{padding:12px 14px;background:var(--bg2);border-radius:10px;
-    margin-bottom:8px;border-left:3px solid var(--blue)}
-  .audit-item.red{border-left-color:var(--red)}
-  .audit-item.amber{border-left-color:var(--amber)}
-  .audit-item-title{font-weight:600;font-size:.83rem;color:var(--text);margin-bottom:5px}
-  .audit-item-detail{font-size:.73rem;color:var(--text3);display:flex;flex-direction:column;gap:3px}
+  .audit-body::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:4px}
+  .audit-item{padding:10px 12px;background:rgba(15,23,42,.4);border-radius:10px;margin-bottom:8px;border-left:3px solid #3b82f6}
+  .audit-item.red{border-left-color:#ef4444}
+  .audit-item.amber{border-left-color:#f59e0b}
+  .audit-item-title{font-weight:600;font-size:.82rem;color:#e2e8f0;margin-bottom:4px}
+  .audit-item-detail{font-size:.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:2px}
   .audit-item-detail span{padding:2px 0}
-  .audit-empty{padding:30px;text-align:center;color:var(--green2);font-size:.85rem}
-
-  .footer{text-align:center;padding:24px 0 12px;color:var(--text4);
-    font-size:.76rem;border-top:1px solid var(--border);margin-top:24px}
-
-  .toast{position:fixed;bottom:24px;right:24px;background:var(--card);
-    border:1px solid var(--green);color:var(--green2);padding:14px 22px;
-    border-radius:12px;font-weight:600;font-size:.85rem;z-index:9999;
-    display:none;max-width:340px;box-shadow:0 20px 40px rgba(0,0,0,.4)}
-  .toast.show{display:block;animation:slideIn .3s ease}
-  .toast.error{border-color:var(--red);color:var(--red2)}
-  .toast.info{border-color:var(--blue);color:var(--blue2)}
-  @keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
-
-  .menu-toggle{display:none;background:var(--card);border:1px solid var(--border2);
-    color:var(--text);width:42px;height:42px;border-radius:10px;cursor:pointer;
-    align-items:center;justify-content:center;font-size:1rem}
-
-  @media(max-width:900px){
-    .sidebar{transform:translateX(-100%)}
-    .sidebar.mobile-open{transform:translateX(0)}
-    .main{margin-left:0}
-    .menu-toggle{display:flex}
-    .kpi-value{font-size:1.5rem}
-    .grav-grid,.locais-grid{grid-template-columns:1fr}
-  }
-
-  .shortcut-hint{position:fixed;bottom:24px;left:24px;background:var(--card);
-    border:1px solid var(--border2);padding:10px 14px;border-radius:10px;
-    font-size:.75rem;color:var(--text3);box-shadow:var(--shadow);
-    display:flex;gap:12px;align-items:center;opacity:0;pointer-events:none;
-    transition:.3s;z-index:50}
-  .shortcut-hint.show{opacity:1}
-  .shortcut-hint kbd{background:var(--bg2);border:1px solid var(--border2);
-    padding:2px 8px;border-radius:6px;font-family:monospace;font-size:.7rem;
-    color:var(--blue2);font-weight:700}
+  .audit-empty{padding:30px;text-align:center;color:#4ade80;font-size:.85rem}
+  .toast{position:fixed;bottom:24px;right:24px;background:#1e293b;border:1px solid #22c55e;color:#4ade80;padding:14px 22px;border-radius:12px;font-weight:600;font-size:.85rem;z-index:200;display:none;max-width:340px}
+  .toast.show{display:block}
+  .toast.error{border-color:#ef4444;color:#f87171}
+  .toast.info{border-color:#3b82f6;color:#60a5fa}
+  @media(max-width:700px){body{padding:12px}h1.title{font-size:1.1rem}.kpis{grid-template-columns:repeat(2,1fr)}.locais-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<div class="app">
-  <aside class="sidebar" id="sidebar">
-    <div class="logo">
-      <div class="logo-icon"><i class="fas fa-video"></i></div>
-      <div class="logo-text">CFTV<small>MONITORAMENTO</small></div>
-    </div>
-    <nav class="nav">
-      <button class="nav-item active" data-view="cameras" onclick="setView('cameras')">
-        <i class="fas fa-list"></i><span class="nav-label">Câmeras</span>
-        <span class="nav-count" id="nav-cam-count">0</span>
-      </button>
-      <button class="nav-item" data-view="gravadores" onclick="setView('gravadores')">
-        <i class="fas fa-film"></i><span class="nav-label">Gravadores</span>
-        <span class="nav-count" id="nav-grav-count">0</span>
-      </button>
-      <button class="nav-item" data-view="equipamentos" onclick="setView('equipamentos')">
-        <i class="fas fa-server"></i><span class="nav-label">Equipamentos</span>
-        <span class="nav-count" id="nav-equip-count">0</span>
-      </button>
-      <button class="nav-item" data-view="auditoria" onclick="setView('auditoria')">
-        <i class="fas fa-search"></i><span class="nav-label">Auditoria</span>
-        <span class="nav-count" id="nav-audit-count">0</span>
-      </button>
-      <button class="nav-item" data-view="graficos" onclick="setView('graficos')">
-        <i class="fas fa-chart-pie"></i><span class="nav-label">Gráficos</span>
-      </button>
-    </nav>
-    <div class="sidebar-footer" onclick="toggleTheme()">
-      <div class="theme-toggle"><i class="fas fa-moon" id="theme-icon"></i></div>
-      <span class="sidebar-footer-text" style="font-size:.78rem;font-weight:600;color:var(--text3)">Modo claro/escuro</span>
-    </div>
-  </aside>
-
-  <main class="main" id="main">
-    <div class="topbar">
-      <div style="display:flex;align-items:center;gap:16px">
-        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <div class="breadcrumb">
-          <i class="fas fa-home"></i><span>CFTV</span>
-          <i class="fas fa-chevron-right sep"></i>
-          <span class="current" id="breadcrumb-current">Câmeras</span>
-        </div>
-      </div>
-      <div class="topbar-actions">
+<div class="container">
+  <div class="top-block">
+    <div class="header">
+      <h1 class="title"><span class="badge">🎥</span> CFTV • Monitoramento Operacional</h1>
+      <div class="actions">
         <div class="clock" id="syncStatus"><span class="pulse-dot"></span><span id="clock">--:--:--</span></div>
-        <button class="btn" onclick="exportarCSV()"><i class="fas fa-download"></i> CSV</button>
-        <button class="btn" onclick="sincronizarManual()"><i class="fas fa-sync-alt"></i> Recarregar</button>
-        <button class="btn danger" onclick="resetar()"><i class="fas fa-undo"></i> Restaurar</button>
+        <button class="btn green" onclick="exportarCSV()">⬇ CSV</button>
       </div>
     </div>
-
     <div class="kpis" id="kpis"></div>
+  </div>
 
-    <div class="view active" id="view-cameras">
-      <div class="toolbar-box">
-        <div class="toolbar">
-          <input class="search" id="search" placeholder="🔍  Buscar câmera... (Ctrl+K)">
-          <button class="btn small active" data-filter="all" onclick="setFilter('all')">Todas</button>
-          <button class="btn small" data-filter="online" onclick="setFilter('online')">🟢 Online</button>
-          <button class="btn small" data-filter="offline" onclick="setFilter('offline')">🔴 Off-line</button>
-          <select class="search" id="floorFilter" style="max-width:170px"><option value="all">Todos os pisos</option></select>
-        </div>
+  <div class="tabs">
+    <button class="tab active" data-tab="cameras" onclick="setTab('cameras')">📋 Câmeras <span class="cnt" id="tab-cam-count">0</span></button>
+    <button class="tab" data-tab="equipamentos" onclick="setTab('equipamentos')">🖥️ Equipamentos <span class="cnt" id="tab-equip-count">0</span></button>
+    <button class="tab" data-tab="auditoria" onclick="setTab('auditoria')">🔍 Auditoria <span class="cnt" id="tab-audit-count">0</span></button>
+  </div>
+
+  <div id="tab-cameras-content">
+    <div class="legend-box">
+      <span class="legend-title">Legenda:</span>
+      <button class="legend-item" data-legend="ip" onclick="toggleLegend('ip')"><span class="dot ip"></span> IP <span class="count" id="count-ip">0</span></button>
+      <button class="legend-item" data-legend="analog" onclick="toggleLegend('analog')"><span class="dot analog"></span> Analógica <span class="count" id="count-analog">0</span></button>
+      <button class="legend-item" data-legend="online" onclick="toggleLegend('online')"><span class="dot online"></span> Online <span class="count" id="count-online">0</span></button>
+      <button class="legend-item" data-legend="offline" onclick="toggleLegend('offline')"><span class="dot offline"></span> Off-line <span class="count" id="count-offline">0</span></button>
+    </div>
+    <div class="toolbar-box">
+      <div class="toolbar">
+        <input class="search" id="search" placeholder="🔍 Buscar por nome, IP, modelo ou local...">
+        <button class="btn small active" data-filter="all" onclick="setFilter('all')">Todas</button>
+        <button class="btn small" data-filter="online" onclick="setFilter('online')">🟢 Online</button>
+        <button class="btn small" data-filter="offline" onclick="setFilter('offline')">🔴 Off-line</button>
+        <select class="search" id="floorFilter" style="max-width:170px"><option value="all">Todos os pisos</option></select>
       </div>
-      <div class="table-box">
-        <div class="table-scroll">
-          <table>
-            <thead><tr>
+    </div>
+    <div class="table-box">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
               <th style="width:60px">Ligar</th>
-              <th>Nome da Câmera</th><th>Tipo</th><th>Piso</th><th>Local</th>
-              <th>IP</th><th>Status</th><th>Desde</th><th>Tempo</th>
-            </tr></thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
+              <th>Nome da Câmera</th>
+              <th>Tipo</th>
+              <th>Piso</th>
+              <th>Local</th>
+              <th>IP</th>
+              <th>Status</th>
+              <th>Desde</th>
+              <th>Tempo</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
       </div>
     </div>
+  </div>
 
-    <div class="view" id="view-gravadores">
-      <div class="toolbar-box">
-        <div class="toolbar">
-          <input class="search" id="gravSearch" placeholder="🔍  Buscar gravador ou câmera...">
-          <button class="btn small active" data-grav-filter="all" onclick="setGravFilter('all')">Todos</button>
-          <button class="btn small" data-grav-filter="nvr" onclick="setGravFilter('nvr')">📼 NVRs</button>
-          <button class="btn small" data-grav-filter="dvr" onclick="setGravFilter('dvr')">📼 DVRs</button>
-          <button class="btn small" data-grav-filter="srv" onclick="setGravFilter('srv')">🖥️ Servidores</button>
-        </div>
-      </div>
-      <div class="grav-grid" id="gravGrid"></div>
-    </div>
+  <div id="tab-equipamentos-content" style="display:none"><div class="locais-grid" id="equipGrid"></div></div>
+  <div id="tab-auditoria-content" style="display:none"><div class="audit-grid" id="auditGrid"></div></div>
 
-    <div class="view" id="view-equipamentos"><div class="locais-grid" id="equipGrid"></div></div>
-    <div class="view" id="view-auditoria"><div class="audit-grid" id="auditGrid"></div></div>
-
-    <div class="view" id="view-graficos">
-      <div class="charts-grid">
-        <div class="chart-card">
-          <div class="chart-title"><i class="fas fa-chart-pie"></i> Status das Câmeras</div>
-          <div class="chart-box"><canvas id="chartStatus"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title"><i class="fas fa-network-wired"></i> IP vs Analógica</div>
-          <div class="chart-box"><canvas id="chartTipo"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title"><i class="fas fa-building"></i> Câmeras por Piso</div>
-          <div class="chart-box"><canvas id="chartPiso"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title"><i class="fas fa-triangle-exclamation"></i> Equipamentos em EOL</div>
-          <div class="chart-box"><canvas id="chartEOL"></canvas></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer">
-      💾 <span id="syncInfo">Carregando cameras.json...</span> • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line • <span id="equipCount">0</span> equipamentos
-    </div>
-  </main>
+  <div class="footer">
+    💾 <span id="syncInfo">Carregando dados do GitHub...</span> • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line • <span id="equipCount">0</span> equipamentos
+  </div>
 </div>
 
-<div class="shortcut-hint" id="shortcutHint">
-  <span>Pressione <kbd>Ctrl</kbd> + <kbd>K</kbd> para buscar</span>
-</div>
 <div class="toast" id="toast"></div>
 
 <script>
-const LOCAL_JSON_URL = 'cameras.json';
-const LOCAL_SAVE_URL = '/salvar';
+// ============================================================
+// ⚠️⚠️ CONFIGURE AQUI — TOKEN FIXO ⚠️⚠️
+// ============================================================
+const GITHUB_OWNER = 'Italodeveloperhere';
+const GITHUB_REPO = 'cftv-dashboard';
+const GITHUB_TOKEN = 'github_pat_11A7...';   // Seu token novo
+const GITHUB_BRANCH = 'main';                 // 'main' ou 'master'
+const GITHUB_FILE_PATH = 'cameras.json';
+ 
+// ============================================================
+// URLs do GitHub
+// ============================================================
+const API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
+const RAW_URL = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_FILE_PATH}`;
 const FALLBACK_KEY = 'cftv_fallback';
 
 // ============================================================
-// GRAVADORES
+// EQUIPAMENTOS
 // ============================================================
-const GRAVADORES = [
-  {id:'nvr200',tipo:'NVR',nome:'NVR Motorola 200',modelo:'MTN322K0012',ip:'192.168.1.252',local:'Central de Segurança',canais:31,
-   cameras:["C ELEV AMARELO","141 HALL ELEV LOBY","G ESC ROL GOLDEN","LIP 96 TERREO AMARELO","158 RAMPA SAIDA","SOFAS LOBBY","L BAR LOBY","L PTZ 160","FOYER DO GOL 2","L RECEP","C HALL ELEV AMA","G SAIDA DE EMER","L WC","G JUMBAO VERDE","G ELEVADOR LARANJA","JUMBAO VERDE GOLDEN","PISO L RESTAURANTE","G FOYER 1","FOYER GOLDEN 5","L P GIR EXTERNA","L COR BUSINESS","L RAMPA ENTRADA","GOLDEN 3","G FOYER 6","G CORR CAMARIM","TERREO ELEV LARANJA","C HALL ELEV AMARELO","G FOYER 3","G FOYER 2","L REST INTERNA","M ELEV LARANJA"]},
-  {id:'nvr252',tipo:'NVR',nome:'NVR Motorola 252',modelo:'MTN322K0012',ip:'192.168.1.252',local:'Central de Segurança',canais:29,
-   cameras:["ACADEMIA 2","C CORRE BALROON 2","C CORR BALLROON 1","C HALL ELEV 13","M CORR MONET","SALA SIG","LOBY 15 ANDAR","M CORR VOLP","C CORR BALLROON 3","C CORR TEATRO 2","CORR TEATRO 3","C1 CORREDOR 2","C 1 CORREDOR 1","C FOYER SANTOS","FOYER RJ","PISO C1 SALA BONEMI","C HALL GALERIA","CORR BALLRONN 4","C CORR TEATRO 3","C CORR BALROON 1","SALA EVENTOS","M CORR DEGAS","M JUMBAO VERDE","M ESCADA ROL","C SALA SÃO PAULO","M CORR PORTINARI","M HALL SOCIAL","C FOYER BALLROON","Câmera IP01"]},
-  {id:'srv12',tipo:'SRV',nome:'Servidor 12 (CPD)',modelo:'HP / DELL',ip:'192.168.1.12',local:'Central de Segurança',canais:14,
-   cameras:["13A HALL DE SERV","C SHAFT DE CFTV","C NEW ORLEANS","M CORR AREA TECN","M CORR CASA BLAN","L BAD ALMOX","C CORR TEATR ESQU","C CORR TEATR DIR","C CORR PALCO ESQ","C COR PALCO DIR","L BAD COZ FRIA","L BAD COZ QUENTE","L BAD VARANDA","L RESTAURANTE 2"]},
-  {id:'srv13',tipo:'SRV',nome:'Servidor 13 (CPD)',modelo:'HP / DELL',ip:'192.168.1.13',local:'Central de Segurança',canais:31,
-   cameras:["C CURITIBA","G CAMARIN","C BRASILIA","C TEATRO PLATEIA","C1 CORREDOR 2","ELEV TEATRO AMAR","M HALL JUMBÃO","M ACADENIA","M GAUGUIN","M CHAGAL","C SANTOS 2","M SALA DILUIDOR","C1 PANAMA","C1 VOLP","C1 VIVALD 2","C1 BOMENI","C1 VIVALD 1","C SALVADOR 2","C SANTOS 1","C SALVADOR 1","C BACK BALLROON","C BALLROON 3","C BACK BALLROON 1","C FOYER SP","C SÃO PAULO 1","C BALLROON 4","C CURITIBA 2","C ESPAÇO GALERIA","C SÃO PAULO 4","C SÃO PAULO 3","C SÃO PAULO 2"]},
-  {id:'srv14',tipo:'SRV',nome:'Servidor 14 (CPD)',modelo:'HP / DELL',ip:'192.168.1.14',local:'Central de Segurança',canais:33,
-   cameras:["C CORR TEATRO 1","C1 PARANAGUA","M GAUGUIN 2","C CURITIBA 1","G TI","16 ANDAR","M MONET","10 B1","10 B3","M RENOIR","M DEGAS","M MAISSE","M TARSILA","M PORTINARI","10 B2","10 HALL SOCIAL","10 HALL SERVIÇO","10 10A2","10 A3","10 A1","M VOLP","M ESC ROLANTE","M CHAGAL 1","PTZ GOLDEN","M ACESS FORUM","M AUX LIMPEZA"]},
-  {id:'dvr40',tipo:'DVR',nome:'DVR 40 Câmeras (Andares)',modelo:'40CH • HD 6T • 46 dias',ip:'192.168.1.19',local:'Central de Segurança',canais:40,
-   cameras:["1º ANDAR ASA B","4 ANDAR HALL DE SERVIÇO","1 ANDA ASA B","5 ANDAR HALL SOCIAL","3 ANDAR ASA A","6 ANDAR HALL DE SERVIÇO","2 ANDAR ASA A","6 ANDAR ASA B","2 ANDAR ASA B","2 ANDAR HALL DE SERVIÇO","5 ANDAR HALL SERVIÇO","6 ANDAR ASA A","5 ANDAR ASA A","C HALL SOCIAL","1 ANDAR HALL SERVIÇO","C WC PISO BRANCO","5 ANDAR ASA B","VAGO","VAGO","GOLDEN AREA DE FUMANTE","4 ANDAR ASA B","C HALL SERVIÇO","4 ANDAR HALL SOCIAL","VAGO","VAGO","1 ANDAR HALL SOCIAL","VAGO","3 ANDAR ASA B","VAGO","GOLDEN ESCADA VERMELHA","GOLDEN COZINHA"]},
-  {id:'dvr6m',tipo:'DVR',nome:'DVR 6º Andar ao Piso M',modelo:'20CH • HD 4T • 11 dias',ip:'192.168.1.20',local:'Central de Segurança',canais:20,
-   cameras:["6º ANDAR A","6º ANDAR B","6º ANDAR HALL DE SERVIÇO","5º ANDAR A","5º ANDAR B","5º ANDAR HALL DE SERVIÇO","4º ANDAR A","4º ANDAR LOUGE","4º ANDAR HALL SERVIÇO","3º ANDAR HALL SOCIAL","3º ANDAR A","3º ANDAR B","3º ANDAR HALL SERVIÇO","2º ANDAR A","2º ANDAR B","2º ANDAR HALL SERVIÇO","1º ANDAR ASA B","1º ANDAR HALL SOCIAL","1º ANDAR HALL SERVIÇO","PISO M HALL SERVICO"]},
-  {id:'dvrlazer139',tipo:'DVR',nome:'DVR Lazer (192.168.1.139)',modelo:'HD 6T • 26 dias',ip:'192.168.1.139',local:'Central de Segurança',canais:40,
-   cameras:["L P1","L P 2","L DOCAS 1","L ENT DOCAS","L SALA Descanso","BUSINESS 1","BUSINESS 2","PISO M HALL SERV","S3 GOV1","MALEIRO L","S2 WC FEMININO","DOCAS 3","L PORT RECEPÇAO","PTZ LOBY","PISO S 3 GOV 2","ACESSO BUSINNES","VAGO","ACESSO BUSINNES 1","L ENTRADA GR","VAGO","C JUMBAO VERDE","VAGO","S3 RESTAURANTE","L CORREDOR SEG","L BUSINNES CENTER","L CAIXA GERAL","L CORR T I","PISO C JUBAO V 2","PISO C JUMBAO V","CENTRAL SEG","ALMOX MANUT","MANUTENCAO 1","L PORT RECEP 1","L HALL SERVICO","L DOCAS EXT","HALL ELEV S3","C1 HALL SERVICO","Câmera IP01","C SALA EVENTOS","L CACAMBA"]},
-  {id:'dvrlazer10',tipo:'DVR',nome:'DVR Lazer 8 Canais',modelo:'8 canais • HD 1T • 22 dias',ip:'192.168.1.10',local:'Central de Segurança',canais:8,
-   cameras:["CAQ","CAQ 2","S2 CONFEITARIA","ADM MANUTENÇÃO","S 2 WC MASC","S2 AREA DESCANÇO","RELOGIO DE PONTO","LAVANDERIA 1"]},
-  {id:'dvrshaft1',tipo:'DVR',nome:'DVR Intelbras (Shaft 1º)',modelo:'MHDX 1232',ip:'192.168.1.132',local:'Shaft 1º Andar',canais:32,
-   cameras:["L_Restaurante 1","L_Bad_Varanda 1","L_Bad_Almoxarifado","L_Bad_Coz_fria","L_Bad_Coz_Quente","L_Rampa Saida","L_PTZ","L_Cascata","L_Docas"]},
-  {id:'dvrshaft10',tipo:'DVR',nome:'DVR Motorola (Shaft 10º)',modelo:'MTD324UON12',ip:'192.168.1.138',local:'Shaft 10º Andar',canais:16,
-   cameras:["10º HALL SOCIAL","10º A1","10º A2","10º A3","10º B1","10º B2","10º B3","10º HALL SERVIÇO","16º PRESIDENCIA","16º PRESID CORR. ASA B"]}
-];
-
 const EQUIPAMENTOS = [
   {local:"Central de Segurança", tipo:"SW", nome:"Switch HP sem gerência", modelo:"HP V1910", status:"ok"},
   {local:"Central de Segurança", tipo:"SW", nome:"Switch POE JG92CA", modelo:"JG92CA", status:"eol", obs:"Com defeito — trocar"},
@@ -589,6 +287,9 @@ const EQUIPAMENTOS = [
 
 const ORDEM_LOCAIS = ["Central de Segurança","Sala TI","Sala da Diretoria","Sala da Gerência","Portaria de Serviço","Sala Rio de Janeiro","Shaft 1º Andar","Shaft 10º Andar","3SUB2"];
 
+// ============================================================
+// CÂMERAS
+// ============================================================
 const NOMES_IP = [
 ["C ELEV AMARELO","C","Sala de Segurança"],["141 HALL ELEV LOBY","L","Sala de Segurança"],
 ["G ESC ROL GOLDEN","G","Sala de Segurança"],["LIP 96 TERREO AMARELO","T","Sala de Segurança"],
@@ -694,119 +395,102 @@ const NOMES_ANALOG = [
 ["LAVANDERIA 2","L","DVR Lazer"],["ADM MANUTENCAO","L","DVR Lazer"]
 ];
 
+// ============================================================
+// ESTADO
+// ============================================================
 let cameras = [];
 let filter = 'all';
 let search = '';
 let floorFilter = 'all';
-let currentView = 'cameras';
-let gravFilter = 'all';
-let gravSearch = '';
+let legendFilters = {ip:false, analog:false, online:false, offline:false};
+let currentTab = 'cameras';
 let syncing = false;
 let lastSyncTime = null;
-let gravExpanded = JSON.parse(localStorage.getItem('cftv_grav_expanded') || '{}');
-let charts = {status:null, tipo:null, piso:null, eol:null};
 const TOTAL_CAMERAS = 250;
 const TOTAL_OFF = 78;
 
 // ============================================================
-// TEMA
+// SYNC GITHUB
 // ============================================================
-function toggleTheme(){
-  const html = document.documentElement;
-  const atual = html.getAttribute('data-theme');
-  const novo = atual === 'dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', novo);
-  localStorage.setItem('cftv_theme', novo);
-  document.getElementById('theme-icon').className = novo === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-  if(currentView === 'graficos') setTimeout(renderCharts, 100);
-}
-(function(){
-  const tema = localStorage.getItem('cftv_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', tema);
-  document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('theme-icon').className = tema === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-  });
-})();
-
-// ============================================================
-// SIDEBAR
-// ============================================================
-function toggleSidebar(){
-  document.getElementById('sidebar').classList.toggle('mobile-open');
-  document.getElementById('sidebar').classList.toggle('collapsed');
-  document.getElementById('main').classList.toggle('expanded');
-}
-
-// ============================================================
-// NAVEGAÇÃO
-// ============================================================
-const VIEW_NAMES = {
-  cameras:'Câmeras', gravadores:'Gravadores',
-  equipamentos:'Equipamentos', auditoria:'Auditoria', graficos:'Gráficos'
-};
-function setView(v){
-  currentView = v;
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === v));
-  document.querySelectorAll('.view').forEach(b => b.classList.remove('active'));
-  document.getElementById(`view-${v}`).classList.add('active');
-  document.getElementById('breadcrumb-current').textContent = VIEW_NAMES[v];
-  if(v === 'graficos') setTimeout(renderCharts, 150);
-  if(window.innerWidth < 900) document.getElementById('sidebar').classList.remove('mobile-open');
-}
-
-// ============================================================
-// SYNC
-// ============================================================
-function setSyncStatus(s){
-  const dot = document.querySelector('#syncStatus .pulse-dot');
+function setSyncStatus(status){
+  const el = document.getElementById('syncStatus');
+  const dot = el.querySelector('.pulse-dot');
   dot.classList.remove('syncing','error');
-  if(s === 'syncing') dot.classList.add('syncing');
-  else if(s === 'error') dot.classList.add('error');
+  if(status === 'syncing') dot.classList.add('syncing');
+  else if(status === 'error') dot.classList.add('error');
 }
+
 async function carregarDoGitHub(){
   setSyncStatus('syncing');
-  document.getElementById('syncInfo').textContent = '🔄 Carregando cameras.json...';
+  document.getElementById('syncInfo').textContent = '🔄 Carregando do GitHub...';
   try{
-    const res = await fetch(`${LOCAL_JSON_URL}?t=${Date.now()}`);
+    const res = await fetch(`${RAW_URL}?t=${Date.now()}`);
     if(res.ok){
-      cameras = await res.json();
-      if(!Array.isArray(cameras) || cameras.length === 0){
-        cameras = buildInitial(); await salvarNoGitHub();
+      const data = await res.json();
+      cameras = Array.isArray(data) ? data : (data.cameras || []);
+      if(cameras.length === 0){
+        cameras = buildInitial();
+        await salvarNoGitHub();
       }
       lastSyncTime = new Date();
       setSyncStatus('ok');
-      document.getElementById('syncInfo').textContent = `✅ Carregado (${lastSyncTime.toLocaleTimeString('pt-BR')})`;
+      document.getElementById('syncInfo').textContent = `✅ Sincronizado (${lastSyncTime.toLocaleTimeString('pt-BR')})`;
       return;
     }
-    cameras = buildInitial(); await salvarNoGitHub();
+    cameras = buildInitial();
+    await salvarNoGitHub();
     setSyncStatus('ok');
-    document.getElementById('syncInfo').textContent = '✅ Arquivo criado';
+    document.getElementById('syncInfo').textContent = '✅ Arquivo criado no GitHub';
   }catch(e){
-    console.error(e); carregarLocal();
+    console.error('Erro ao carregar:', e);
+    carregarLocal();
     setSyncStatus('error');
     document.getElementById('syncInfo').textContent = '⚠️ Usando cópia local';
   }
 }
+
 async function salvarNoGitHub(){
   if(syncing) return;
-  syncing = true; setSyncStatus('syncing');
+  syncing = true;
+  setSyncStatus('syncing');
   try{
-    const res = await fetch(LOCAL_SAVE_URL, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(cameras)
+    let sha = null;
+    try{
+      const getRes = await fetch(API_URL, { headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }});
+      if(getRes.ok){ const d = await getRes.json(); sha = d.sha; }
+    }catch(e){}
+
+    const jsonStr = JSON.stringify(cameras, null, 2);
+    const content = btoa(unescape(encodeURIComponent(jsonStr)));
+
+    const body = { message: `CFTV sync - ${new Date().toLocaleString('pt-BR')}`, content, branch: GITHUB_BRANCH };
+    if(sha) body.sha = sha;
+
+    const putRes = await fetch(API_URL, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
     });
-    if(!res.ok) throw new Error(`Servidor ${res.status}`);
+
+    if(!putRes.ok){
+      const err = await putRes.json();
+      throw new Error(err.message || 'Erro');
+    }
+
     lastSyncTime = new Date();
     setSyncStatus('ok');
-    document.getElementById('syncInfo').textContent = `💾 Salvo em cameras.json (${lastSyncTime.toLocaleTimeString('pt-BR')})`;
+    document.getElementById('syncInfo').textContent = `✅ Salvo (${lastSyncTime.toLocaleTimeString('pt-BR')})`;
     salvarLocal();
   }catch(e){
-    console.error(e);
+    console.error('Erro ao salvar:', e);
     setSyncStatus('error');
     document.getElementById('syncInfo').textContent = `⚠️ Erro: ${e.message}`;
     salvarLocal();
-  }finally{ syncing = false; }
+  }finally{
+    syncing = false;
+  }
 }
+
 function salvarLocal(){ try{ localStorage.setItem(FALLBACK_KEY, JSON.stringify(cameras)); }catch(e){} }
 function carregarLocal(){
   try{
@@ -814,18 +498,27 @@ function carregarLocal(){
     cameras = s ? JSON.parse(s) : buildInitial();
   }catch(e){ cameras = buildInitial(); }
 }
+
+// ⚠️ Mantidas para uso via console (F12), sem botão na interface
 async function sincronizarManual(){
-  toast('Recarregando...', 'info');
+  toast('Sincronizando...', 'info');
+  await salvarNoGitHub();
   await carregarDoGitHub();
   render();
 }
+function resetar(){
+  if(!confirm('Restaurar dados com 250 câmeras (78 off-line)?')) return;
+  cameras = buildInitial(); render(); salvarNoGitHub();
+  toast('Dados restaurados!');
+}
 
 // ============================================================
-// BUILD
+// BUILD INITIAL
 // ============================================================
 function buildInitial(){
   const now = Date.now();
-  const cams = []; let id = 1;
+  const cams = [];
+  let id = 1;
   NOMES_IP.forEach(([n,p,local],i) => {
     cams.push({id:id++, n, ip:`192.168.1.${20+i}`, t:'IP', s:'ok', p, mod:'ONVIF', local, statusSince:now});
   });
@@ -866,6 +559,7 @@ function fmtDT(ts){ if(!ts) return '—'; return new Date(ts).toLocaleString('pt
 function durH(ts){ return ts ? (Date.now()-ts)/3600000 : 0; }
 function escapeHtml(s){ return s==null ? '' : String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 function normalizeStr(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\s_\-\.]/g,''); }
+
 function toast(msg, type='success'){
   const el = document.getElementById('toast');
   el.textContent = (type==='success'?'✅ ':type==='error'?'🔴 ':'ℹ️ ') + msg;
@@ -885,47 +579,22 @@ function toggleCamera(id){
   salvarNoGitHub();
   toast(`${cam.n} → ${novo==='ok'?'Ligada':'Desligada'}`, novo==='ok'?'success':'error');
 }
-function toggleCameraPorNome(nome){
-  const cam = cameras.find(c=>c.n.toLowerCase() === nome.toLowerCase());
-  if(!cam){ toast(`Câmera "${nome}" não encontrada`, 'error'); return; }
-  toggleCamera(cam.id);
-}
-function ligarTodasGravador(gravId){
-  const g = GRAVADORES.find(x=>x.id===gravId);
-  if(!g) return;
-  let count = 0;
-  g.cameras.forEach(nome => {
-    const cam = cameras.find(c=>c.n.toLowerCase() === nome.toLowerCase());
-    if(cam && cam.s.toLowerCase() !== 'ok'){ cam.s = 'ok'; cam.statusSince = Date.now(); count++; }
-  });
-  if(count > 0){ render(); salvarNoGitHub(); toast(`${count} câmera(s) ligada(s)`); }
-  else toast('Todas já estavam ligadas', 'info');
-}
-function desligarTodasGravador(gravId){
-  const g = GRAVADORES.find(x=>x.id===gravId);
-  if(!g) return;
-  let count = 0;
-  g.cameras.forEach(nome => {
-    const cam = cameras.find(c=>c.n.toLowerCase() === nome.toLowerCase());
-    if(cam && cam.s.toLowerCase() === 'ok'){ cam.s = 'Parada'; cam.statusSince = Date.now(); count++; }
-  });
-  if(count > 0){ render(); salvarNoGitHub(); toast(`${count} câmera(s) desligada(s)`, 'error'); }
-  else toast('Todas já estavam desligadas', 'info');
+function toggleLegend(key){
+  legendFilters[key] = !legendFilters[key];
+  document.querySelector(`[data-legend="${key}"]`).classList.toggle('active', legendFilters[key]);
+  render();
 }
 function setFilter(f){
   filter = f;
   document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active', b.dataset.filter === f));
   render();
 }
-function setGravFilter(f){
-  gravFilter = f;
-  document.querySelectorAll('[data-grav-filter]').forEach(b=>b.classList.toggle('active', b.dataset.gravFilter === f));
-  renderGravadores();
-}
-function resetar(){
-  if(!confirm('Restaurar dados com 250 câmeras (78 off-line)?')) return;
-  cameras = buildInitial(); render(); salvarNoGitHub();
-  toast('Dados restaurados!');
+function setTab(t){
+  currentTab = t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===t));
+  document.getElementById('tab-cameras-content').style.display = t==='cameras' ? 'block' : 'none';
+  document.getElementById('tab-equipamentos-content').style.display = t==='equipamentos' ? 'block' : 'none';
+  document.getElementById('tab-auditoria-content').style.display = t==='auditoria' ? 'block' : 'none';
 }
 function exportarCSV(){
   const headers = ['ID','Nome','Tipo','Status','Piso','IP','Modelo','Local','Desde'];
@@ -946,13 +615,13 @@ function exportarCSV(){
 // AUDITORIA
 // ============================================================
 function auditar(){
-  const duplicatasIP = {}, nomesNorm = {}, semIP = [], semPiso = [], semLocal = [], ipsInvalidos = [];
+  const duplicatasIP = {}, nomesNorm = {}, semPiso = [], semLocal = [], ipsInvalidos = [];
   cameras.forEach(c => {
     if(c.ip && c.ip.trim()){
       if(!duplicatasIP[c.ip]) duplicatasIP[c.ip] = [];
       duplicatasIP[c.ip].push(c);
       if(!/^192\.168\.\d{1,3}\.\d{1,3}$/.test(c.ip)) ipsInvalidos.push(c);
-    } else semIP.push(c);
+    }
     const norm = normalizeStr(c.n);
     if(!nomesNorm[norm]) nomesNorm[norm] = [];
     nomesNorm[norm].push(c);
@@ -962,10 +631,14 @@ function auditar(){
   const ipsDuplicados = Object.entries(duplicatasIP).filter(([k,v])=>v.length>1);
   const nomesDuplicados = Object.entries(nomesNorm).filter(([k,v])=>v.length>1);
   return {
-    ipsDuplicados, nomesDuplicados, semIP, semPiso, semLocal, ipsInvalidos,
-    totalProblemas: ipsDuplicados.length + nomesDuplicados.length + semIP.length + semPiso.length + semLocal.length + ipsInvalidos.length
+    ipsDuplicados, nomesDuplicados, semPiso, semLocal, ipsInvalidos,
+    totalProblemas: ipsDuplicados.length + nomesDuplicados.length + semPiso.length + semLocal.length + ipsInvalidos.length
   };
 }
+
+// ============================================================
+// FILTROS
+// ============================================================
 function getFiltered(){
   return cameras.filter(c => {
     if(filter==='offline' && c.s.toLowerCase()!=='parada') return false;
@@ -977,102 +650,21 @@ function getFiltered(){
           && !(c.mod||'').toLowerCase().includes(q)
           && !(c.local||'').toLowerCase().includes(q)) return false;
     }
+    const la = Object.keys(legendFilters).filter(k=>legendFilters[k]);
+    if(la.length > 0){
+      let m = false;
+      if(legendFilters.ip && c.t==='IP') m=true;
+      if(legendFilters.analog && c.t==='Analogica') m=true;
+      if(legendFilters.online && c.s.toLowerCase()==='ok') m=true;
+      if(legendFilters.offline && c.s.toLowerCase()==='parada') m=true;
+      if(!m) return false;
+    }
     return true;
   });
 }
 
 // ============================================================
-// RENDER GRAVADORES (COM TOGGLES)
-// ============================================================
-function renderGravadores(){
-  const grid = document.getElementById('gravGrid');
-  const camMap = {};
-  cameras.forEach(c => { camMap[c.n.toLowerCase()] = c; });
-
-  let gravs = GRAVADORES.slice();
-  if(gravFilter !== 'all') gravs = gravs.filter(g => g.tipo.toLowerCase() === gravFilter);
-  if(gravSearch){
-    const q = gravSearch.toLowerCase();
-    gravs = gravs.filter(g =>
-      g.nome.toLowerCase().includes(q) || g.ip.toLowerCase().includes(q) ||
-      g.cameras.some(cn => cn.toLowerCase().includes(q)));
-  }
-  if(gravs.length === 0){
-    grid.innerHTML = '<div class="grav-empty" style="grid-column:1/-1">Nenhum gravador encontrado</div>';
-    return;
-  }
-
-  const forceExpand = gravSearch.trim().length > 0;
-  grid.innerHTML = gravs.map(g => {
-    let onCount = 0, offCount = 0;
-    const camList = g.cameras.map((nome, idx) => {
-      const cam = camMap[nome.toLowerCase()];
-      const isOn = cam ? cam.s.toLowerCase()==='ok' : false;
-      if(cam){ if(isOn) onCount++; else offCount++; }
-      return { ch: idx + 1, nome, cam, isOn };
-    });
-    const tipoClass = g.tipo.toLowerCase();
-    const iconTipo = g.tipo === 'NVR' ? 'fa-hdd' : g.tipo === 'DVR' ? 'fa-video' : 'fa-server';
-    const isExpanded = forceExpand || gravExpanded[g.id] === true;
-
-    return `<div class="grav-card ${isExpanded?'expanded':''}" data-grav-id="${g.id}">
-      <div class="grav-header ${tipoClass}" onclick="toggleGravCard('${g.id}')">
-        <div>
-          <div class="grav-title">
-            <i class="fas ${iconTipo}" style="color:${g.tipo==='NVR'?'var(--cyan2)':g.tipo==='DVR'?'var(--pink2)':'var(--blue2)'}"></i>
-            ${escapeHtml(g.nome)}
-            <span class="badge ${tipoClass}">${g.tipo}</span>
-          </div>
-          <div class="grav-subtitle">
-            <span>📦 ${escapeHtml(g.modelo)}</span>
-            <span>🌐 <code>${escapeHtml(g.ip)}</code> • 📍 ${escapeHtml(g.local)}</span>
-          </div>
-        </div>
-        <i class="fas fa-chevron-down grav-chevron"></i>
-      </div>
-      <div class="grav-stats" onclick="toggleGravCard('${g.id}')">
-        <div class="grav-stat"><div class="num">${g.canais}</div><div class="lbl">Canais</div></div>
-        <div class="grav-stat ok"><div class="num">${onCount}</div><div class="lbl">Online</div></div>
-        <div class="grav-stat bad"><div class="num">${offCount}</div><div class="lbl">Off-line</div></div>
-      </div>
-      <div class="grav-cams">
-        <div class="grav-actions" onclick="event.stopPropagation()">
-          <span>⚡ Ações em massa:</span>
-          <button class="btn" onclick="ligarTodasGravador('${g.id}')">🟢 Ligar todas</button>
-          <button class="btn" onclick="desligarTodasGravador('${g.id}')">🔴 Desligar todas</button>
-        </div>
-        ${camList.map(c => {
-          const status = c.cam ? (c.isOn ? '<span class="status on">● Online</span>' : '<span class="status off">● Off-line</span>')
-            : '<span class="status virtual">— Não catalogada</span>';
-          const toggleHtml = c.cam
-            ? `<div class="toggle small ${c.isOn?'on':''} cam-toggle" onclick="event.stopPropagation();toggleCameraPorNome('${escapeHtml(c.nome).replace(/'/g,"\\'")}')" title="Ligar/Desligar"></div>`
-            : '';
-          return `<div class="grav-cam ${c.cam && !c.isOn ? 'off' : ''}">
-            <span class="ch">CH${String(c.ch).padStart(2,'0')}</span>
-            <span class="name">${escapeHtml(c.nome)}</span>
-            <span class="ip">${c.cam && c.cam.ip ? escapeHtml(c.cam.ip) : '—'}</span>
-            ${status}
-            ${toggleHtml}
-          </div>`;
-        }).join('')}
-        <div class="grav-hint">👆 Clique no cabeçalho para recolher</div>
-      </div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('nav-grav-count').textContent = GRAVADORES.length;
-}
-function toggleGravCard(gravId){
-  const card = document.querySelector(`.grav-card[data-grav-id="${gravId}"]`);
-  if(!card) return;
-  const isExpanded = card.classList.contains('expanded');
-  if(isExpanded){ card.classList.remove('expanded'); gravExpanded[gravId] = false; }
-  else { card.classList.add('expanded'); gravExpanded[gravId] = true; }
-  try{ localStorage.setItem('cftv_grav_expanded', JSON.stringify(gravExpanded)); }catch(e){}
-}
-
-// ============================================================
-// RENDER PRINCIPAL
+// RENDER
 // ============================================================
 function render(){
   const total = cameras.length;
@@ -1080,50 +672,35 @@ function render(){
   const offline = total - online;
   const ip = cameras.filter(c=>c.t==='IP').length;
   const analog = total - ip;
-  const switches = EQUIPAMENTOS.filter(e=>e.tipo==='SW').length;
   const eol = EQUIPAMENTOS.filter(e=>e.status==='eol').length;
   const servidores = EQUIPAMENTOS.filter(e=>e.tipo==='SRV').length;
   const audit = auditar();
 
   document.getElementById('kpis').innerHTML = `
-    <div class="kpi blue" onclick="setView('cameras');setFilter('all');render();">
-      <div class="kpi-header"><span class="kpi-label">Total</span>
-        <div class="kpi-icon"><i class="fas fa-video"></i></div></div>
-      <div class="kpi-value">${total}</div><small>Câmeras cadastradas</small></div>
-    <div class="kpi green" onclick="setView('cameras');setFilter('online');render();">
-      <div class="kpi-header"><span class="kpi-label">Online</span>
-        <div class="kpi-icon"><i class="fas fa-circle-check"></i></div></div>
-      <div class="kpi-value">${online}</div><small>${((online/total)*100).toFixed(1)}% operacionais</small></div>
-    <div class="kpi red" onclick="setView('cameras');setFilter('offline');render();">
-      <div class="kpi-header"><span class="kpi-label">Off-line</span>
-        <div class="kpi-icon"><i class="fas fa-triangle-exclamation"></i></div></div>
-      <div class="kpi-value">${offline}</div><small>${((offline/total)*100).toFixed(1)}% com falha</small></div>
-    <div class="kpi cyan" onclick="setView('equipamentos');">
-      <div class="kpi-header"><span class="kpi-label">Switches</span>
-        <div class="kpi-icon"><i class="fas fa-network-wired"></i></div></div>
-      <div class="kpi-value">${switches}</div><small>${eol} em fim de vida</small></div>
-    <div class="kpi amber" onclick="setView('equipamentos');">
-      <div class="kpi-header"><span class="kpi-label">EOL</span>
-        <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div></div>
-      <div class="kpi-value">${eol}</div><small>Precisam trocar</small></div>
-    <div class="kpi purple" onclick="setView('gravadores');">
-      <div class="kpi-header"><span class="kpi-label">Gravadores</span>
-        <div class="kpi-icon"><i class="fas fa-film"></i></div></div>
-      <div class="kpi-value">${GRAVADORES.length}</div><small>DVRs + NVRs + Servidores</small></div>
-    <div class="kpi red" onclick="setView('auditoria');">
-      <div class="kpi-header"><span class="kpi-label">Problemas</span>
-        <div class="kpi-icon"><i class="fas fa-bug"></i></div></div>
-      <div class="kpi-value">${audit.totalProblemas}</div><small>Ver auditoria</small></div>
+    <div class="kpi" onclick="setFilter('all');legendFilters={ip:false,analog:false,online:false,offline:false};document.querySelectorAll('[data-legend]').forEach(b=>b.classList.remove('active'));render();">
+      <div class="kpi-label">Total</div><div class="kpi-value">${total}</div><small>Câmeras</small></div>
+    <div class="kpi green" onclick="setFilter('online');render();">
+      <div class="kpi-label">Online</div><div class="kpi-value">${online}</div><small>${((online/total)*100).toFixed(1)}%</small></div>
+    <div class="kpi red" onclick="setFilter('offline');render();">
+      <div class="kpi-label">Off-line</div><div class="kpi-value">${offline}</div><small>${((offline/total)*100).toFixed(1)}%</small></div>
+    <div class="kpi blue"><div class="kpi-label">IP</div><div class="kpi-value">${ip}</div><small>Câmeras IP</small></div>
+    <div class="kpi purple"><div class="kpi-label">Analógica</div><div class="kpi-value">${analog}</div><small>Câmeras analógicas</small></div>
+    <div class="kpi amber" onclick="setTab('equipamentos');"><div class="kpi-label">⚠️ EOL</div><div class="kpi-value">${eol}</div><small>Precisam trocar</small></div>
+    <div class="kpi blue" onclick="setTab('equipamentos');"><div class="kpi-label">🖥️ Servidores</div><div class="kpi-value">${servidores}</div><small>Gravação</small></div>
+    <div class="kpi red" onclick="setTab('auditoria');"><div class="kpi-label">🔍 Problemas</div><div class="kpi-value">${audit.totalProblemas}</div><small>Ver auditoria</small></div>
   `;
 
-  document.getElementById('nav-cam-count').textContent = total;
-  document.getElementById('nav-equip-count').textContent = EQUIPAMENTOS.length;
-  document.getElementById('nav-audit-count').textContent = audit.totalProblemas;
-  document.getElementById('nav-grav-count').textContent = GRAVADORES.length;
+  document.getElementById('count-ip').textContent = ip;
+  document.getElementById('count-analog').textContent = analog;
+  document.getElementById('count-online').textContent = online;
+  document.getElementById('count-offline').textContent = offline;
+  document.getElementById('tab-cam-count').textContent = total;
+  document.getElementById('tab-equip-count').textContent = EQUIPAMENTOS.length;
+  document.getElementById('tab-audit-count').textContent = audit.totalProblemas;
 
   const filtered = getFiltered();
   const tbody = document.getElementById('tbody');
-  if(filtered.length === 0){
+  if(filtered.length===0){
     tbody.innerHTML = '<tr><td colspan="9" class="empty">Nenhuma câmera encontrada</td></tr>';
   } else {
     tbody.innerHTML = filtered.map(c => {
@@ -1159,7 +736,7 @@ function render(){
   const iconTipo = t => t==='SW'?'fa-network-wired':t==='DVR'?'fa-video':t==='NVR'?'fa-hdd':t==='NOB'?'fa-battery-full':t==='SRV'?'fa-server':t==='MON'?'fa-tv':'fa-microchip';
   const nomeTipo = t => t==='SW'?'Switch':t==='DVR'?'DVR':t==='NVR'?'NVR':t==='NOB'?'Nobreak':t==='SRV'?'Servidor':t==='MON'?'Monitor':'Equip';
   const andarDe = local => {
-    if(["Central de Segurança","Sala TI","Sala da Diretoria","Sala da Gerência","Portaria de Serviço"].includes(local)) return "Piso L";
+    if(local === "Central de Segurança" || local === "Sala TI" || local === "Sala da Diretoria" || local === "Sala da Gerência" || local === "Portaria de Serviço") return "Piso L";
     if(local === "Sala Rio de Janeiro") return "Piso C";
     if(local === "Shaft 1º Andar") return "1º Andar";
     if(local === "Shaft 10º Andar") return "10º Andar";
@@ -1177,7 +754,7 @@ function render(){
     const andar = andarDe(local);
     if(andar !== andarAtual){
       andarAtual = andar;
-      htmlEquip += `<div style="grid-column:1/-1;margin-top:${htmlEquip?'20px':'0'};margin-bottom:6px;padding:14px 20px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1));border-radius:12px;border-left:4px solid var(--blue);font-weight:800;font-size:1rem;color:var(--blue2);letter-spacing:.05em">🏢 ${andar}</div>`;
+      htmlEquip += `<div style="grid-column:1/-1;margin-top:${htmlEquip?'20px':'0'};margin-bottom:6px;padding:10px 16px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1));border-radius:12px;border-left:4px solid #3b82f6;font-weight:800;font-size:1rem;color:#93c5fd;letter-spacing:.05em">🏢 ${andar}</div>`;
     }
     const equips = locais[local];
     const eolLocal = equips.filter(e=>e.status==='eol').length;
@@ -1201,7 +778,7 @@ function render(){
           ${equips.map(e => `<div class="equip-item ${e.tipo.toLowerCase()} ${e.status==='eol'?'eol':''}">
             <div class="equip-icon"><i class="fas ${iconTipo(e.tipo)}"></i></div>
             <div class="equip-info">
-              <div class="equip-name">${escapeHtml(e.nome)}${e.qtd?' <span style="color:var(--text3)">(x'+e.qtd+')</span>':''}</div>
+              <div class="equip-name">${escapeHtml(e.nome)}${e.qtd?' <span style="color:#94a3b8">(x'+e.qtd+')</span>':''}</div>
               <div class="equip-meta"><span>📦 ${escapeHtml(e.modelo)}</span>
                 ${e.obs?'<span style="color:#fca5a5">⚠ '+escapeHtml(e.obs)+'</span>':''}</div>
             </div>
@@ -1214,7 +791,6 @@ function render(){
   document.getElementById('equipGrid').innerHTML = htmlEquip;
 
   renderAuditoria(audit);
-  renderGravadores();
   document.getElementById('totalCount').textContent = total;
   document.getElementById('offCount').textContent = offline;
   document.getElementById('equipCount').textContent = EQUIPAMENTOS.length;
@@ -1231,7 +807,7 @@ function renderAuditoria(a){
     card('red','🔴 IPs Duplicados', a.ipsDuplicados, ([ip, cams]) => `
       <div class="audit-item red">
         <div class="audit-item-title">🌐 ${escapeHtml(ip)} <span class="badge dup">${cams.length}x</span></div>
-        <div class="audit-item-detail">${cams.map(c=>`<span>• ${escapeHtml(c.n)} <span style="color:var(--text4)">(${escapeHtml(c.p||'—')} • ${escapeHtml(c.local||'—')})</span></span>`).join('')}</div>
+        <div class="audit-item-detail">${cams.map(c=>`<span>• ${escapeHtml(c.n)} <span style="color:#64748b">(${escapeHtml(c.p||'—')} • ${escapeHtml(c.local||'—')})</span></span>`).join('')}</div>
       </div>`)
     + card('red','🔴 IPs Inválidos', a.ipsInvalidos, c => `
       <div class="audit-item red">
@@ -1241,91 +817,10 @@ function renderAuditoria(a){
     + card('amber','⚠️ Nomes Similares', a.nomesDuplicados, ([norm, cams]) => `
       <div class="audit-item amber">
         <div class="audit-item-title">📛 ${cams.length} câmeras parecidas</div>
-        <div class="audit-item-detail">${cams.map(c=>`<span>• ${escapeHtml(c.n)} <span style="color:var(--text4)">(IP: ${escapeHtml(c.ip||'—')})</span></span>`).join('')}</div>
+        <div class="audit-item-detail">${cams.map(c=>`<span>• ${escapeHtml(c.n)} <span style="color:#64748b">(IP: ${escapeHtml(c.ip||'—')})</span></span>`).join('')}</div>
       </div>`)
-    + card('blue','📋 Sem IP', a.semIP, c => `<div class="audit-item"><div class="audit-item-title">${escapeHtml(c.n)}</div><div class="audit-item-detail"><span>Tipo: ${c.t} • Piso: ${escapeHtml(c.p||'—')}</span></div></div>`)
     + card('blue','📋 Sem Piso', a.semPiso, c => `<div class="audit-item"><div class="audit-item-title">${escapeHtml(c.n)}</div><div class="audit-item-detail"><span>Local: ${escapeHtml(c.local||'—')}</span></div></div>`)
     + card('blue','📋 Sem Local', a.semLocal, c => `<div class="audit-item"><div class="audit-item-title">${escapeHtml(c.n)}</div><div class="audit-item-detail"><span>Piso: ${escapeHtml(c.p||'—')}</span></div></div>`);
-}
-
-// ============================================================
-// GRÁFICOS
-// ============================================================
-function renderCharts(){
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  Chart.defaults.color = isDark ? '#94a3b8' : '#475569';
-  Chart.defaults.font.family = "'Inter', 'Segoe UI', sans-serif";
-  Chart.defaults.font.size = 11;
-
-  const total = cameras.length;
-  const online = cameras.filter(c=>c.s.toLowerCase()==='ok').length;
-  const offline = total - online;
-  const ip = cameras.filter(c=>c.t==='IP').length;
-  const analog = total - ip;
-
-  if(charts.status) charts.status.destroy();
-  charts.status = new Chart(document.getElementById('chartStatus'), {
-    type:'doughnut',
-    data:{labels:['Online','Off-line'],
-      datasets:[{data:[online,offline],backgroundColor:['#22c55e','#ef4444'],
-        borderColor: isDark ? '#0f172a' : '#fff', borderWidth:4, hoverOffset:10}]},
-    options:{responsive:true, maintainAspectRatio:false, cutout:'68%',
-      plugins:{legend:{position:'bottom', labels:{padding:14,usePointStyle:true,pointStyle:'circle'}},
-        tooltip:{backgroundColor:'#1e293b', padding:12, cornerRadius:10,
-          callbacks:{label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
-  });
-
-  if(charts.tipo) charts.tipo.destroy();
-  charts.tipo = new Chart(document.getElementById('chartTipo'), {
-    type:'doughnut',
-    data:{labels:['IP','Analógica'],
-      datasets:[{data:[ip,analog],backgroundColor:['#3b82f6','#f59e0b'],
-        borderColor: isDark ? '#0f172a' : '#fff', borderWidth:4, hoverOffset:10}]},
-    options:{responsive:true, maintainAspectRatio:false, cutout:'68%',
-      plugins:{legend:{position:'bottom', labels:{padding:14,usePointStyle:true,pointStyle:'circle'}},
-        tooltip:{backgroundColor:'#1e293b', padding:12, cornerRadius:10,
-          callbacks:{label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
-  });
-
-  const porPiso = {};
-  cameras.forEach(c => {
-    const p = c.p || 'Sem piso';
-    if(!porPiso[p]) porPiso[p] = {total:0, online:0, offline:0};
-    porPiso[p].total++;
-    if(c.s.toLowerCase()==='ok') porPiso[p].online++;
-    else porPiso[p].offline++;
-  });
-  const topPisos = Object.entries(porPiso).sort((a,b)=>b[1].total-a[1].total).slice(0,7);
-  if(charts.piso) charts.piso.destroy();
-  charts.piso = new Chart(document.getElementById('chartPiso'), {
-    type:'bar',
-    data:{labels: topPisos.map(([p])=>p),
-      datasets:[
-        {label:'Online', data: topPisos.map(([,d])=>d.online), backgroundColor:'#22c55e', borderRadius:6, stack:'s'},
-        {label:'Off-line', data: topPisos.map(([,d])=>d.offline), backgroundColor:'#ef4444', borderRadius:6, stack:'s'}
-      ]},
-    options:{responsive:true, maintainAspectRatio:false, indexAxis:'y',
-      scales:{x:{stacked:true, grid:{color: isDark ? 'rgba(148,163,184,.08)' : 'rgba(15,23,42,.08)'}},
-        y:{stacked:true, grid:{display:false}}},
-      plugins:{legend:{position:'bottom', labels:{padding:14,usePointStyle:true,pointStyle:'circle'}}}}
-  });
-
-  if(charts.eol) charts.eol.destroy();
-  charts.eol = new Chart(document.getElementById('chartEOL'), {
-    type:'bar',
-    data:{labels:['Switches EOL','DVRs','NVRs','Servidores','Nobreaks'],
-      datasets:[{data:[
-        EQUIPAMENTOS.filter(e=>e.status==='eol').length,
-        EQUIPAMENTOS.filter(e=>e.tipo==='DVR').length,
-        EQUIPAMENTOS.filter(e=>e.tipo==='NVR').length,
-        EQUIPAMENTOS.filter(e=>e.tipo==='SRV').length,
-        EQUIPAMENTOS.filter(e=>e.tipo==='NOB').length
-      ], backgroundColor:['#ef4444','#ec4899','#06b6d4','#3b82f6','#f59e0b'], borderRadius:8}]},
-    options:{responsive:true, maintainAspectRatio:false,
-      scales:{y:{beginAtZero:true, ticks:{stepSize:1}, grid:{color: isDark ? 'rgba(148,163,184,.08)' : 'rgba(15,23,42,.08)'}},
-        x:{grid:{display:false}}},
-      plugins:{legend:{display:false}}}
-  });
 }
 
 // ============================================================
@@ -1343,7 +838,6 @@ async function init(){
   });
   sel.onchange = e => { floorFilter = e.target.value; render(); };
   document.getElementById('search').oninput = e => { search = e.target.value; render(); };
-  document.getElementById('gravSearch').oninput = e => { gravSearch = e.target.value; renderGravadores(); };
 
   function atualizaRelogio(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR'); }
   atualizaRelogio();
@@ -1352,24 +846,8 @@ async function init(){
   render();
 }
 
-document.addEventListener('keydown', e => {
-  if((e.ctrlKey || e.metaKey) && e.key === 'k'){
-    e.preventDefault();
-    setView('cameras');
-    setTimeout(() => document.getElementById('search').focus(), 100);
-    const hint = document.getElementById('shortcutHint');
-    hint.classList.add('show');
-    setTimeout(() => hint.classList.remove('show'), 1500);
-  }
-  if(e.key === 'Escape'){
-    document.getElementById('search').value = '';
-    document.getElementById('gravSearch').value = '';
-    search = ''; gravSearch = '';
-    render(); renderGravadores();
-  }
-});
-
 init();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 </body>
 </html>
