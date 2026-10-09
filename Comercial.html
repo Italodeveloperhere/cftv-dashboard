@@ -3,1422 +3,851 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CFTV Pro • Monitoramento Inteligente de Câmeras</title>
-<meta name="description" content="Sistema profissional para gerenciar câmeras, gravadores e infraestrutura de CFTV. Tenha controle total, relatórios e alertas em tempo real.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>CFTV • Monitoramento Operacional</title>
 <style>
-  :root{
-    --bg:#0a0f1a;
-    --bg2:#0f172a;
-    --card:#1e293b;
-    --border:rgba(148,163,184,.12);
-    --text:#f1f5f9;
-    --text2:#cbd5e1;
-    --text3:#94a3b8;
-    --text4:#64748b;
-    --blue:#3b82f6;
-    --blue2:#60a5fa;
-    --purple:#8b5cf6;
-    --purple2:#a78bfa;
-    --green:#22c55e;
-    --green2:#4ade80;
-    --red:#ef4444;
-    --amber:#f59e0b;
-    --cyan:#06b6d4;
-    --pink:#ec4899;
-    --grad:linear-gradient(135deg,#3b82f6,#8b5cf6);
-    --grad2:linear-gradient(135deg,#06b6d4,#3b82f6);
-    --grad3:linear-gradient(135deg,#8b5cf6,#ec4899);
-    --grad-gold:linear-gradient(135deg,#f59e0b,#ef4444);
-  }
   *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    font-family:'Inter','Segoe UI',sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    overflow-x:hidden;
-    line-height:1.6;
-  }
-
-  /* ============ FUNDO ANIMADO ============ */
-  .bg-orbs{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden;pointer-events:none}
-  .orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.35;animation:float 20s infinite ease-in-out}
-  .orb.blue{width:500px;height:500px;background:#3b82f6;top:-100px;left:-100px}
-  .orb.purple{width:400px;height:400px;background:#8b5cf6;top:20%;right:-100px;animation-delay:-7s}
-  .orb.cyan{width:450px;height:450px;background:#06b6d4;bottom:-100px;left:30%;animation-delay:-14s}
-  @keyframes float{
-    0%,100%{transform:translate(0,0) scale(1)}
-    33%{transform:translate(50px,-50px) scale(1.1)}
-    66%{transform:translate(-50px,30px) scale(.95)}
-  }
-
-  /* ============ NAVBAR ============ */
-  .nav{
-    position:fixed;top:0;left:0;right:0;z-index:1000;
-    padding:16px 40px;
-    transition:all .3s;
-    backdrop-filter:blur(0px);
-  }
-  .nav.scrolled{
-    background:rgba(10,15,26,.85);
-    backdrop-filter:blur(20px);
-    border-bottom:1px solid var(--border);
-    padding:12px 40px;
-  }
-  .nav-inner{
-    max-width:1300px;margin:0 auto;
-    display:flex;justify-content:space-between;align-items:center;gap:24px;
-  }
-  .logo{
-    display:flex;align-items:center;gap:12px;
-    font-weight:900;font-size:1.15rem;letter-spacing:-.02em;
-    color:var(--text);text-decoration:none;
-  }
-  .logo-icon{
-    width:42px;height:42px;
-    background:var(--grad);border-radius:12px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:1.1rem;color:#fff;
-    box-shadow:0 8px 24px -6px rgba(59,130,246,.5);
-  }
-  .logo-text span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .logo-text small{display:block;font-size:.62rem;color:var(--text4);font-weight:700;letter-spacing:.15em}
-  .nav-links{display:flex;gap:32px;align-items:center}
-  .nav-link{
-    color:var(--text3);text-decoration:none;font-weight:600;font-size:.9rem;
-    transition:.2s;position:relative;
-  }
-  .nav-link:hover{color:var(--text)}
-  .nav-link::after{
-    content:'';position:absolute;bottom:-6px;left:0;width:0;height:2px;
-    background:var(--grad);transition:.3s;border-radius:2px;
-  }
-  .nav-link:hover::after{width:100%}
-  .nav-actions{display:flex;gap:12px;align-items:center}
-  .btn{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:11px 22px;border-radius:10px;
-    font-weight:700;font-size:.88rem;font-family:inherit;
-    cursor:pointer;transition:.25s;text-decoration:none;
-    border:none;white-space:nowrap;
-  }
-  .btn-ghost{
-    background:transparent;color:var(--text2);
-    border:1px solid var(--border);
-  }
-  .btn-ghost:hover{border-color:var(--blue);color:var(--blue2);background:rgba(59,130,246,.08)}
-  .btn-primary{
-    background:var(--grad);color:#fff;
-    box-shadow:0 8px 20px -6px rgba(59,130,246,.5);
-  }
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 28px -6px rgba(59,130,246,.6);color:#fff}
-  .btn-lg{padding:15px 32px;font-size:1rem}
-
-  .menu-toggle{display:none;background:transparent;border:none;color:var(--text);font-size:1.3rem;cursor:pointer}
-
-  /* ============ HERO ============ */
-  .hero{
-    padding:160px 40px 100px;
-    max-width:1300px;margin:0 auto;
-    display:grid;grid-template-columns:1.1fr 1fr;gap:60px;align-items:center;
-    min-height:100vh;
-  }
-  .hero-badge{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:8px 16px;border-radius:100px;
-    background:rgba(59,130,246,.1);
-    border:1px solid rgba(59,130,246,.3);
-    color:var(--blue2);font-weight:700;font-size:.78rem;
-    margin-bottom:24px;
-    animation:fadeIn .6s ease;
-  }
-  .hero-badge i{animation:pulse-dot 2s infinite}
-  @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
-
-  .hero h1{
-    font-size:3.8rem;font-weight:900;line-height:1.05;
-    letter-spacing:-.03em;margin-bottom:24px;
-    animation:fadeIn .6s ease .1s backwards;
-  }
-  .hero h1 .grad{
-    background:var(--grad);-webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;background-clip:text;
-  }
-  .hero h1 .grad2{
-    background:var(--grad3);-webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;background-clip:text;
-  }
-  .hero p.sub{
-    font-size:1.15rem;color:var(--text2);margin-bottom:36px;
-    max-width:560px;line-height:1.65;
-    animation:fadeIn .6s ease .2s backwards;
-  }
-  .hero-cta{
-    display:flex;gap:14px;flex-wrap:wrap;margin-bottom:40px;
-    animation:fadeIn .6s ease .3s backwards;
-  }
-  .hero-stats{
-    display:flex;gap:40px;flex-wrap:wrap;
-    padding-top:32px;border-top:1px solid var(--border);
-    animation:fadeIn .6s ease .4s backwards;
-  }
-  .hero-stat .num{
-    font-size:2rem;font-weight:900;letter-spacing:-.02em;
-    background:var(--grad);-webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;background-clip:text;
-  }
-  .hero-stat .label{font-size:.78rem;color:var(--text4);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
-
-  @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-
-  /* MOCKUP DASHBOARD */
-  .hero-visual{
-    position:relative;
-    animation:fadeIn .8s ease .3s backwards;
-  }
-  .mockup{
-    background:var(--card);border:1px solid var(--border);
-    border-radius:20px;overflow:hidden;
-    box-shadow:0 30px 80px -20px rgba(0,0,0,.6), 0 0 0 1px rgba(148,163,184,.05);
-    transform:perspective(1500px) rotateY(-8deg) rotateX(4deg);
-    transition:.5s;
-  }
-  .hero-visual:hover .mockup{transform:perspective(1500px) rotateY(-2deg) rotateX(1deg)}
-  .mockup-header{
-    background:var(--bg2);padding:12px 16px;
-    display:flex;gap:8px;align-items:center;
-    border-bottom:1px solid var(--border);
-  }
-  .mockup-dot{width:11px;height:11px;border-radius:50%}
-  .mockup-dot.r{background:#ef4444}
-  .mockup-dot.y{background:#f59e0b}
-  .mockup-dot.g{background:#22c55e}
-  .mockup-url{
-    flex:1;margin-left:12px;background:rgba(0,0,0,.3);
-    padding:5px 12px;border-radius:6px;font-size:.7rem;
-    color:var(--text4);font-family:'Courier New',monospace;
-  }
-  .mockup-body{padding:20px;display:flex;flex-direction:column;gap:12px}
-  .mockup-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .mockup-kpi{
-    background:var(--bg2);padding:10px;border-radius:10px;
-    border-left:3px solid var(--blue);
-  }
-  .mockup-kpi.green{border-left-color:var(--green)}
-  .mockup-kpi.red{border-left-color:var(--red)}
-  .mockup-kpi.amber{border-left-color:var(--amber)}
-  .mockup-kpi .label{font-size:.55rem;color:var(--text4);text-transform:uppercase;font-weight:700;letter-spacing:.05em}
-  .mockup-kpi .val{font-size:1.1rem;font-weight:800;color:var(--text);margin-top:2px}
-  .mockup-kpi.green .val{color:var(--green2)}
-  .mockup-kpi.red .val{color:var(--red)}
-
-  .mockup-rows{display:flex;flex-direction:column;gap:6px}
-  .mockup-row{
-    display:flex;align-items:center;gap:10px;
-    padding:8px 10px;background:var(--bg2);border-radius:8px;
-    font-size:.7rem;
-  }
-  .mockup-row .toggle-mock{
-    width:28px;height:14px;border-radius:8px;background:var(--green);position:relative;flex-shrink:0;
-  }
-  .mockup-row .toggle-mock::after{
-    content:'';position:absolute;top:2px;right:2px;width:10px;height:10px;
-    background:#fff;border-radius:50%;
-  }
-  .mockup-row.off .toggle-mock{background:var(--red)}
-  .mockup-row.off .toggle-mock::after{right:auto;left:2px}
-  .mockup-row .name{color:var(--text2);font-weight:600;flex:1}
-  .mockup-row .status{color:var(--green2);font-weight:700;font-size:.65rem}
-  .mockup-row.off .status{color:var(--red)}
-
-  /* Badge flutuante */
-  .floating-badge{
-    position:absolute;
-    background:var(--card);border:1px solid var(--border);
-    border-radius:14px;padding:12px 16px;
-    box-shadow:0 20px 50px -15px rgba(0,0,0,.5);
-    display:flex;align-items:center;gap:12px;
-    animation:float-badge 4s infinite ease-in-out;
-    backdrop-filter:blur(10px);
-  }
-  .floating-badge.b1{top:-20px;right:-20px;animation-delay:0s}
-  .floating-badge.b2{bottom:40px;left:-30px;animation-delay:-2s}
-  @keyframes float-badge{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-10px)}
-  }
-  .floating-badge-icon{
-    width:38px;height:38px;border-radius:10px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:1rem;color:#fff;
-  }
-  .floating-badge-icon.green{background:var(--green)}
-  .floating-badge-icon.blue{background:var(--blue)}
-  .floating-badge-text{font-size:.78rem;font-weight:700;color:var(--text)}
-  .floating-badge-sub{font-size:.65rem;color:var(--text4);font-weight:500}
-
-  /* ============ SEÇÕES GENÉRICAS ============ */
-  section{padding:100px 40px;max-width:1300px;margin:0 auto}
-  .section-title{
-    text-align:center;max-width:720px;margin:0 auto 64px;
-  }
-  .section-title .tag{
-    display:inline-block;
-    padding:6px 16px;border-radius:100px;
-    background:rgba(59,130,246,.1);
-    border:1px solid rgba(59,130,246,.25);
-    color:var(--blue2);
-    font-size:.72rem;font-weight:800;
-    text-transform:uppercase;letter-spacing:.1em;
-    margin-bottom:18px;
-  }
-  .section-title h2{
-    font-size:2.8rem;font-weight:900;letter-spacing:-.03em;
-    margin-bottom:18px;line-height:1.15;
-  }
-  .section-title h2 .grad{
-    background:var(--grad);-webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;background-clip:text;
-  }
-  .section-title p{
-    color:var(--text3);font-size:1.08rem;line-height:1.7;
-  }
-
-  /* ============ FEATURES ============ */
-  .features-grid{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;
-  }
-  .feature-card{
-    background:var(--card);border:1px solid var(--border);
-    border-radius:20px;padding:32px;
-    transition:.4s;position:relative;overflow:hidden;
-  }
-  .feature-card::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:3px;
-    background:var(--grad);opacity:0;transition:.4s;
-  }
-  .feature-card:hover{
-    transform:translateY(-6px);
-    border-color:rgba(96,165,250,.3);
-    box-shadow:0 20px 40px -15px rgba(59,130,246,.3);
-  }
-  .feature-card:hover::before{opacity:1}
-  .feature-icon{
-    width:56px;height:56px;border-radius:16px;
-    background:var(--grad);color:#fff;
-    display:flex;align-items:center;justify-content:center;
-    font-size:1.4rem;margin-bottom:20px;
-    box-shadow:0 10px 25px -8px rgba(59,130,246,.5);
-  }
-  .feature-icon.green{background:linear-gradient(135deg,#22c55e,#10b981)}
-  .feature-icon.red{background:linear-gradient(135deg,#ef4444,#f97316)}
-  .feature-icon.amber{background:linear-gradient(135deg,#f59e0b,#ef4444)}
-  .feature-icon.cyan{background:linear-gradient(135deg,#06b6d4,#3b82f6)}
-  .feature-icon.pink{background:linear-gradient(135deg,#ec4899,#8b5cf6)}
-  .feature-card h3{font-size:1.15rem;font-weight:800;margin-bottom:10px;letter-spacing:-.01em}
-  .feature-card p{color:var(--text3);font-size:.92rem;line-height:1.65}
-
-  /* ============ COMO FUNCIONA ============ */
-  .steps{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:24px;position:relative;
-  }
-  .step{
-    text-align:center;padding:32px 20px;
-    position:relative;
-  }
-  .step-num{
-    width:64px;height:64px;margin:0 auto 20px;
-    border-radius:20px;background:var(--grad);
-    display:flex;align-items:center;justify-content:center;
-    font-weight:900;font-size:1.5rem;color:#fff;
-    box-shadow:0 15px 30px -10px rgba(59,130,246,.5);
-    position:relative;z-index:2;
-  }
-  .step h3{font-size:1.1rem;font-weight:800;margin-bottom:10px}
-  .step p{color:var(--text3);font-size:.9rem;line-height:1.6}
-
-  /* ============ PRICING ============ */
-  .pricing-grid{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;
-    align-items:stretch;
-  }
-  .pricing-card{
-    background:var(--card);border:1px solid var(--border);
-    border-radius:24px;padding:36px;
-    display:flex;flex-direction:column;
-    transition:.4s;position:relative;overflow:hidden;
-  }
-  .pricing-card:hover{
-    transform:translateY(-6px);
-    border-color:rgba(96,165,250,.4);
-    box-shadow:0 25px 50px -20px rgba(59,130,246,.3);
-  }
-  .pricing-card.featured{
-    border-color:var(--blue);
-    box-shadow:0 25px 60px -20px rgba(59,130,246,.5);
-    transform:scale(1.03);
-  }
-  .pricing-card.featured::before{
-    content:'MAIS POPULAR';
-    position:absolute;top:20px;right:-40px;
-    background:var(--grad-gold);color:#fff;
-    padding:6px 50px;font-size:.68rem;font-weight:800;
-    letter-spacing:.1em;transform:rotate(38deg);
-    box-shadow:0 5px 15px rgba(0,0,0,.3);
-  }
-  .pricing-card.gold{border-color:rgba(245,158,11,.4)}
-  .plan-name{
-    font-size:1.3rem;font-weight:800;margin-bottom:6px;
-    display:flex;align-items:center;gap:10px;
-  }
-  .plan-name i{color:var(--blue2)}
-  .plan-desc{color:var(--text4);font-size:.85rem;margin-bottom:20px}
-  .plan-price{
-    display:flex;align-items:baseline;gap:6px;
-    margin-bottom:24px;padding-bottom:24px;
-    border-bottom:1px solid var(--border);
-  }
-  .plan-price .currency{font-size:1.1rem;font-weight:700;color:var(--text3);margin-top:8px}
-  .plan-price .val{font-size:3.2rem;font-weight:900;letter-spacing:-.03em;line-height:1;
-    background:var(--grad);-webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;background-clip:text;
-  }
-  .plan-price .period{color:var(--text4);font-size:.85rem;font-weight:600}
-  .plan-features{list-style:none;margin-bottom:32px;flex:1;display:flex;flex-direction:column;gap:12px}
-  .plan-features li{
-    display:flex;align-items:flex-start;gap:10px;
-    font-size:.88rem;color:var(--text2);line-height:1.5;
-  }
-  .plan-features li i{
-    color:var(--green2);font-size:.9rem;margin-top:4px;flex-shrink:0;
-  }
-  .plan-features li.disabled{color:var(--text4);opacity:.6}
-  .plan-features li.disabled i{color:var(--text4)}
-  .plan-cta{
-    width:100%;padding:15px;border-radius:12px;
-    font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;
-    border:none;transition:.3s;
-  }
-  .plan-cta.primary{background:var(--grad);color:#fff;
-    box-shadow:0 12px 25px -8px rgba(59,130,246,.5)}
-  .plan-cta.primary:hover{transform:translateY(-2px);box-shadow:0 15px 30px -8px rgba(59,130,246,.7)}
-  .plan-cta.ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
-  .plan-cta.ghost:hover{border-color:var(--blue);color:var(--blue2);background:rgba(59,130,246,.08)}
-  .plan-cta.gold{background:var(--grad-gold);color:#fff;box-shadow:0 12px 25px -8px rgba(245,158,11,.5)}
-  .plan-cta.gold:hover{transform:translateY(-2px)}
-
-  /* ============ DEPOIMENTOS ============ */
-  .testimonials{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;
-  }
-  .testimonial{
-    background:var(--card);border:1px solid var(--border);
-    border-radius:20px;padding:28px;
-    transition:.3s;
-  }
-  .testimonial:hover{border-color:rgba(96,165,250,.3);transform:translateY(-4px)}
-  .stars{color:var(--amber);margin-bottom:14px;font-size:.9rem}
-  .testimonial p{color:var(--text2);font-size:.92rem;line-height:1.7;margin-bottom:20px;font-style:italic}
-  .testimonial-author{display:flex;align-items:center;gap:12px}
-  .avatar{
-    width:44px;height:44px;border-radius:50%;
-    background:var(--grad);color:#fff;
-    display:flex;align-items:center;justify-content:center;
-    font-weight:800;font-size:1rem;flex-shrink:0;
-  }
-  .avatar.g{background:linear-gradient(135deg,#22c55e,#10b981)}
-  .avatar.p{background:linear-gradient(135deg,#ec4899,#8b5cf6)}
-  .author-info .name{font-weight:700;font-size:.92rem}
-  .author-info .role{font-size:.78rem;color:var(--text4)}
-
-  /* ============ FAQ ============ */
-  .faq{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-  .faq-item{
-    background:var(--card);border:1px solid var(--border);
-    border-radius:16px;overflow:hidden;transition:.3s;
-  }
-  .faq-item.open{border-color:rgba(96,165,250,.3)}
-  .faq-q{
-    padding:20px 24px;cursor:pointer;
-    display:flex;justify-content:space-between;align-items:center;
-    font-weight:700;font-size:1rem;color:var(--text);
-    user-select:none;transition:.2s;
-  }
-  .faq-q:hover{background:rgba(59,130,246,.05)}
-  .faq-q i{
-    color:var(--blue2);transition:.3s;flex-shrink:0;
-  }
-  .faq-item.open .faq-q i{transform:rotate(180deg)}
-  .faq-a{
-    max-height:0;overflow:hidden;transition:max-height .4s ease;
-    padding:0 24px;
-  }
-  .faq-item.open .faq-a{max-height:400px;padding:0 24px 22px}
-  .faq-a p{color:var(--text3);line-height:1.7;font-size:.92rem}
-
-  /* ============ CONTATO ============ */
-  .contact{
-    background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(139,92,246,.06));
-    border:1px solid var(--border);border-radius:28px;
-    padding:60px 40px;position:relative;overflow:hidden;
-  }
-  .contact::before{
-    content:'';position:absolute;top:-100px;right:-100px;
-    width:300px;height:300px;border-radius:50%;
-    background:radial-gradient(circle,rgba(59,130,246,.3),transparent 70%);
-    filter:blur(40px);
-  }
-  .contact-grid{
-    display:grid;grid-template-columns:1fr 1.2fr;gap:60px;
-    align-items:center;position:relative;z-index:2;
-  }
-  .contact-info h2{font-size:2.4rem;font-weight:900;letter-spacing:-.03em;margin-bottom:16px;line-height:1.15}
-  .contact-info h2 .grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .contact-info p{color:var(--text3);font-size:1.02rem;margin-bottom:28px;line-height:1.7}
-  .contact-features{display:flex;flex-direction:column;gap:14px}
-  .contact-feature{display:flex;align-items:center;gap:12px;color:var(--text2);font-size:.92rem}
-  .contact-feature i{
-    width:38px;height:38px;border-radius:10px;
-    background:rgba(59,130,246,.15);color:var(--blue2);
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-  }
-
-  .contact-form{
-    background:var(--bg2);border:1px solid var(--border);
-    border-radius:20px;padding:36px;
-    box-shadow:0 20px 50px -20px rgba(0,0,0,.4);
-  }
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-  .form-group{margin-bottom:16px}
-  .form-group label{
-    display:block;font-size:.78rem;font-weight:700;
-    color:var(--text3);margin-bottom:8px;
-    text-transform:uppercase;letter-spacing:.05em;
-  }
-  .form-group input,
-  .form-group select,
-  .form-group textarea{
-    width:100%;background:var(--bg);
-    border:1px solid var(--border);
-    padding:13px 16px;border-radius:10px;
-    color:var(--text);font-size:.92rem;
-    font-family:inherit;outline:none;
-    transition:.2s;
-  }
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus{
-    border-color:var(--blue);
-    box-shadow:0 0 0 3px rgba(59,130,246,.15);
-  }
-  .form-group textarea{resize:vertical;min-height:100px}
-  .form-submit{
-    width:100%;padding:16px;border-radius:12px;
-    background:var(--grad);color:#fff;
-    font-weight:800;font-size:1rem;border:none;
-    cursor:pointer;transition:.3s;font-family:inherit;
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    box-shadow:0 15px 30px -8px rgba(59,130,246,.5);
-  }
-  .form-submit:hover{transform:translateY(-2px);box-shadow:0 20px 40px -8px rgba(59,130,246,.7)}
-
-  /* ============ CTA FINAL ============ */
-  .final-cta{
-    text-align:center;padding:100px 40px;
-    background:radial-gradient(ellipse at center,rgba(59,130,246,.15),transparent 70%);
-    border-radius:32px;margin-top:60px;
-  }
-  .final-cta h2{
-    font-size:3rem;font-weight:900;letter-spacing:-.03em;
-    margin-bottom:20px;line-height:1.15;
-  }
-  .final-cta h2 .grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .final-cta p{color:var(--text3);font-size:1.15rem;max-width:600px;margin:0 auto 36px;line-height:1.7}
-
-  /* ============ FOOTER ============ */
-  footer{
-    background:var(--bg2);border-top:1px solid var(--border);
-    padding:60px 40px 32px;margin-top:80px;
-  }
-  .footer-inner{max-width:1300px;margin:0 auto}
-  .footer-grid{
-    display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;
-    margin-bottom:48px;
-  }
-  .footer-brand p{color:var(--text3);font-size:.9rem;margin-top:16px;line-height:1.7;max-width:340px}
-  .footer-col h4{font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text);margin-bottom:18px}
-  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:12px}
-  .footer-col a{color:var(--text3);text-decoration:none;font-size:.88rem;transition:.2s}
-  .footer-col a:hover{color:var(--blue2)}
-  .footer-bottom{
-    padding-top:32px;border-top:1px solid var(--border);
-    display:flex;justify-content:space-between;align-items:center;
-    flex-wrap:wrap;gap:16px;
-    color:var(--text4);font-size:.82rem;
-  }
-  .social{display:flex;gap:12px}
-  .social a{
-    width:38px;height:38px;border-radius:10px;
-    background:var(--card);color:var(--text3);
-    display:flex;align-items:center;justify-content:center;
-    text-decoration:none;transition:.2s;font-size:.9rem;
-  }
-  .social a:hover{background:var(--grad);color:#fff;transform:translateY(-2px)}
-
-  /* ============ MODAL PAGAMENTO ============ */
-  .modal-overlay{
-    position:fixed;inset:0;background:rgba(0,0,0,.8);
-    backdrop-filter:blur(10px);
-    display:none;align-items:center;justify-content:center;
-    z-index:2000;padding:20px;
-  }
-  .modal-overlay.show{display:flex;animation:fadeIn .3s ease}
-  .modal{
-    background:var(--card);border:1px solid var(--border);
-    border-radius:24px;padding:36px;
-    max-width:520px;width:100%;
-    box-shadow:0 40px 100px rgba(0,0,0,.6);
-    max-height:90vh;overflow-y:auto;
-  }
-  .modal h3{font-size:1.5rem;font-weight:800;margin-bottom:8px;letter-spacing:-.02em}
-  .modal .sub{color:var(--text3);font-size:.9rem;margin-bottom:24px}
-  .plan-summary{
-    background:var(--bg2);border:1px solid var(--border);
-    border-radius:14px;padding:18px;margin-bottom:24px;
-    display:flex;justify-content:space-between;align-items:center;
-  }
-  .plan-summary .label{font-size:.82rem;color:var(--text3);font-weight:600}
-  .plan-summary .label strong{display:block;color:var(--text);font-size:1rem;font-weight:800;margin-bottom:4px}
-  .plan-summary .price{font-size:1.6rem;font-weight:900;
-    background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
-  .pay-method{
-    padding:14px;border-radius:12px;
-    background:var(--bg2);border:2px solid var(--border);
-    cursor:pointer;transition:.2s;text-align:center;
-    font-size:.82rem;font-weight:700;color:var(--text2);
-  }
-  .pay-method:hover{border-color:var(--blue)}
-  .pay-method.selected{border-color:var(--blue);background:rgba(59,130,246,.1);color:var(--blue2)}
-  .pay-method i{font-size:1.3rem;display:block;margin-bottom:6px;color:var(--text3)}
-  .pay-method.selected i{color:var(--blue2)}
-  .modal-actions{display:flex;gap:12px;margin-top:8px}
-  .modal-actions .btn{flex:1;justify-content:center;padding:14px}
-
-  /* ============ TOAST ============ */
-  .toast{
-    position:fixed;bottom:24px;right:24px;
-    background:var(--card);border:1px solid var(--green);
-    color:var(--green2);padding:16px 24px;border-radius:14px;
-    font-weight:700;font-size:.92rem;z-index:3000;
-    box-shadow:0 20px 50px rgba(0,0,0,.5);
-    display:none;align-items:center;gap:12px;max-width:400px;
-  }
-  .toast.show{display:flex;animation:slideIn .3s ease}
-  .toast.error{border-color:var(--red);color:var(--red)}
-  @keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
-
-  /* ============ RESPONSIVE ============ */
-  @media(max-width:1000px){
-    .hero{grid-template-columns:1fr;text-align:center;padding-top:120px}
-    .hero h1{font-size:2.8rem}
-    .hero p.sub{margin-left:auto;margin-right:auto}
-    .hero-cta{justify-content:center}
-    .hero-stats{justify-content:center}
-    .hero-visual{max-width:520px;margin:0 auto}
-    .contact-grid{grid-template-columns:1fr;gap:40px}
-    .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
-    .footer-brand{grid-column:span 2}
-  }
-  @media(max-width:768px){
-    .nav-links{display:none}
-    .menu-toggle{display:block}
-    section{padding:70px 24px}
-    .hero{padding:120px 24px 70px}
-    .hero h1{font-size:2.2rem}
-    .section-title h2{font-size:2rem}
-    .final-cta h2{font-size:2rem}
-    .contact{padding:36px 24px}
-    .contact-info h2{font-size:1.8rem}
-    .pricing-card.featured{transform:none}
-    .modal{padding:28px 22px}
-    .pay-methods{grid-template-columns:1fr}
-    .form-row{grid-template-columns:1fr}
-    .footer-grid{grid-template-columns:1fr}
-    .footer-brand{grid-column:span 1}
-  }
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:20px}
+  .container{max-width:1650px;margin:0 auto}
+  .top-block{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:20px;padding:18px 22px;margin-bottom:18px}
+  .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  h1.title{font-size:1.5rem;font-weight:800;display:flex;align-items:center;gap:12px;
+    background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  h1.title .badge{background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-text-fill-color:white;padding:9px 13px;border-radius:12px;font-size:1rem}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .clock{background:rgba(30,41,59,.7);padding:9px 16px;border-radius:12px;font-weight:600;font-size:.85rem;border:1px solid rgba(148,163,184,.15);color:#cbd5e1}
+  .pulse-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite;display:inline-block;margin-right:6px}
+  .pulse-dot.syncing{background:#fbbf24;animation:pulse 0.8s infinite}
+  .pulse-dot.error{background:#ef4444;animation:none}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+  .btn{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);color:#cbd5e1;padding:9px 16px;border-radius:9px;font-weight:600;font-size:.83rem;cursor:pointer;transition:.2s;font-family:inherit}
+  .btn:hover{border-color:#3b82f6;color:#fff}
+  .btn.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-color:transparent;color:#fff}
+  .btn.green{background:linear-gradient(135deg,#22c55e,#10b981);border:none;color:#fff}
+  .btn.red{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171}
+  .btn.small{padding:7px 12px;font-size:.76rem}
+  .tabs{display:flex;gap:6px;background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:4px;margin-bottom:14px;overflow-x:auto}
+  .tab{padding:11px 20px;background:transparent;border:none;color:#94a3b8;font-weight:600;font-size:.83rem;cursor:pointer;border-radius:10px;transition:.2s;font-family:inherit;white-space:nowrap}
+  .tab.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff}
+  .tab .cnt{background:rgba(0,0,0,.25);padding:1px 8px;border-radius:10px;font-size:.7rem;margin-left:6px}
+  .tab.active .cnt{background:rgba(255,255,255,.2)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+  .kpi{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:14px;padding:12px 14px;position:relative;cursor:pointer;transition:.25s}
+  .kpi:hover{transform:translateY(-2px);border-color:rgba(96,165,250,.5)}
+  .kpi::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;border-radius:4px 0 0 4px;background:linear-gradient(180deg,#3b82f6,#8b5cf6)}
+  .kpi.red::before{background:linear-gradient(180deg,#ef4444,#f97316)}
+  .kpi.green::before{background:linear-gradient(180deg,#22c55e,#10b981)}
+  .kpi.amber::before{background:linear-gradient(180deg,#f59e0b,#ef4444)}
+  .kpi.purple::before{background:linear-gradient(180deg,#8b5cf6,#d946ef)}
+  .kpi.blue::before{background:linear-gradient(180deg,#3b82f6,#06b6d4)}
+  .kpi.cyan::before{background:linear-gradient(180deg,#06b6d4,#0ea5e9)}
+  .kpi-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;font-weight:600;margin-bottom:4px}
+  .kpi-value{font-size:1.5rem;font-weight:800;color:#f1f5f9;line-height:1}
+  .kpi.red .kpi-value{color:#f87171}
+  .kpi.green .kpi-value{color:#4ade80}
+  .kpi.amber .kpi-value{color:#fbbf24}
+  .kpi small{font-size:.66rem;color:#64748b;display:block;margin-top:3px}
+  .legend-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:14px 18px;margin-bottom:14px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+  .legend-title{font-size:.72rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+  .legend-item{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(15,23,42,.5);border:1px solid rgba(148,163,184,.15);font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;color:#cbd5e1;font-family:inherit}
+  .legend-item:hover{border-color:#3b82f6}
+  .legend-item.active{background:rgba(59,130,246,.2);border-color:#3b82f6;color:#fff}
+  .legend-item .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .dot.ip{background:#60a5fa}
+  .dot.analog{background:#fbbf24}
+  .dot.online{background:#4ade80}
+  .dot.offline{background:#f87171}
+  .legend-item .count{background:rgba(0,0,0,.3);padding:1px 8px;border-radius:10px;font-size:.7rem;margin-left:2px;color:#94a3b8}
+  .toolbar-box{background:rgba(30,41,59,.5);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  input.search,select.search{background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);padding:9px 13px;border-radius:9px;color:#e2e8f0;font-size:.83rem;outline:none;font-family:inherit}
+  input.search:focus,select.search:focus{border-color:#3b82f6}
+  input.search{flex:1;min-width:200px}
+  .table-box{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;margin-bottom:22px}
+  .table-scroll{overflow-x:auto;max-height:70vh;overflow-y:auto}
+  .table-scroll::-webkit-scrollbar{width:10px;height:10px}
+  .table-scroll::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:8px}
+  table{width:100%;border-collapse:collapse;font-size:.82rem}
+  thead th{text-align:left;padding:12px;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;background:#1a2234;border-bottom:2px solid rgba(96,165,250,.2);white-space:nowrap;position:sticky;top:0;z-index:10}
+  tbody td{padding:10px 12px;border-bottom:1px solid rgba(148,163,184,.06);color:#e2e8f0;vertical-align:middle}
+  tbody tr:hover td{background:rgba(59,130,246,.05)}
+  tbody tr:nth-child(even){background:rgba(15,23,42,.2)}
+  .row-alert{background:rgba(239,68,68,.06)!important}
+  .piso{background:rgba(59,130,246,.2);color:#93c5fd;padding:3px 10px;border-radius:8px;font-weight:700;font-size:.72rem;display:inline-block}
+  .badge{padding:4px 10px;border-radius:20px;font-size:.68rem;font-weight:700;display:inline-flex;align-items:center;gap:5px}
+  .badge.ok{background:rgba(34,197,94,.15);color:#4ade80}
+  .badge.bad{background:rgba(239,68,68,.15);color:#f87171}
+  .badge.ip{background:rgba(59,130,246,.15);color:#60a5fa}
+  .badge.analog{background:rgba(245,158,11,.15);color:#fbbf24}
+  .badge.eol{background:rgba(239,68,68,.25);color:#fca5a5}
+  .badge.dup{background:rgba(239,68,68,.2);color:#fca5a5;font-size:.7rem}
+  .toggle{position:relative;width:48px;height:24px;background:#ef4444;border-radius:20px;cursor:pointer;transition:.3s;display:inline-block}
+  .toggle.on{background:#22c55e}
+  .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.3s}
+  .toggle.on::after{left:27px}
+  .offtime{font-size:.7rem;color:#f87171;font-weight:600}
+  .offtime.long{color:#fbbf24}
+  .offtime.critical{color:#ef4444;font-weight:800;animation:blink 2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+  .empty{text-align:center;padding:40px;color:#64748b}
+  .footer{text-align:center;padding:24px 0 12px;color:#64748b;font-size:.76rem;border-top:1px solid rgba(148,163,184,.1);margin-top:24px}
+  .info-cell{font-size:.72rem;color:#64748b}
+  .locais-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:22px}
+  .local-card{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden;transition:.25s}
+  .local-card:hover{border-color:rgba(96,165,250,.4);transform:translateY(-2px)}
+  .local-header{padding:14px 18px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.12));border-bottom:1px solid rgba(148,163,184,.1);display:flex;justify-content:space-between;align-items:center}
+  .local-title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;color:#f1f5f9}
+  .local-count{font-size:.7rem;background:rgba(0,0,0,.3);padding:3px 9px;border-radius:20px;color:#cbd5e1;font-weight:700}
+  .local-body{padding:14px 18px 16px}
+  .local-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(148,163,184,.08)}
+  .stat-box{text-align:center}
+  .stat-box .num{font-size:1.15rem;font-weight:800;color:#f1f5f9}
+  .stat-box .lbl{font-size:.6rem;text-transform:uppercase;color:#64748b;font-weight:600;letter-spacing:.05em;margin-top:2px}
+  .stat-box.ok .num{color:#4ade80}
+  .stat-box.bad .num{color:#f87171}
+  .equip-list{display:flex;flex-direction:column;gap:8px}
+  .equip-item{display:flex;align-items:center;gap:12px;padding:9px 11px;background:rgba(15,23,42,.4);border-radius:10px;border-left:3px solid #3b82f6}
+  .equip-item.sw{border-left-color:#a78bfa}
+  .equip-item.dvr{border-left-color:#f472b6}
+  .equip-item.nvr{border-left-color:#22d3ee}
+  .equip-item.nob{border-left-color:#facc15}
+  .equip-item.srv{border-left-color:#60a5fa}
+  .equip-item.mon{border-left-color:#94a3b8}
+  .equip-item.eol{border-left-color:#ef4444;background:rgba(239,68,68,.06)}
+  .equip-icon{width:30px;height:30px;border-radius:8px;background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;color:#60a5fa;font-size:.8rem;flex-shrink:0}
+  .equip-item.sw .equip-icon{background:rgba(139,92,246,.15);color:#a78bfa}
+  .equip-item.dvr .equip-icon{background:rgba(236,72,153,.15);color:#f472b6}
+  .equip-item.nvr .equip-icon{background:rgba(34,211,238,.15);color:#22d3ee}
+  .equip-item.nob .equip-icon{background:rgba(250,204,21,.15);color:#facc15}
+  .equip-item.eol .equip-icon{background:rgba(239,68,68,.2);color:#fca5a5}
+  .equip-info{flex:1;min-width:0}
+  .equip-name{font-weight:600;font-size:.82rem;color:#e2e8f0}
+  .equip-meta{font-size:.68rem;color:#64748b;margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
+  .equip-tag{font-size:.6rem;padding:2px 7px;border-radius:6px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+  .equip-tag.sw{background:rgba(139,92,246,.2);color:#a78bfa}
+  .equip-tag.dvr{background:rgba(236,72,153,.2);color:#f472b6}
+  .equip-tag.nvr{background:rgba(34,211,238,.2);color:#22d3ee}
+  .equip-tag.nob{background:rgba(250,204,21,.2);color:#facc15}
+  .equip-tag.srv{background:rgba(59,130,246,.2);color:#60a5fa}
+  .equip-tag.mon{background:rgba(148,163,184,.2);color:#cbd5e1}
+  .audit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:22px}
+  .audit-card{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.12);border-radius:18px;overflow:hidden}
+  .audit-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(148,163,184,.1)}
+  .audit-header.red{background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(249,115,22,.1))}
+  .audit-header.amber{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(239,68,68,.1))}
+  .audit-header.blue{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1))}
+  .audit-title{font-weight:700;font-size:.92rem;color:#f1f5f9;display:flex;align-items:center;gap:8px}
+  .audit-count{background:rgba(0,0,0,.3);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;color:#fff}
+  .audit-body{padding:12px 16px;max-height:400px;overflow-y:auto}
+  .audit-body::-webkit-scrollbar{width:6px}
+  .audit-body::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:4px}
+  .audit-item{padding:10px 12px;background:rgba(15,23,42,.4);border-radius:10px;margin-bottom:8px;border-left:3px solid #3b82f6}
+  .audit-item.red{border-left-color:#ef4444}
+  .audit-item.amber{border-left-color:#f59e0b}
+  .audit-item-title{font-weight:600;font-size:.82rem;color:#e2e8f0;margin-bottom:4px}
+  .audit-item-detail{font-size:.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:2px}
+  .audit-item-detail span{padding:2px 0}
+  .audit-empty{padding:30px;text-align:center;color:#4ade80;font-size:.85rem}
+  .toast{position:fixed;bottom:24px;right:24px;background:#1e293b;border:1px solid #22c55e;color:#4ade80;padding:14px 22px;border-radius:12px;font-weight:600;font-size:.85rem;z-index:200;display:none;max-width:340px}
+  .toast.show{display:block}
+  .toast.error{border-color:#ef4444;color:#f87171}
+  .toast.info{border-color:#3b82f6;color:#60a5fa}
+  @media(max-width:700px){body{padding:12px}h1.title{font-size:1.1rem}.kpis{grid-template-columns:repeat(2,1fr)}.locais-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<!-- BG ORBS -->
-<div class="bg-orbs">
-  <div class="orb blue"></div>
-  <div class="orb purple"></div>
-  <div class="orb cyan"></div>
-</div>
-
-<!-- NAVBAR -->
-<nav class="nav" id="nav">
-  <div class="nav-inner">
-    <a href="#" class="logo">
-      <div class="logo-icon"><i class="fas fa-video"></i></div>
-      <div class="logo-text">
-        <span>CFTV Pro</span>
-        <small>MONITORAMENTO INTELIGENTE</small>
+<div class="container">
+  <div class="top-block">
+    <div class="header">
+      <h1 class="title"><span class="badge">🎥</span> CFTV • Monitoramento Operacional</h1>
+      <div class="actions">
+        <div class="clock" id="syncStatus"><span class="pulse-dot"></span><span id="clock">--:--:--</span></div>
+        <button class="btn green" onclick="exportarCSV()">⬇ CSV</button>
       </div>
-    </a>
-    <div class="nav-links">
-      <a href="#recursos" class="nav-link">Recursos</a>
-      <a href="#como-funciona" class="nav-link">Como funciona</a>
-      <a href="#planos" class="nav-link">Planos</a>
-      <a href="#depoimentos" class="nav-link">Clientes</a>
-      <a href="#faq" class="nav-link">FAQ</a>
-      <a href="#contato" class="nav-link">Contato</a>
     </div>
-    <div class="nav-actions">
-      <button class="btn btn-ghost" onclick="scrollToId('contato')">Falar com vendas</button>
-      <button class="btn btn-primary" onclick="scrollToId('planos')">
-        <i class="fas fa-rocket"></i> Começar agora
-      </button>
-    </div>
-    <button class="menu-toggle" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+    <div class="kpis" id="kpis"></div>
   </div>
-</nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div>
-    <div class="hero-badge">
-      <i class="fas fa-bolt"></i>
-      Novo • IA incluída nos planos Pro
+  <div class="tabs">
+    <button class="tab active" data-tab="cameras" onclick="setTab('cameras')">📋 Câmeras <span class="cnt" id="tab-cam-count">0</span></button>
+    <button class="tab" data-tab="equipamentos" onclick="setTab('equipamentos')">🖥️ Equipamentos <span class="cnt" id="tab-equip-count">0</span></button>
+    <button class="tab" data-tab="auditoria" onclick="setTab('auditoria')">🔍 Auditoria <span class="cnt" id="tab-audit-count">0</span></button>
+  </div>
+
+  <div id="tab-cameras-content">
+    <div class="legend-box">
+      <span class="legend-title">Legenda:</span>
+      <button class="legend-item" data-legend="ip" onclick="toggleLegend('ip')"><span class="dot ip"></span> IP <span class="count" id="count-ip">0</span></button>
+      <button class="legend-item" data-legend="analog" onclick="toggleLegend('analog')"><span class="dot analog"></span> Analógica <span class="count" id="count-analog">0</span></button>
+      <button class="legend-item" data-legend="online" onclick="toggleLegend('online')"><span class="dot online"></span> Online <span class="count" id="count-online">0</span></button>
+      <button class="legend-item" data-legend="offline" onclick="toggleLegend('offline')"><span class="dot offline"></span> Off-line <span class="count" id="count-offline">0</span></button>
     </div>
-    <h1>
-      Gerencie <span class="grad">todas as suas câmeras</span> com <span class="grad2">inteligência</span>
-    </h1>
-    <p class="sub">
-      O sistema definitivo para monitorar câmeras, gravadores e infraestrutura de CFTV. 
-      Tenha controle total, alertas em tempo real e relatórios profissionais em um único dashboard.
-    </p>
-    <div class="hero-cta">
-      <button class="btn btn-primary btn-lg" onclick="scrollToId('planos')">
-        <i class="fas fa-rocket"></i> Teste grátis por 14 dias
-      </button>
-      <button class="btn btn-ghost btn-lg" onclick="scrollToId('recursos')">
-        <i class="fas fa-play"></i> Ver demonstração
-      </button>
+    <div class="toolbar-box">
+      <div class="toolbar">
+        <input class="search" id="search" placeholder="🔍 Buscar por nome, IP, modelo ou local...">
+        <button class="btn small active" data-filter="all" onclick="setFilter('all')">Todas</button>
+        <button class="btn small" data-filter="online" onclick="setFilter('online')">🟢 Online</button>
+        <button class="btn small" data-filter="offline" onclick="setFilter('offline')">🔴 Off-line</button>
+        <select class="search" id="floorFilter" style="max-width:170px"><option value="all">Todos os pisos</option></select>
+      </div>
     </div>
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="num">250+</div>
-        <div class="label">Câmeras suportadas</div>
-      </div>
-      <div class="hero-stat">
-        <div class="num">99,9%</div>
-        <div class="label">Uptime</div>
-      </div>
-      <div class="hero-stat">
-        <div class="num">5 min</div>
-        <div class="label">Para configurar</div>
+    <div class="table-box">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60px">Ligar</th>
+              <th>Nome da Câmera</th>
+              <th>Tipo</th>
+              <th>Piso</th>
+              <th>Local</th>
+              <th>IP</th>
+              <th>Status</th>
+              <th>Desde</th>
+              <th>Tempo</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <div class="hero-visual">
-    <div class="mockup">
-      <div class="mockup-header">
-        <div class="mockup-dot r"></div>
-        <div class="mockup-dot y"></div>
-        <div class="mockup-dot g"></div>
-        <div class="mockup-url">app.cftvpro.com.br/dashboard</div>
-      </div>
-      <div class="mockup-body">
-        <div class="mockup-kpis">
-          <div class="mockup-kpi">
-            <div class="label">Total</div>
-            <div class="val">250</div>
-          </div>
-          <div class="mockup-kpi green">
-            <div class="label">Online</div>
-            <div class="val">172</div>
-          </div>
-          <div class="mockup-kpi red">
-            <div class="label">Off-line</div>
-            <div class="val">78</div>
-          </div>
-          <div class="mockup-kpi amber">
-            <div class="label">EOL</div>
-            <div class="val">5</div>
-          </div>
-        </div>
-        <div class="mockup-rows">
-          <div class="mockup-row">
-            <div class="toggle-mock"></div>
-            <div class="name">C ELEV AMARELO</div>
-            <div class="status">● Online</div>
-          </div>
-          <div class="mockup-row off">
-            <div class="toggle-mock"></div>
-            <div class="name">C_Piscina 1</div>
-            <div class="status">● Off-line</div>
-          </div>
-          <div class="mockup-row">
-            <div class="toggle-mock"></div>
-            <div class="name">L_Hall Social</div>
-            <div class="status">● Online</div>
-          </div>
-          <div class="mockup-row">
-            <div class="toggle-mock"></div>
-            <div class="name">M_Hall Jumbão</div>
-            <div class="status">● Online</div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div id="tab-equipamentos-content" style="display:none"><div class="locais-grid" id="equipGrid"></div></div>
+  <div id="tab-auditoria-content" style="display:none"><div class="audit-grid" id="auditGrid"></div></div>
 
-    <div class="floating-badge b1">
-      <div class="floating-badge-icon green"><i class="fas fa-check"></i></div>
-      <div>
-        <div class="floating-badge-text">Câmera ligada</div>
-        <div class="floating-badge-sub">em tempo real</div>
-      </div>
-    </div>
-
-    <div class="floating-badge b2">
-      <div class="floating-badge-icon blue"><i class="fas fa-chart-line"></i></div>
-      <div>
-        <div class="floating-badge-text">+42%</div>
-        <div class="floating-badge-sub">eficiência na operação</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- RECURSOS -->
-<section id="recursos">
-  <div class="section-title">
-    <span class="tag">Recursos</span>
-    <h2>Tudo que você precisa em <span class="grad">um só lugar</span></h2>
-    <p>Do monitoramento básico até análise com inteligência artificial. Nossos recursos foram desenhados para você ter controle absoluto da sua operação.</p>
-  </div>
-
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon"><i class="fas fa-video"></i></div>
-      <h3>Gestão de Câmeras</h3>
-      <p>Cadastre, organize e monitore todas as suas câmeras com interface intuitiva. Status em tempo real com um clique.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon green"><i class="fas fa-film"></i></div>
-      <h3>Controle de Gravadores</h3>
-      <p>Visualize NVRs, DVRs e servidores com todas as câmeras vinculadas. Identifique problemas no gravador em segundos.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon red"><i class="fas fa-triangle-exclamation"></i></div>
-      <h3>Alertas Inteligentes</h3>
-      <p>Receba notificações quando câmeras caírem, quando gravadores falharem ou quando equipamentos precisarem de troca.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon amber"><i class="fas fa-server"></i></div>
-      <h3>Inventário Completo</h3>
-      <p>Switches, nobreaks, servidores, monitores e mais. Saiba exatamente onde cada equipamento está instalado.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon cyan"><i class="fas fa-chart-pie"></i></div>
-      <h3>Relatórios Visuais</h3>
-      <p>Gráficos profissionais de status, distribuição por piso, topologia de rede e desempenho da infraestrutura.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon pink"><i class="fas fa-brain"></i></div>
-      <h3>IA no Dashboard <span style="font-size:.7rem;color:var(--amber);font-weight:800">NOVO</span></h3>
-      <p>Pergunte em português e receba respostas instantâneas. IA analisa padrões e sugere ações preventivas.</p>
-    </div>
-  </div>
-</section>
-
-<!-- COMO FUNCIONA -->
-<section id="como-funciona">
-  <div class="section-title">
-    <span class="tag">Como funciona</span>
-    <h2>Pronto para usar em <span class="grad">3 passos</span></h2>
-    <p>Sem instalação complexa, sem treinamento extenso. Você configura uma vez e começa a usar.</p>
-  </div>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <h3>Conecte seus dados</h3>
-      <p>Importe sua planilha de câmeras e equipamentos ou comece do zero. Leva menos de 5 minutos.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <h3>Personalize</h3>
-      <p>Organize por piso, setor ou qualquer critério. Nossa IA sugere a melhor estrutura para o seu caso.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <h3>Monitore 24/7</h3>
-      <p>Acesse de qualquer dispositivo, receba alertas e tome decisões com base em dados em tempo real.</p>
-    </div>
-  </div>
-</section>
-
-<!-- PLANOS -->
-<section id="planos">
-  <div class="section-title">
-    <span class="tag">Planos e preços</span>
-    <h2>Escolha o plano <span class="grad">ideal para você</span></h2>
-    <p>Sem surpresas. Cancele quando quiser. Todos os planos incluem 14 dias de teste grátis.</p>
-  </div>
-
-  <div class="pricing-grid">
-    <!-- BÁSICO -->
-    <div class="pricing-card">
-      <div class="plan-name"><i class="fas fa-cube"></i> Básico</div>
-      <div class="plan-desc">Para pequenos condomínios e empresas</div>
-      <div class="plan-price">
-        <span class="currency">R$</span>
-        <span class="val">97</span>
-        <span class="period">/mês</span>
-      </div>
-      <ul class="plan-features">
-        <li><i class="fas fa-check"></i> Até 50 câmeras cadastradas</li>
-        <li><i class="fas fa-check"></i> 3 usuários simultâneos</li>
-        <li><i class="fas fa-check"></i> Dashboard completo</li>
-        <li><i class="fas fa-check"></i> Gestão de equipamentos</li>
-        <li><i class="fas fa-check"></i> Exportação CSV</li>
-        <li><i class="fas fa-check"></i> Suporte por email</li>
-        <li class="disabled"><i class="fas fa-times"></i> IA no dashboard</li>
-        <li class="disabled"><i class="fas fa-times"></i> Relatórios em PDF</li>
-      </ul>
-      <button class="plan-cta ghost" onclick="abrirPagamento('Básico', '97')">
-        Começar teste grátis
-      </button>
-    </div>
-
-    <!-- PROFISSIONAL -->
-    <div class="pricing-card featured">
-      <div class="plan-name"><i class="fas fa-star"></i> Profissional</div>
-      <div class="plan-desc">O mais escolhido pelas empresas</div>
-      <div class="plan-price">
-        <span class="currency">R$</span>
-        <span class="val">297</span>
-        <span class="period">/mês</span>
-      </div>
-      <ul class="plan-features">
-        <li><i class="fas fa-check"></i> <strong>Até 250 câmeras</strong> cadastradas</li>
-        <li><i class="fas fa-check"></i> 10 usuários simultâneos</li>
-        <li><i class="fas fa-check"></i> Dashboard completo</li>
-        <li><i class="fas fa-check"></i> Gestão completa de equipamentos</li>
-        <li><i class="fas fa-check"></i> Exportação CSV + PDF</li>
-        <li><i class="fas fa-check"></i> <strong>IA no dashboard</strong> (chatbot)</li>
-        <li><i class="fas fa-check"></i> Relatórios profissionais</li>
-        <li><i class="fas fa-check"></i> Suporte prioritário WhatsApp</li>
-      </ul>
-      <button class="plan-cta primary" onclick="abrirPagamento('Profissional', '297')">
-        <i class="fas fa-rocket"></i> Começar teste grátis
-      </button>
-    </div>
-
-    <!-- CORPORATIVO -->
-    <div class="pricing-card gold">
-      <div class="plan-name"><i class="fas fa-crown"></i> Corporativo</div>
-      <div class="plan-desc">Para grandes operações</div>
-      <div class="plan-price">
-        <span class="currency">R$</span>
-        <span class="val">897</span>
-        <span class="period">/mês</span>
-      </div>
-      <ul class="plan-features">
-        <li><i class="fas fa-check"></i> <strong>Câmeras ilimitadas</strong></li>
-        <li><i class="fas fa-check"></i> Usuários ilimitados</li>
-        <li><i class="fas fa-check"></i> Todos os recursos Pro</li>
-        <li><i class="fas fa-check"></i> <strong>IA avançada + Análise de padrões</strong></li>
-        <li><i class="fas fa-check"></i> Alertas inteligentes automáticos</li>
-        <li><i class="fas fa-check"></i> Treinamento da equipe incluso</li>
-        <li><i class="fas fa-check"></i> Gerente de conta dedicado</li>
-        <li><i class="fas fa-check"></i> SLA 99,9% + suporte 24/7</li>
-      </ul>
-      <button class="plan-cta gold" onclick="abrirPagamento('Corporativo', '897')">
-        <i class="fas fa-crown"></i> Falar com especialista
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- DEPOIMENTOS -->
-<section id="depoimentos">
-  <div class="section-title">
-    <span class="tag">Depoimentos</span>
-    <h2>Quem usa, <span class="grad">recomenda</span></h2>
-    <p>Profissionais de segurança de todo o Brasil já transformaram sua operação com o CFTV Pro.</p>
-  </div>
-
-  <div class="testimonials">
-    <div class="testimonial">
-      <div class="stars">
-        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-      </div>
-      <p>"Antes eu levava 2 horas para fazer um relatório de status das câmeras. Agora leva 30 segundos. Impressionante."</p>
-      <div class="testimonial-author">
-        <div class="avatar">CM</div>
-        <div class="author-info">
-          <div class="name">Carlos Mendes</div>
-          <div class="role">Supervisor de Segurança • Grupo ABC</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="testimonial">
-      <div class="stars">
-        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-      </div>
-      <p>"A IA do sistema me avisou que uma câmera caía sempre no mesmo horário. Descobri um problema elétrico que ninguém tinha percebido."</p>
-      <div class="testimonial-author">
-        <div class="avatar g">RS</div>
-        <div class="author-info">
-          <div class="name">Renata Silva</div>
-          <div class="role">Gerente de Facilities • WTC</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="testimonial">
-      <div class="stars">
-        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-      </div>
-      <p>"Reduzimos em 40% o tempo de resposta a incidentes. O investimento se pagou no primeiro mês."</p>
-      <div class="testimonial-author">
-        <div class="avatar p">JP</div>
-        <div class="author-info">
-          <div class="name">João Pereira</div>
-          <div class="role">Diretor de Operações • Condomínio Prime</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section id="faq">
-  <div class="section-title">
-    <span class="tag">Perguntas frequentes</span>
-    <h2>Tire suas <span class="grad">dúvidas</span></h2>
-    <p>Se não encontrar sua resposta aqui, entre em contato com nossa equipe.</p>
-  </div>
-
-  <div class="faq">
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Preciso instalar algo no meu computador?
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-a">
-        <p>Não! O CFTV Pro funciona 100% no navegador. Você acessa de qualquer computador, tablet ou celular com internet. Não precisa instalar nada, nem fazer manutenção local.</p>
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Meus dados ficam seguros?
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-a">
-        <p>Sim! Usamos criptografia de ponta a ponta, servidores com certificação ISO 27001 e backups automáticos diários. Seus dados são só seus — nunca compartilhamos com terceiros.</p>
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Consigo importar minha planilha de câmeras atual?
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-a">
-        <p>Sim! Aceitamos importação de Excel, CSV e Google Sheets. Nossa equipe de onboarding ajuda você a migrar todos os dados em menos de 24h sem custo adicional.</p>
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Como funciona a IA do dashboard?
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-a">
-        <p>Nos planos Profissional e Corporativo você tem acesso a um assistente inteligente que responde perguntas em português sobre seus dados. Exemplo: "quantas câmeras estão off-line no piso C?" — e ele responde na hora, com base nos seus dados reais.</p>
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Posso cancelar quando quiser?
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-a">
-        <p>Sim! Sem multa, sem burocracia. Cancele direto no painel em menos de 1 minuto. Se cancelar em até 7 dias, devolvemos 100% do valor pago.</p>
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Vocês emitem nota fiscal?
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-a">
-        <p>Sim, emitimos NFS-e automaticamente para todos os planos. Ideal para empresas que precisam comprovar o investimento contábil ou para reembolso corporativo.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTATO -->
-<section id="contato">
-  <div class="contact">
-    <div class="contact-grid">
-      <div class="contact-info">
-        <h2>Pronto para <span class="grad">transformar</span> sua operação?</h2>
-        <p>Fale com nosso time e descubra como o CFTV Pro pode reduzir custos e aumentar a eficiência do seu departamento de segurança.</p>
-
-        <div class="contact-features">
-          <div class="contact-feature">
-            <i class="fas fa-clock"></i>
-            <span>Resposta em até 2 horas úteis</span>
-          </div>
-          <div class="contact-feature">
-            <i class="fas fa-user-tie"></i>
-            <span>Especialista dedicado ao seu caso</span>
-          </div>
-          <div class="contact-feature">
-            <i class="fas fa-gift"></i>
-            <span>Demonstração personalizada gratuita</span>
-          </div>
-          <div class="contact-feature">
-            <i class="fas fa-shield-alt"></i>
-            <span>Sem compromisso, sem cartão de crédito</span>
-          </div>
-        </div>
-      </div>
-
-      <form class="contact-form" onsubmit="enviarContato(event)">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nome completo</label>
-            <input type="text" name="nome" required placeholder="Seu nome">
-          </div>
-          <div class="form-group">
-            <label>Email corporativo</label>
-            <input type="email" name="email" required placeholder="voce@empresa.com">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Telefone / WhatsApp</label>
-            <input type="tel" name="telefone" required placeholder="(11) 99999-9999">
-          </div>
-          <div class="form-group">
-            <label>Empresa</label>
-            <input type="text" name="empresa" required placeholder="Nome da empresa">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Quantas câmeras você tem?</label>
-          <select name="camera_qtd" required>
-            <option value="">Selecione...</option>
-            <option value="1-50">1 a 50 câmeras</option>
-            <option value="51-150">51 a 150 câmeras</option>
-            <option value="151-500">151 a 500 câmeras</option>
-            <option value="500+">Mais de 500 câmeras</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Mensagem (opcional)</label>
-          <textarea name="mensagem" placeholder="Conte-nos sobre seu desafio..."></textarea>
-        </div>
-        <button type="submit" class="form-submit">
-          <i class="fas fa-paper-plane"></i> Quero falar com especialista
-        </button>
-      </form>
-    </div>
-  </div>
-</section>
-
-<!-- CTA FINAL -->
-<div class="final-cta">
-  <h2>Comece hoje. <span class="grad">Evolua amanhã.</span></h2>
-  <p>Junte-se a centenas de empresas que já transformaram a gestão de CFTV com o CFTV Pro.</p>
-  <button class="btn btn-primary btn-lg" onclick="scrollToId('planos')">
-    <i class="fas fa-rocket"></i> Teste grátis por 14 dias
-  </button>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="logo">
-          <div class="logo-icon"><i class="fas fa-video"></i></div>
-          <div class="logo-text">
-            <span>CFTV Pro</span>
-            <small>MONITORAMENTO INTELIGENTE</small>
-          </div>
-        </div>
-        <p>A plataforma definitiva para gestão profissional de câmeras e infraestrutura de CFTV. Feita por especialistas, para especialistas.</p>
-      </div>
-
-      <div class="footer-col">
-        <h4>Produto</h4>
-        <ul>
-          <li><a href="#recursos">Recursos</a></li>
-          <li><a href="#planos">Planos</a></li>
-          <li><a href="#depoimentos">Clientes</a></li>
-          <li><a href="#">API</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Empresa</h4>
-        <ul>
-          <li><a href="#">Sobre nós</a></li>
-          <li><a href="#">Blog</a></li>
-          <li><a href="#">Carreiras</a></li>
-          <li><a href="#contato">Contato</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Legal</h4>
-        <ul>
-          <li><a href="#">Termos de uso</a></li>
-          <li><a href="#">Privacidade</a></li>
-          <li><a href="#">LGPD</a></li>
-          <li><a href="#">Cookies</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <div>© 2026 CFTV Pro. Todos os direitos reservados.</div>
-      <div class="social">
-        <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
-        <a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<!-- MODAL PAGAMENTO -->
-<div class="modal-overlay" id="modalPagamento">
-  <div class="modal" onclick="event.stopPropagation()">
-    <button style="float:right;background:transparent;border:none;color:var(--text3);font-size:1.5rem;cursor:pointer" onclick="fecharPagamento()">&times;</button>
-    <h3>Finalizar assinatura</h3>
-    <p class="sub">Escolha a forma de pagamento preferida</p>
-
-    <div class="plan-summary">
-      <div>
-        <div class="label">
-          <strong id="modalPlanoNome">Profissional</strong>
-          Teste grátis por 14 dias
-        </div>
-      </div>
-      <div class="price">R$ <span id="modalPlanoValor">297</span></div>
-    </div>
-
-    <div style="font-size:.82rem;color:var(--text3);margin-bottom:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em">Forma de pagamento</div>
-    <div class="pay-methods">
-      <div class="pay-method selected" onclick="selectPay(this, 'pix')">
-        <i class="fas fa-qrcode"></i>
-        PIX
-      </div>
-      <div class="pay-method" onclick="selectPay(this, 'credit')">
-        <i class="fas fa-credit-card"></i>
-        Cartão
-      </div>
-      <div class="pay-method" onclick="selectPay(this, 'boleto')">
-        <i class="fas fa-barcode"></i>
-        Boleto
-      </div>
-      <div class="pay-method" onclick="selectPay(this, 'mercadopago')">
-        <i class="fas fa-wallet"></i>
-        Mercado Pago
-      </div>
-    </div>
-
-    <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:12px;padding:14px;margin-bottom:20px;font-size:.82rem;color:var(--green2);display:flex;align-items:center;gap:10px">
-      <i class="fas fa-shield-alt" style="font-size:1.1rem"></i>
-      <span>Ambiente 100% seguro. Cancele quando quiser. Sem cobrança hoje.</span>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="fecharPagamento()">Cancelar</button>
-      <button class="btn btn-primary" onclick="processarPagamento()">
-        <i class="fas fa-lock"></i> Iniciar teste grátis
-      </button>
-    </div>
+  <div class="footer">
+    💾 <span id="syncInfo">Carregando dados do GitHub...</span> • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line • <span id="equipCount">0</span> equipamentos
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <i class="fas fa-check-circle"></i>
-  <span id="toastMsg">Sucesso!</span>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
 // ============================================================
-// NAVBAR SCROLL
+// ⚠️⚠️ CONFIGURE AQUI — TOKEN FIXO ⚠️⚠️
 // ============================================================
-window.addEventListener('scroll', () => {
-  const nav = document.getElementById('nav');
-  if(window.scrollY > 40) nav.classList.add('scrolled');
-  else nav.classList.remove('scrolled');
-});
+const GITHUB_OWNER = 'Italodeveloperhere';
+const GITHUB_REPO = 'cftv-dashboard';
+const GITHUB_TOKEN = 'github_pat_11A7...';   // Seu token novo
+const GITHUB_BRANCH = 'main';                 // 'main' ou 'master'
+const GITHUB_FILE_PATH = 'cameras.json';
+ 
+// ============================================================
+// URLs do GitHub
+// ============================================================
+const API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
+const RAW_URL = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_FILE_PATH}`;
+const FALLBACK_KEY = 'cftv_fallback';
 
 // ============================================================
-// SCROLL SUAVE
+// EQUIPAMENTOS
 // ============================================================
-function scrollToId(id){
-  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+const EQUIPAMENTOS = [
+  {local:"Central de Segurança", tipo:"SW", nome:"Switch HP sem gerência", modelo:"HP V1910", status:"ok"},
+  {local:"Central de Segurança", tipo:"SW", nome:"Switch POE JG92CA", modelo:"JG92CA", status:"eol", obs:"Com defeito — trocar"},
+  {local:"Central de Segurança", tipo:"SW", nome:"Switch 48 portas HP", modelo:"HP 48P", status:"eol", obs:"Trocar"},
+  {local:"Central de Segurança", tipo:"NOB", nome:"Nobreak 3000 kVA", modelo:"3000 kVA", status:"ok"},
+  {local:"Central de Segurança", tipo:"SRV", nome:"Servidor HP Proliant #1", modelo:"Proliant", status:"ok"},
+  {local:"Central de Segurança", tipo:"SRV", nome:"Servidor HP Proliant #2", modelo:"Proliant", status:"ok"},
+  {local:"Central de Segurança", tipo:"SRV", nome:"Servidor montado #1", modelo:"—", status:"ok"},
+  {local:"Central de Segurança", tipo:"SRV", nome:"Servidor montado #2", modelo:"—", status:"ok"},
+  {local:"Central de Segurança", tipo:"SRV", nome:"Servidor montado #3", modelo:"—", status:"ok"},
+  {local:"Central de Segurança", tipo:"SRV", nome:"Servidor montado #4", modelo:"—", status:"ok"},
+  {local:"Central de Segurança", tipo:"NVR", nome:"NVR Motorola #1", modelo:"MTN322K0012", status:"ok"},
+  {local:"Central de Segurança", tipo:"NVR", nome:"NVR Motorola #2", modelo:"MTN322K0012", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR 40 câmeras (Andares)", modelo:"40CH • HD 6T • 46 dias", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR 6º andar ao Piso M", modelo:"20CH • HD 4T • 11 dias", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR Lazer (192.168.1.139)", modelo:"HD 6T • 26 dias", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR Lazer (192.168.1.10)", modelo:"8 canais • HD 1T • 22 dias", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR Motorola reserva", modelo:"MTD324UON12", status:"ok"},
+  {local:"Central de Segurança", tipo:"DVR", nome:"DVR Motorola reserva", modelo:"MTR16A1080L", status:"ok"},
+  {local:"Central de Segurança", tipo:"MON", nome:"TV/Monitor LG", modelo:"LG", status:"ok", qtd:6},
+  {local:"Central de Segurança", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
+  {local:"Sala TI", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"},
+  {local:"Sala TI", tipo:"SW", nome:"Switch Ubiquiti", modelo:"UniFi", status:"ok"},
+  {local:"Sala TI", tipo:"SRV", nome:"Servidor DELL montado", modelo:"DELL", status:"ok"},
+  {local:"Sala da Diretoria", tipo:"SRV", nome:"Servidor DELL OptiPlex", modelo:"OptiPlex", status:"ok"},
+  {local:"Sala da Gerência", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
+  {local:"Portaria de Serviço", tipo:"SRV", nome:"Servidor DELL OptiPlex", modelo:"OptiPlex", status:"ok"},
+  {local:"Portaria de Serviço", tipo:"MON", nome:"Monitor Samsung", modelo:"Samsung", status:"ok"},
+  {local:"Sala Rio de Janeiro", tipo:"SW", nome:"Switch GV #1", modelo:"Geovision", status:"ok"},
+  {local:"Sala Rio de Janeiro", tipo:"SW", nome:"Switch GV #2", modelo:"Geovision", status:"ok"},
+  {local:"Sala Rio de Janeiro", tipo:"SW", nome:"Switch GV #3", modelo:"Geovision", status:"ok"},
+  {local:"Sala Rio de Janeiro", tipo:"DVR", nome:"DVR Motorola #1", modelo:"MTD324UON12", status:"ok"},
+  {local:"Sala Rio de Janeiro", tipo:"DVR", nome:"DVR Motorola #2", modelo:"MTD324UON12", status:"ok"},
+  {local:"Sala Rio de Janeiro", tipo:"DVR", nome:"DVR Motorola #3", modelo:"MTD324UON12", status:"ok"},
+  {local:"Shaft 1º Andar", tipo:"SW", nome:"Switch POE Geovision", modelo:"Geovision PoE", status:"eol", obs:"Trocar"},
+  {local:"Shaft 1º Andar", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
+  {local:"Shaft 1º Andar", tipo:"DVR", nome:"DVR Intelbras", modelo:"MHDX 1232", status:"ok"},
+  {local:"Shaft 10º Andar", tipo:"SW", nome:"Switch POE Geovision", modelo:"Geovision PoE", status:"eol", obs:"Trocar"},
+  {local:"Shaft 10º Andar", tipo:"SW", nome:"Switch HP POE 24 portas", modelo:"HP 1910-24G-PoE+", status:"ok"},
+  {local:"Shaft 10º Andar", tipo:"DVR", nome:"DVR Motorola", modelo:"MTD324UON12", status:"ok"},
+  {local:"3SUB2", tipo:"SW", nome:"Switch Giga sem gerência", modelo:"Giga", status:"ok"}
+];
+
+const ORDEM_LOCAIS = ["Central de Segurança","Sala TI","Sala da Diretoria","Sala da Gerência","Portaria de Serviço","Sala Rio de Janeiro","Shaft 1º Andar","Shaft 10º Andar","3SUB2"];
+
+// ============================================================
+// CÂMERAS
+// ============================================================
+const NOMES_IP = [
+["C ELEV AMARELO","C","Sala de Segurança"],["141 HALL ELEV LOBY","L","Sala de Segurança"],
+["G ESC ROL GOLDEN","G","Sala de Segurança"],["LIP 96 TERREO AMARELO","T","Sala de Segurança"],
+["158 RAMPA SAIDA","L","Sala de Segurança"],["SOFAS LOBBY","L","Sala de Segurança"],
+["L BAR LOBY","L","Sala de Segurança"],["L PTZ 160","L","Sala de Segurança"],
+["FOYER DO GOL 2","G","Sala de Segurança"],["L RECEP","L","Sala de Segurança"],
+["C HALL ELEV AMA","C","Piso C"],["G SAIDA DE EMER","G","Sala de Segurança"],
+["L WC","L","Sala de Segurança"],["G JUMBAO VERDE","G","Sala de Segurança"],
+["G ELEVADOR LARANJA","G","Sala de Segurança"],["JUMBAO VERDE GOLDEN","G","Sala de Segurança"],
+["PISO L RESTAURANTE","L","Sala de Segurança"],["G FOYER 1","G","Sala de Segurança"],
+["FOYER GOLDEN 5","G","Sala de Segurança"],["L P GIR EXTERNA","L","Sala de Segurança"],
+["L COR BUSINESS","L","Sala de Segurança"],["L RAMPA ENTRADA","L","Sala de Segurança"],
+["GOLDEN 3","G","Sala de Segurança"],["G FOYER 6","G","Sala de Segurança"],
+["G CORR CAMARIM","G","Sala de Segurança"],["TERREO ELEV LARANJA","T","Sala de Segurança"],
+["C HALL ELEV AMARELO","C","Sala de Segurança"],["G FOYER 3","G","Sala de Segurança"],
+["G FOYER 2","G","Sala de Segurança"],["L REST INTERNA","L","Sala de Segurança"],
+["M ELEV LARANJA","M","Sala de Segurança"],["ACADEMIA 2","L","Sala de Segurança"],
+["C CORRE BALROON 2","C","Piso C"],["C CORR BALLROON 1","C","Piso C"],
+["C HALL ELEV 13","C","Piso C"],["M CORR MONET","M","Shaft 1º Andar"],
+["SALA SIG","L","Sala TI"],["LOBY 15 ANDAR","15º","Shaft 10º Andar"],
+["M CORR VOLP","M","Shaft 1º Andar"],["C CORR BALLROON 3","C","Piso C"],
+["C CORR TEATRO 2","C","Piso C"],["CORR TEATRO 3","C","Piso C"],
+["C1 CORREDOR 2","C","Piso C"],["C 1 CORREDOR 1","C","Shaft 1º Andar"],
+["C FOYER SANTOS","C","Piso C"],["FOYER RJ","C","Piso C"],
+["PISO C1 SALA BONEMI","C","Piso C"],["C HALL GALERIA","C","Shaft 1º Andar"],
+["CORR BALLRONN 4","C","Piso C"],["C CORR TEATRO 3","C","Piso C"],
+["C CORR BALROON 1","C","Piso C"],["SALA EVENTOS","C","Piso C"],
+["M CORR DEGAS","M","Shaft 1º Andar"],["M JUMBAO VERDE","M","Shaft 1º Andar"],
+["M ESCADA ROL","M","Shaft 1º Andar"],["C SALA SÃO PAULO","C","Piso C"],
+["M CORR PORTINARI","M","Shaft 1º Andar"],["M HALL SOCIAL","M","Shaft 1º Andar"],
+["C FOYER BALLROON","C","Piso C"],["13A HALL DE SERV","13º","Shaft 10º Andar"],
+["C SHAFT DE CFTV","C","Piso C"],["C NEW ORLEANS","C","Piso C"],
+["M CORR AREA TECN","M","Shaft 1º Andar"],["M CORR CASA BLAN","M","Shaft 1º Andar"],
+["L BAD ALMOX","L","Sala TI"],["C CORR TEATR ESQU","C","Piso C"],
+["C CORR TEATR DIR","C","Piso C"],["C CORR PALCO ESQ","C","Piso C"],
+["C COR PALCO DIR","C","Piso C"],["L BAD COZ FRIA","L","Sala TI"],
+["L BAD COZ QUENTE","L","Sala TI"],["L BAD VARANDA","L","Sala TI"],
+["L RESTAURANTE 2","L","Sala TI"],["C CURITIBA","C","Piso C"],
+["G CAMARIN","G","Piso C"],["C BRASILIA","C","Piso C"],
+["C TEATRO PLATEIA","C","Piso C"],["ELEV TEATRO AMAR","C","Piso C"],
+["M HALL JUMBÃO","M","Shaft 1º Andar"],["M ACADENIA","M","Shaft 1º Andar"],
+["M GAUGUIN","M","Shaft 1º Andar"],["M CHAGAL","M","Shaft 1º Andar"],
+["C SANTOS 2","C","Piso C"],["M SALA DILUIDOR","M","Shaft 1º Andar"],
+["C1 PANAMA","C","Piso C"],["C1 VOLP","C","Piso C"],
+["C1 VIVALD 2","C","Piso C"],["C1 BOMENI","C","Piso C"],
+["C1 VIVALD 1","C","Piso C"],["C SALVADOR 2","C","Piso C"],
+["C SANTOS 1","C","Piso C"],["C SALVADOR 1","C","Piso C"],
+["C BACK BALLROON","C","Piso C"],["C BALLROON 3","C","Piso C"],
+["C BACK BALLROON 1","C","Piso C"],["C FOYER SP","C","Piso C"],
+["C SÃO PAULO 1","C","Piso C"],["C BALLROON 4","C","Piso C"],
+["C CURITIBA 2","C","Piso C"],["C ESPAÇO GALERIA","C","Piso C"],
+["C SÃO PAULO 4","C","Piso C"],["C SÃO PAULO 3","C","Piso C"],
+["C SÃO PAULO 2","C","Piso C"],["C CORR TEATRO 1","C","Shaft 1º Andar"],
+["C1 PARANAGUA","C","Piso C"],["M GAUGUIN 2","M","Shaft 1º Andar"],
+["C CURITIBA 1","C","Piso C"],["G TI","G","Shaft 1º Andar"],
+["16 ANDAR","16º","Shaft 10º Andar"],["M MONET","M","Shaft 1º Andar"],
+["10 B1","10º","Shaft 10º Andar"],["10 B3","10º","Shaft 10º Andar"],
+["M RENOIR","M","Shaft 1º Andar"],["M DEGAS","M","Shaft 1º Andar"],
+["M MAISSE","M","Shaft 1º Andar"],["M TARSILA","M","Shaft 1º Andar"],
+["M PORTINARI","M","Shaft 1º Andar"],["10 B2","10º","Shaft 10º Andar"],
+["10 HALL SOCIAL","10º","Shaft 10º Andar"],["10 HALL SERVIÇO","10º","Shaft 10º Andar"],
+["10 10A2","10º","Shaft 10º Andar"],["10 A3","10º","Shaft 10º Andar"],
+["10 A1","10º","Shaft 10º Andar"],["M VOLP","M","Shaft 1º Andar"],
+["M ESC ROLANTE","M","Shaft 1º Andar"],["M CHAGAL 1","M","Shaft 1º Andar"],
+["PTZ GOLDEN","G","Shaft 1º Andar"],["M ACESS FORUM","M","Shaft 1º Andar"],
+["M AUX LIMPEZA","M","Shaft 1º Andar"]
+];
+
+const NOMES_ANALOG = [
+["17 ANDAR","17º","DVR Andares"],["17 ANDAR CORR HELIPONTO","17º","DVR Andares"],
+["Hall Serv 16 andar","16º","DVR Andares"],["17 CORR CASA MAQUINAS","17º","DVR Andares"],
+["Asa A 14 Andar","14º","DVR Andares"],["Asa B14 Andar","14º","DVR Andares"],
+["Hal Serv 14 Andar","14º","DVR Andares"],["Asa A 15 Andar","15º","DVR Andares"],
+["Asa B 15 Andar","15º","DVR Andares"],["Hall Social 15 Andar","15º","DVR Andares"],
+["15 ANDAR HALL SERV","15º","DVR Andares"],["Asa A 11 Andar","11º","DVR Andares"],
+["11 ANDAR HALL SERV","11º","DVR Andares"],["11 ANDAR ASA B","11º","DVR Andares"],
+["ELEVADOR H6","19","DVR Andares"],["ELEVADOR H7","19","DVR Andares"],
+["12 ANDAR HALL SERV","12º","DVR Andares"],["12 ANDAR ASA A","12º","DVR Andares"],
+["12 ANDAR ASA B","12º","DVR Andares"],["ASA B 9 ANDAR","9º","DVR Andares"],
+["ELEVADOR H 5","19","DVR Andares"],["ASA A 9 ANDAR","9º","DVR Andares"],
+["AREA SERV 7 ANDAR","7º","DVR Andares"],["7 ANDAR ASA A","7º","DVR Andares"],
+["AREA SERV 9 ANDAR","9º","DVR Andares"],["7 ANDAR ASA B","7º","DVR Andares"],
+["8 Andar Asa A","8º","DVR Andares"],["8 andar Hall Serv","8º","DVR Andares"],
+["8 ANDAR ASA B","8º","DVR Andares"],["16 HALL SOCIAL","16º","DVR Andares"],
+["L P1","L","DVR Lazer"],["L P 2","L","DVR Lazer"],
+["L DOCAS 1","L","DVR Lazer"],["L ENT DOCAS","L","DVR Lazer"],
+["L SALA Descanso","L","DVR Lazer"],["BUSINESS 1","L","DVR Lazer"],
+["BUSINESS 2","L","DVR Lazer"],["PISO M HALL SERV","M","DVR Lazer"],
+["S3 GOV1","S3","DVR Lazer"],["MALEIRO L","L","DVR Lazer"],
+["S2 WC FEMININO","S2","DVR Lazer"],["DOCAS 3","L","DVR Lazer"],
+["L PORT RECEPÇAO","L","DVR Lazer"],["PTZ LOBY","L","DVR Lazer"],
+["PISO S 3 GOV 2","S3","DVR Lazer"],["ACESSO BUSINNES","L","DVR Lazer"],
+["L ENTRADA GR","L","DVR Lazer"],["C JUMBAO VERDE","C","DVR Lazer"],
+["S3 RESTAURANTE","S3","DVR Lazer"],["L CORREDOR SEG","L","DVR Lazer"],
+["L BUSINNES CENTER","L","DVR Lazer"],["L CAIXA GERAL","L","DVR Lazer"],
+["L CORR T I","L","DVR Lazer"],["PISO C JUBAO V 2","C","DVR Lazer"],
+["PISO C JUMBAO V","C","DVR Lazer"],["CENTRAL SEG","L","DVR Lazer"],
+["ALMOX MANUT","L","DVR Lazer"],["MANUTENCAO 1","L","DVR Lazer"],
+["CAQ","L","DVR Lazer"],["CAQ 2","L","DVR Lazer"],
+["S2 CONFEITARIA","S2","DVR Lazer"],["ADM MANUTENÇÃO","L","DVR Lazer"],
+["S 2 WC MASC","S2","DVR Lazer"],["S2 AREA DESCANÇO","S2","DVR Lazer"],
+["RELOGIO DE PONTO","L","DVR Lazer"],["LAVANDERIA 1","L","DVR Lazer"],
+["LAVANDERIA 2","L","DVR Lazer"],["ADM MANUTENCAO","L","DVR Lazer"]
+];
+
+// ============================================================
+// ESTADO
+// ============================================================
+let cameras = [];
+let filter = 'all';
+let search = '';
+let floorFilter = 'all';
+let legendFilters = {ip:false, analog:false, online:false, offline:false};
+let currentTab = 'cameras';
+let syncing = false;
+let lastSyncTime = null;
+const TOTAL_CAMERAS = 250;
+const TOTAL_OFF = 78;
+
+// ============================================================
+// SYNC GITHUB
+// ============================================================
+function setSyncStatus(status){
+  const el = document.getElementById('syncStatus');
+  const dot = el.querySelector('.pulse-dot');
+  dot.classList.remove('syncing','error');
+  if(status === 'syncing') dot.classList.add('syncing');
+  else if(status === 'error') dot.classList.add('error');
 }
 
-// ============================================================
-// MOBILE MENU
-// ============================================================
-function toggleMobileMenu(){
-  const links = document.querySelector('.nav-links');
-  if(links.style.display === 'flex'){
-    links.style.display = 'none';
-  } else {
-    links.style.display = 'flex';
-    links.style.position = 'absolute';
-    links.style.top = '100%';
-    links.style.left = '0';
-    links.style.right = '0';
-    links.style.background = 'var(--card)';
-    links.style.flexDirection = 'column';
-    links.style.padding = '20px';
-    links.style.gap = '16px';
-    links.style.borderBottom = '1px solid var(--border)';
+async function carregarDoGitHub(){
+  setSyncStatus('syncing');
+  document.getElementById('syncInfo').textContent = '🔄 Carregando do GitHub...';
+  try{
+    const res = await fetch(`${RAW_URL}?t=${Date.now()}`);
+    if(res.ok){
+      const data = await res.json();
+      cameras = Array.isArray(data) ? data : (data.cameras || []);
+      if(cameras.length === 0){
+        cameras = buildInitial();
+        await salvarNoGitHub();
+      }
+      lastSyncTime = new Date();
+      setSyncStatus('ok');
+      document.getElementById('syncInfo').textContent = `✅ Sincronizado (${lastSyncTime.toLocaleTimeString('pt-BR')})`;
+      return;
+    }
+    cameras = buildInitial();
+    await salvarNoGitHub();
+    setSyncStatus('ok');
+    document.getElementById('syncInfo').textContent = '✅ Arquivo criado no GitHub';
+  }catch(e){
+    console.error('Erro ao carregar:', e);
+    carregarLocal();
+    setSyncStatus('error');
+    document.getElementById('syncInfo').textContent = '⚠️ Usando cópia local';
   }
 }
 
-// ============================================================
-// FAQ
-// ============================================================
-function toggleFaq(el){
-  const item = el.parentElement;
-  document.querySelectorAll('.faq-item').forEach(f => {
-    if(f !== item) f.classList.remove('open');
-  });
-  item.classList.toggle('open');
-}
+async function salvarNoGitHub(){
+  if(syncing) return;
+  syncing = true;
+  setSyncStatus('syncing');
+  try{
+    let sha = null;
+    try{
+      const getRes = await fetch(API_URL, { headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }});
+      if(getRes.ok){ const d = await getRes.json(); sha = d.sha; }
+    }catch(e){}
 
-// ============================================================
-// PAGAMENTO
-// ============================================================
-let planoAtual = {nome:'', valor:''};
-let metodoPagamento = 'pix';
+    const jsonStr = JSON.stringify(cameras, null, 2);
+    const content = btoa(unescape(encodeURIComponent(jsonStr)));
 
-function abrirPagamento(plano, valor){
-  planoAtual = {nome:plano, valor:valor};
-  document.getElementById('modalPlanoNome').textContent = plano;
-  document.getElementById('modalPlanoValor').textContent = valor;
-  document.getElementById('modalPagamento').classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
+    const body = { message: `CFTV sync - ${new Date().toLocaleString('pt-BR')}`, content, branch: GITHUB_BRANCH };
+    if(sha) body.sha = sha;
 
-function fecharPagamento(){
-  document.getElementById('modalPagamento').classList.remove('show');
-  document.body.style.overflow = '';
-}
+    const putRes = await fetch(API_URL, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
 
-document.getElementById('modalPagamento').addEventListener('click', (e) => {
-  if(e.target.id === 'modalPagamento') fecharPagamento();
-});
-
-function selectPay(el, tipo){
-  document.querySelectorAll('.pay-method').forEach(p => p.classList.remove('selected'));
-  el.classList.add('selected');
-  metodoPagamento = tipo;
-}
-
-function processarPagamento(){
-  const nome = planoAtual.nome;
-  const valor = planoAtual.valor;
-  
-  // Aqui você integra com o gateway de pagamento real:
-  // - Mercado Pago: https://www.mercadopago.com.br/developers
-  // - Stripe: https://stripe.com/br
-  // - Pagar.me: https://pagar.me
-  // - Asaas: https://www.asaas.com
-  
-  console.log('Processando pagamento:', {plano:nome, valor, metodo:metodoPagamento});
-  
-  mostrarToast(`✅ Teste grátis ativado! Plano ${nome}`, 'success');
-  fecharPagamento();
-  
-  // Em produção, redirecione para o checkout:
-  // window.location.href = `https://checkout.mercadopago.com/...`;
-}
-
-// ============================================================
-// CONTATO
-// ============================================================
-function enviarContato(e){
-  e.preventDefault();
-  const form = e.target;
-  const dados = Object.fromEntries(new FormData(form));
-  
-  console.log('Dados do contato:', dados);
-  
-  // Aqui você integra com:
-  // - EmailJS: https://www.emailjs.com
-  // - Formspree: https://formspree.io
-  // - Web3Forms: https://web3forms.com
-  // - Seu backend próprio
-  
-  mostrarToast('✅ Mensagem enviada! Entraremos em contato em breve.', 'success');
-  form.reset();
-}
-
-// ============================================================
-// TOAST
-// ============================================================
-function mostrarToast(msg, tipo = 'success'){
-  const toast = document.getElementById('toast');
-  const msgEl = document.getElementById('toastMsg');
-  msgEl.textContent = msg;
-  toast.className = 'toast show ' + tipo;
-  setTimeout(() => {
-    toast.classList.remove('show');
-  }, 4000);
-}
-
-// ============================================================
-// ANIMAÇÃO AO ENTRAR NA TELA
-// ============================================================
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if(entry.isIntersecting){
-      entry.target.style.opacity = '1';
-      entry.target.style.transform = 'translateY(0)';
+    if(!putRes.ok){
+      const err = await putRes.json();
+      throw new Error(err.message || 'Erro');
     }
+
+    lastSyncTime = new Date();
+    setSyncStatus('ok');
+    document.getElementById('syncInfo').textContent = `✅ Salvo (${lastSyncTime.toLocaleTimeString('pt-BR')})`;
+    salvarLocal();
+  }catch(e){
+    console.error('Erro ao salvar:', e);
+    setSyncStatus('error');
+    document.getElementById('syncInfo').textContent = `⚠️ Erro: ${e.message}`;
+    salvarLocal();
+  }finally{
+    syncing = false;
+  }
+}
+
+function salvarLocal(){ try{ localStorage.setItem(FALLBACK_KEY, JSON.stringify(cameras)); }catch(e){} }
+function carregarLocal(){
+  try{
+    const s = localStorage.getItem(FALLBACK_KEY);
+    cameras = s ? JSON.parse(s) : buildInitial();
+  }catch(e){ cameras = buildInitial(); }
+}
+
+// ⚠️ Mantidas para uso via console (F12), sem botão na interface
+async function sincronizarManual(){
+  toast('Sincronizando...', 'info');
+  await salvarNoGitHub();
+  await carregarDoGitHub();
+  render();
+}
+function resetar(){
+  if(!confirm('Restaurar dados com 250 câmeras (78 off-line)?')) return;
+  cameras = buildInitial(); render(); salvarNoGitHub();
+  toast('Dados restaurados!');
+}
+
+// ============================================================
+// BUILD INITIAL
+// ============================================================
+function buildInitial(){
+  const now = Date.now();
+  const cams = [];
+  let id = 1;
+  NOMES_IP.forEach(([n,p,local],i) => {
+    cams.push({id:id++, n, ip:`192.168.1.${20+i}`, t:'IP', s:'ok', p, mod:'ONVIF', local, statusSince:now});
   });
-}, { threshold: 0.1 });
+  NOMES_ANALOG.forEach(([n,p,local]) => {
+    cams.push({id:id++, n, ip:'', t:'Analogica', s:'ok', p, mod:'', local, statusSince:now});
+  });
+  while(cams.length < TOTAL_CAMERAS){
+    const idx = cams.length + 1;
+    const piso = ['C','M','L','G','T'][idx % 5];
+    cams.push({id:id++, n:`Câmera Extra ${idx}`, ip:`192.168.1.${200 + (idx % 50)}`,
+      t: idx % 3 === 0 ? 'Analogica' : 'IP', s:'ok', p:piso,
+      mod: idx % 3 === 0 ? '' : 'ONVIF',
+      local: piso === 'C' ? 'Piso C' : piso === 'L' ? 'Sala de Segurança' : 'Shaft 1º Andar',
+      statusSince: now});
+  }
+  cams.splice(TOTAL_CAMERAS);
+  const shuffled = [...cams].sort(()=>Math.random()-0.5);
+  shuffled.slice(0, TOTAL_OFF).forEach(c => {
+    const idx = cams.findIndex(x=>x.id===c.id);
+    cams[idx].s = 'Parada';
+    cams[idx].statusSince = now - (Math.random()*72+1)*3600000;
+  });
+  return cams;
+}
 
-document.querySelectorAll('.feature-card, .step, .pricing-card, .testimonial, .faq-item').forEach(el => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(30px)';
-  el.style.transition = 'opacity .6s ease, transform .6s ease';
-  observer.observe(el);
-});
+// ============================================================
+// HELPERS
+// ============================================================
+function timeAgo(ts){
+  if(!ts) return '';
+  const d = Date.now()-ts, m = Math.floor(d/60000), h = Math.floor(m/60), dy = Math.floor(h/24);
+  if(dy>0) return `há ${dy}d ${h%24}h`;
+  if(h>0) return `há ${h}h ${m%60}min`;
+  if(m>0) return `há ${m}min`;
+  return 'agora';
+}
+function fmtDT(ts){ if(!ts) return '—'; return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+function durH(ts){ return ts ? (Date.now()-ts)/3600000 : 0; }
+function escapeHtml(s){ return s==null ? '' : String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+function normalizeStr(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\s_\-\.]/g,''); }
+
+function toast(msg, type='success'){
+  const el = document.getElementById('toast');
+  el.textContent = (type==='success'?'✅ ':type==='error'?'🔴 ':'ℹ️ ') + msg;
+  el.className = 'toast show' + (type!=='success' ? ' '+type : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>{ el.className = 'toast'; }, 2500);
+}
+
+// ============================================================
+// AÇÕES
+// ============================================================
+function toggleCamera(id){
+  const cam = cameras.find(c=>c.id===id);
+  const novo = cam.s.toLowerCase()==='ok' ? 'Parada' : 'ok';
+  cam.s = novo; cam.statusSince = Date.now();
+  render();
+  salvarNoGitHub();
+  toast(`${cam.n} → ${novo==='ok'?'Ligada':'Desligada'}`, novo==='ok'?'success':'error');
+}
+function toggleLegend(key){
+  legendFilters[key] = !legendFilters[key];
+  document.querySelector(`[data-legend="${key}"]`).classList.toggle('active', legendFilters[key]);
+  render();
+}
+function setFilter(f){
+  filter = f;
+  document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active', b.dataset.filter === f));
+  render();
+}
+function setTab(t){
+  currentTab = t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===t));
+  document.getElementById('tab-cameras-content').style.display = t==='cameras' ? 'block' : 'none';
+  document.getElementById('tab-equipamentos-content').style.display = t==='equipamentos' ? 'block' : 'none';
+  document.getElementById('tab-auditoria-content').style.display = t==='auditoria' ? 'block' : 'none';
+}
+function exportarCSV(){
+  const headers = ['ID','Nome','Tipo','Status','Piso','IP','Modelo','Local','Desde'];
+  const rows = cameras.map(c => [
+    c.id, `"${c.n}"`, c.t, c.s, c.p||'', c.ip||'', c.mod||'', c.local||'',
+    c.s.toLowerCase()==='ok'?'':fmtDT(c.statusSince)
+  ].join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `cftv_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('CSV exportado!');
+}
+
+// ============================================================
+// AUDITORIA
+// ============================================================
+function auditar(){
+  const duplicatasIP = {}, nomesNorm = {}, semPiso = [], semLocal = [], ipsInvalidos = [];
+  cameras.forEach(c => {
+    if(c.ip && c.ip.trim()){
+      if(!duplicatasIP[c.ip]) duplicatasIP[c.ip] = [];
+      duplicatasIP[c.ip].push(c);
+      if(!/^192\.168\.\d{1,3}\.\d{1,3}$/.test(c.ip)) ipsInvalidos.push(c);
+    }
+    const norm = normalizeStr(c.n);
+    if(!nomesNorm[norm]) nomesNorm[norm] = [];
+    nomesNorm[norm].push(c);
+    if(!c.p || !c.p.trim()) semPiso.push(c);
+    if(!c.local || !c.local.trim()) semLocal.push(c);
+  });
+  const ipsDuplicados = Object.entries(duplicatasIP).filter(([k,v])=>v.length>1);
+  const nomesDuplicados = Object.entries(nomesNorm).filter(([k,v])=>v.length>1);
+  return {
+    ipsDuplicados, nomesDuplicados, semPiso, semLocal, ipsInvalidos,
+    totalProblemas: ipsDuplicados.length + nomesDuplicados.length + semPiso.length + semLocal.length + ipsInvalidos.length
+  };
+}
+
+// ============================================================
+// FILTROS
+// ============================================================
+function getFiltered(){
+  return cameras.filter(c => {
+    if(filter==='offline' && c.s.toLowerCase()!=='parada') return false;
+    if(filter==='online' && c.s.toLowerCase()!=='ok') return false;
+    if(floorFilter!=='all' && (c.p||'Sem piso')!==floorFilter) return false;
+    if(search){
+      const q = search.toLowerCase();
+      if(!c.n.toLowerCase().includes(q) && !(c.ip||'').includes(q)
+          && !(c.mod||'').toLowerCase().includes(q)
+          && !(c.local||'').toLowerCase().includes(q)) return false;
+    }
+    const la = Object.keys(legendFilters).filter(k=>legendFilters[k]);
+    if(la.length > 0){
+      let m = false;
+      if(legendFilters.ip && c.t==='IP') m=true;
+      if(legendFilters.analog && c.t==='Analogica') m=true;
+      if(legendFilters.online && c.s.toLowerCase()==='ok') m=true;
+      if(legendFilters.offline && c.s.toLowerCase()==='parada') m=true;
+      if(!m) return false;
+    }
+    return true;
+  });
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render(){
+  const total = cameras.length;
+  const online = cameras.filter(c=>c.s.toLowerCase()==='ok').length;
+  const offline = total - online;
+  const ip = cameras.filter(c=>c.t==='IP').length;
+  const analog = total - ip;
+  const eol = EQUIPAMENTOS.filter(e=>e.status==='eol').length;
+  const servidores = EQUIPAMENTOS.filter(e=>e.tipo==='SRV').length;
+  const audit = auditar();
+
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi" onclick="setFilter('all');legendFilters={ip:false,analog:false,online:false,offline:false};document.querySelectorAll('[data-legend]').forEach(b=>b.classList.remove('active'));render();">
+      <div class="kpi-label">Total</div><div class="kpi-value">${total}</div><small>Câmeras</small></div>
+    <div class="kpi green" onclick="setFilter('online');render();">
+      <div class="kpi-label">Online</div><div class="kpi-value">${online}</div><small>${((online/total)*100).toFixed(1)}%</small></div>
+    <div class="kpi red" onclick="setFilter('offline');render();">
+      <div class="kpi-label">Off-line</div><div class="kpi-value">${offline}</div><small>${((offline/total)*100).toFixed(1)}%</small></div>
+    <div class="kpi blue"><div class="kpi-label">IP</div><div class="kpi-value">${ip}</div><small>Câmeras IP</small></div>
+    <div class="kpi purple"><div class="kpi-label">Analógica</div><div class="kpi-value">${analog}</div><small>Câmeras analógicas</small></div>
+    <div class="kpi amber" onclick="setTab('equipamentos');"><div class="kpi-label">⚠️ EOL</div><div class="kpi-value">${eol}</div><small>Precisam trocar</small></div>
+    <div class="kpi blue" onclick="setTab('equipamentos');"><div class="kpi-label">🖥️ Servidores</div><div class="kpi-value">${servidores}</div><small>Gravação</small></div>
+    <div class="kpi red" onclick="setTab('auditoria');"><div class="kpi-label">🔍 Problemas</div><div class="kpi-value">${audit.totalProblemas}</div><small>Ver auditoria</small></div>
+  `;
+
+  document.getElementById('count-ip').textContent = ip;
+  document.getElementById('count-analog').textContent = analog;
+  document.getElementById('count-online').textContent = online;
+  document.getElementById('count-offline').textContent = offline;
+  document.getElementById('tab-cam-count').textContent = total;
+  document.getElementById('tab-equip-count').textContent = EQUIPAMENTOS.length;
+  document.getElementById('tab-audit-count').textContent = audit.totalProblemas;
+
+  const filtered = getFiltered();
+  const tbody = document.getElementById('tbody');
+  if(filtered.length===0){
+    tbody.innerHTML = '<tr><td colspan="9" class="empty">Nenhuma câmera encontrada</td></tr>';
+  } else {
+    tbody.innerHTML = filtered.map(c => {
+      const isOn = c.s.toLowerCase()==='ok';
+      const h = durH(c.statusSince);
+      let cls = 'offtime';
+      if(h>72) cls += ' critical'; else if(h>24) cls += ' long';
+      const isCritical = !isOn && h > 24;
+      return `<tr class="${isCritical?'row-alert':''}">
+        <td><div class="toggle ${isOn?'on':''}" onclick="toggleCamera(${c.id})"></div></td>
+        <td style="font-weight:600">${escapeHtml(c.n)}</td>
+        <td><span class="badge ${c.t==='IP'?'ip':'analog'}">${c.t}</span></td>
+        <td>${c.p?'<span class="piso">'+escapeHtml(c.p)+'</span>':'—'}</td>
+        <td class="info-cell">${escapeHtml(c.local||'—')}</td>
+        <td class="info-cell">${escapeHtml(c.ip||'—')}</td>
+        <td><span class="badge ${isOn?'ok':'bad'}">${isOn?'● Online':'● Off-line'}</span></td>
+        <td class="info-cell">${isOn?'—':fmtDT(c.statusSince)}</td>
+        <td class="${isOn?'info-cell':cls}">${isOn?'—':timeAgo(c.statusSince)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  const locais = {};
+  EQUIPAMENTOS.forEach(e => { (locais[e.local] = locais[e.local] || []).push(e); });
+  const camPorLocal = {};
+  cameras.forEach(c => {
+    const loc = c.local || 'Sem local';
+    if(!camPorLocal[loc]) camPorLocal[loc] = {total:0, online:0, offline:0};
+    camPorLocal[loc].total++;
+    if(c.s.toLowerCase()==='ok') camPorLocal[loc].online++;
+    else camPorLocal[loc].offline++;
+  });
+  const iconTipo = t => t==='SW'?'fa-network-wired':t==='DVR'?'fa-video':t==='NVR'?'fa-hdd':t==='NOB'?'fa-battery-full':t==='SRV'?'fa-server':t==='MON'?'fa-tv':'fa-microchip';
+  const nomeTipo = t => t==='SW'?'Switch':t==='DVR'?'DVR':t==='NVR'?'NVR':t==='NOB'?'Nobreak':t==='SRV'?'Servidor':t==='MON'?'Monitor':'Equip';
+  const andarDe = local => {
+    if(local === "Central de Segurança" || local === "Sala TI" || local === "Sala da Diretoria" || local === "Sala da Gerência" || local === "Portaria de Serviço") return "Piso L";
+    if(local === "Sala Rio de Janeiro") return "Piso C";
+    if(local === "Shaft 1º Andar") return "1º Andar";
+    if(local === "Shaft 10º Andar") return "10º Andar";
+    if(local === "3SUB2") return "Subsolo 1";
+    return "Outros";
+  };
+  const locaisOrdenados = Object.keys(locais).sort((a, b) => {
+    const ia = ORDEM_LOCAIS.indexOf(a), ib = ORDEM_LOCAIS.indexOf(b);
+    if(ia === -1 && ib === -1) return a.localeCompare(b);
+    if(ia === -1) return 1; if(ib === -1) return -1;
+    return ia - ib;
+  });
+  let htmlEquip = '', andarAtual = '';
+  locaisOrdenados.forEach(local => {
+    const andar = andarDe(local);
+    if(andar !== andarAtual){
+      andarAtual = andar;
+      htmlEquip += `<div style="grid-column:1/-1;margin-top:${htmlEquip?'20px':'0'};margin-bottom:6px;padding:10px 16px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1));border-radius:12px;border-left:4px solid #3b82f6;font-weight:800;font-size:1rem;color:#93c5fd;letter-spacing:.05em">🏢 ${andar}</div>`;
+    }
+    const equips = locais[local];
+    const eolLocal = equips.filter(e=>e.status==='eol').length;
+    const cams = camPorLocal[local] || {total:0, online:0, offline:0};
+    htmlEquip += `<div class="local-card">
+      <div class="local-header">
+        <div class="local-title">📍 ${escapeHtml(local)}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${cams.total>0?'<span class="local-count">🎥 '+cams.total+'</span>':''}
+          ${eolLocal>0?'<span class="badge eol">⚠ '+eolLocal+' EOL</span>':''}
+        </div>
+      </div>
+      <div class="local-body">
+        ${cams.total>0 ? `<div class="local-stats">
+          <div class="stat-box"><div class="num">${cams.total}</div><div class="lbl">Câmeras</div></div>
+          <div class="stat-box ok"><div class="num">${cams.online}</div><div class="lbl">Online</div></div>
+          <div class="stat-box bad"><div class="num">${cams.offline}</div><div class="lbl">Off-line</div></div>
+          <div class="stat-box"><div class="num">${equips.length}</div><div class="lbl">Equip.</div></div>
+        </div>` : ''}
+        <div class="equip-list">
+          ${equips.map(e => `<div class="equip-item ${e.tipo.toLowerCase()} ${e.status==='eol'?'eol':''}">
+            <div class="equip-icon"><i class="fas ${iconTipo(e.tipo)}"></i></div>
+            <div class="equip-info">
+              <div class="equip-name">${escapeHtml(e.nome)}${e.qtd?' <span style="color:#94a3b8">(x'+e.qtd+')</span>':''}</div>
+              <div class="equip-meta"><span>📦 ${escapeHtml(e.modelo)}</span>
+                ${e.obs?'<span style="color:#fca5a5">⚠ '+escapeHtml(e.obs)+'</span>':''}</div>
+            </div>
+            <span class="equip-tag ${e.tipo.toLowerCase()}">${nomeTipo(e.tipo)}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('equipGrid').innerHTML = htmlEquip;
+
+  renderAuditoria(audit);
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('offCount').textContent = offline;
+  document.getElementById('equipCount').textContent = EQUIPAMENTOS.length;
+}
+
+function renderAuditoria(a){
+  const grid = document.getElementById('auditGrid');
+  const card = (color, title, items, renderItem) => `
+    <div class="audit-card">
+      <div class="audit-header ${color}"><div class="audit-title">${title}</div><div class="audit-count">${items.length}</div></div>
+      <div class="audit-body">${items.length===0 ? '<div class="audit-empty">✅ Nenhum problema</div>' : items.map(renderItem).join('')}</div>
+    </div>`;
+  grid.innerHTML =
+    card('red','🔴 IPs Duplicados', a.ipsDuplicados, ([ip, cams]) => `
+      <div class="audit-item red">
+        <div class="audit-item-title">🌐 ${escapeHtml(ip)} <span class="badge dup">${cams.length}x</span></div>
+        <div class="audit-item-detail">${cams.map(c=>`<span>• ${escapeHtml(c.n)} <span style="color:#64748b">(${escapeHtml(c.p||'—')} • ${escapeHtml(c.local||'—')})</span></span>`).join('')}</div>
+      </div>`)
+    + card('red','🔴 IPs Inválidos', a.ipsInvalidos, c => `
+      <div class="audit-item red">
+        <div class="audit-item-title">⚠️ ${escapeHtml(c.n)}</div>
+        <div class="audit-item-detail"><span>IP: <b style="color:#fca5a5">${escapeHtml(c.ip)}</b></span></div>
+      </div>`)
+    + card('amber','⚠️ Nomes Similares', a.nomesDuplicados, ([norm, cams]) => `
+      <div class="audit-item amber">
+        <div class="audit-item-title">📛 ${cams.length} câmeras parecidas</div>
+        <div class="audit-item-detail">${cams.map(c=>`<span>• ${escapeHtml(c.n)} <span style="color:#64748b">(IP: ${escapeHtml(c.ip||'—')})</span></span>`).join('')}</div>
+      </div>`)
+    + card('blue','📋 Sem Piso', a.semPiso, c => `<div class="audit-item"><div class="audit-item-title">${escapeHtml(c.n)}</div><div class="audit-item-detail"><span>Local: ${escapeHtml(c.local||'—')}</span></div></div>`)
+    + card('blue','📋 Sem Local', a.semLocal, c => `<div class="audit-item"><div class="audit-item-title">${escapeHtml(c.n)}</div><div class="audit-item-detail"><span>Piso: ${escapeHtml(c.p||'—')}</span></div></div>`);
+}
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+async function init(){
+  await carregarDoGitHub();
+  const floors = [...new Set(cameras.map(c=>c.p||'Sem piso'))].sort();
+  const sel = document.getElementById('floorFilter');
+  sel.innerHTML = '<option value="all">Todos os pisos</option>';
+  floors.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f; opt.textContent = f;
+    sel.appendChild(opt);
+  });
+  sel.onchange = e => { floorFilter = e.target.value; render(); };
+  document.getElementById('search').oninput = e => { search = e.target.value; render(); };
+
+  function atualizaRelogio(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR'); }
+  atualizaRelogio();
+  setInterval(atualizaRelogio, 1000);
+  setInterval(render, 30000);
+  render();
+}
+
+init();
 </script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 </body>
 </html>
