@@ -152,6 +152,71 @@
   .toast.error{border-color:#ef4444;color:#f87171}
   .toast.info{border-color:#3b82f6;color:#60a5fa}
   @media(max-width:700px){body{padding:12px}h1.title{font-size:1.1rem}.kpis{grid-template-columns:repeat(2,1fr)}.locais-grid{grid-template-columns:1fr}}
+
+  /* ============================================================
+     ABA EQUIPE — CSS isolado (prefixo .eq-)
+  ============================================================ */
+  .eq-wrapper{position:relative;padding:8px 0}
+  .eq-search-box{position:relative;display:flex;align-items:center;gap:10px;width:100%;max-width:420px;margin:0 auto 4px;background:rgba(30,41,59,.85);border:1px solid rgba(148,163,184,.2);border-radius:40px;padding:10px 18px;transition:.25s}
+  .eq-search-box:focus-within{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+  .eq-search-box svg{color:#94a3b8;flex-shrink:0}
+  .eq-search-box input{flex:1;border:none;outline:none;font-size:14px;font-family:inherit;color:#e2e8f0;background:transparent}
+  .eq-search-box input::placeholder{color:#64748b}
+  .eq-search-clear{border:none;background:rgba(148,163,184,.2);color:#cbd5e1;width:20px;height:20px;border-radius:50%;font-size:14px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;transition:.2s}
+  .eq-search-clear:hover{background:rgba(148,163,184,.35)}
+  .eq-search-clear.visible{display:flex}
+
+  .eq-dept-selector{display:flex;justify-content:center;align-items:flex-start;gap:clamp(16px,5vw,56px);padding:40px 0 8px;flex-wrap:wrap}
+  .eq-dept-item{display:flex;flex-direction:column;align-items:center;gap:10px;background:none;border:none;cursor:pointer;transform:translateY(var(--y,0));transition:transform .35s cubic-bezier(.34,1.56,.64,1);font-family:inherit}
+  .eq-dept-item:hover{transform:translateY(calc(var(--y,0) - 6px))}
+  .eq-dept-item img{width:clamp(56px,7vw,72px);height:clamp(56px,7vw,72px);border-radius:50%;object-fit:cover;border:3px solid rgba(148,163,184,.2);box-shadow:0 6px 20px rgba(0,0,0,.4);transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+  .eq-dept-item.active img{border-color:var(--dept-color);box-shadow:0 0 0 4px color-mix(in srgb,var(--dept-color) 30%,transparent),0 10px 30px rgba(0,0,0,.5);transform:scale(1.1)}
+  .eq-dept-label{background:rgba(30,41,59,.9);color:#cbd5e1;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;border:1px solid rgba(148,163,184,.2);transition:.25s}
+  .eq-dept-item.active .eq-dept-label{background:var(--dept-color);color:#fff;border-color:transparent}
+
+  .eq-stack-container{position:relative;display:flex;justify-content:center;width:100%;padding:20px 0 40px;min-height:440px}
+  .eq-card-stack{position:relative;width:100%;max-width:900px;height:400px}
+  .eq-empty-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:14px;font-weight:500}
+
+  .eq-card{position:absolute;bottom:0;left:50%;width:200px;height:280px;margin-left:-100px;background:linear-gradient(180deg,rgba(30,41,59,.95),rgba(15,23,42,.95));border:1px solid rgba(148,163,184,.15);border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.35),0 2px 8px rgba(0,0,0,.2);transform-origin:bottom center;transition:transform .55s cubic-bezier(.34,1.56,.64,1),opacity .35s ease,box-shadow .3s ease;cursor:pointer;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:26px 16px 16px;will-change:transform;outline:none}
+  .eq-card:hover,.eq-card:focus-visible{box-shadow:0 20px 48px rgba(0,0,0,.5),0 0 0 1px rgba(96,165,250,.3)}
+  .eq-card:focus-visible{box-shadow:0 0 0 3px var(--accent),0 20px 48px rgba(0,0,0,.5)}
+  .eq-card-accent{position:absolute;top:0;left:0;right:0;height:6px;background:var(--accent)}
+  .eq-card-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;margin-top:8px;border:3px solid rgba(148,163,184,.2);background:rgba(15,23,42,.5)}
+  .eq-card-name{margin:14px 0 2px;font-size:15px;font-weight:700;text-align:center;line-height:1.2;color:#f1f5f9}
+  .eq-card-role{font-size:11px;color:#94a3b8;text-align:center;line-height:1.3}
+  .eq-card-dept-tag{margin-top:10px;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px}
+  .eq-card-contact{margin-top:auto;width:100%;padding-top:12px;border-top:1px solid rgba(148,163,184,.1);display:flex;flex-direction:column;gap:3px;font-size:10px;color:#64748b;text-align:center;word-break:break-all}
+
+  .eq-status-bar{display:flex;align-items:center;justify-content:center;gap:16px;font-size:13px;color:#94a3b8;padding:8px 0 16px;min-height:40px}
+  .eq-clear-btn{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s}
+  .eq-clear-btn:hover{filter:brightness(1.1)}
+  .eq-clear-btn:active{transform:scale(.96)}
+
+  .eq-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:2000;padding:24px;animation:eqFadeIn .2s ease}
+  @keyframes eqFadeIn{from{opacity:0}to{opacity:1}}
+  .eq-modal{background:linear-gradient(180deg,rgba(30,41,59,.98),rgba(15,23,42,.98));border:1px solid rgba(148,163,184,.2);border-radius:24px;padding:36px 32px 28px;width:100%;max-width:380px;position:relative;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.7);animation:eqPopIn .35s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes eqPopIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .eq-modal-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:26px;color:#64748b;cursor:pointer;line-height:1;font-family:inherit}
+  .eq-modal-close:hover{color:#f1f5f9}
+  .eq-modal-avatar{width:92px;height:92px;border-radius:50%;object-fit:cover;border:4px solid rgba(148,163,184,.2);margin-bottom:12px}
+  .eq-modal h2{font-size:20px;font-weight:700;color:#f1f5f9}
+  .eq-modal-role{color:#94a3b8;font-size:13px;margin-bottom:12px}
+  .eq-modal-dept{display:inline-block;padding:4px 14px;border-radius:20px;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px}
+  .eq-modal-info{display:flex;flex-direction:column;gap:10px;font-size:13px;color:#cbd5e1;padding-top:16px;border-top:1px solid rgba(148,163,184,.15);text-align:left}
+  .eq-modal-info>div{display:flex;flex-direction:column;gap:2px}
+  .eq-modal-info strong{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:700}
+
+  @media(max-width:640px){
+    .eq-card-stack{height:320px}
+    .eq-card{width:150px;height:230px;margin-left:-75px;padding:18px 12px 12px}
+    .eq-card-avatar{width:52px;height:52px}
+    .eq-card-name{font-size:12px}
+    .eq-card-role{font-size:10px}
+    .eq-card-contact{display:none}
+    .eq-dept-selector{gap:10px;padding:24px 0 4px}
+    .eq-stack-container{min-height:360px}
+  }
 </style>
 </head>
 <body>
@@ -171,6 +236,7 @@
     <button class="tab active" data-tab="cameras" onclick="setTab('cameras')">📋 Câmeras <span class="cnt" id="tab-cam-count">0</span></button>
     <button class="tab" data-tab="equipamentos" onclick="setTab('equipamentos')">🖥️ Equipamentos <span class="cnt" id="tab-equip-count">0</span></button>
     <button class="tab" data-tab="auditoria" onclick="setTab('auditoria')">🔍 Auditoria <span class="cnt" id="tab-audit-count">0</span></button>
+    <button class="tab" data-tab="equipe" onclick="setTab('equipe')">👥 Equipe <span class="cnt" id="tab-equipe-count">0</span></button>
   </div>
 
   <div id="tab-cameras-content">
@@ -215,6 +281,30 @@
   <div id="tab-equipamentos-content" style="display:none"><div class="locais-grid" id="equipGrid"></div></div>
   <div id="tab-auditoria-content" style="display:none"><div class="audit-grid" id="auditGrid"></div></div>
 
+  <div id="tab-equipe-content" style="display:none">
+    <div class="eq-wrapper">
+      <div class="eq-search-box">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input type="text" id="eqSearchInput" placeholder="Buscar por nome, cargo ou email..." autocomplete="off" />
+        <button id="eqSearchClear" class="eq-search-clear" aria-label="Limpar busca">×</button>
+      </div>
+
+      <div class="eq-dept-selector" id="eqDeptSelector"></div>
+
+      <div class="eq-stack-container">
+        <div class="eq-card-stack" id="eqCardStack"></div>
+        <div class="eq-empty-state" id="eqEmptyState" style="display:none">Nenhum contato encontrado.</div>
+      </div>
+
+      <div class="eq-status-bar">
+        <span id="eqStatusText">0 contatos</span>
+        <button class="eq-clear-btn" id="eqClearBtn" style="display:none">Ver todos</button>
+      </div>
+    </div>
+  </div>
+
   <div class="footer">
     💾 <span id="syncInfo">Carregando dados do GitHub...</span> • <span id="totalCount">0</span> câmeras • <span id="offCount">0</span> off-line • <span id="equipCount">0</span> equipamentos
   </div>
@@ -222,19 +312,31 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- Modal da aba Equipe -->
+<div class="eq-modal-overlay" id="eqModal" style="display:none">
+  <div class="eq-modal" role="dialog" aria-modal="true">
+    <button class="eq-modal-close" id="eqModalClose" aria-label="Fechar">×</button>
+    <img class="eq-modal-avatar" id="eqModalAvatar" src="" alt="" />
+    <h2 id="eqModalName"></h2>
+    <p class="eq-modal-role" id="eqModalRole"></p>
+    <span class="eq-modal-dept" id="eqModalDept"></span>
+    <div class="eq-modal-info">
+      <div><strong>Email</strong><span id="eqModalEmail"></span></div>
+      <div><strong>Telefone</strong><span id="eqModalPhone"></span></div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // ⚠️⚠️ CONFIGURE AQUI — TOKEN FIXO ⚠️⚠️
 // ============================================================
 const GITHUB_OWNER = 'Italodeveloperhere';
 const GITHUB_REPO = 'cftv-dashboard';
-const GITHUB_TOKEN = 'github_pat_11A7...';   // Seu token novo
-const GITHUB_BRANCH = 'main';                 // 'main' ou 'master'
+const GITHUB_TOKEN = 'github_pat_11A7...';
+const GITHUB_BRANCH = 'main';
 const GITHUB_FILE_PATH = 'cameras.json';
  
-// ============================================================
-// URLs do GitHub
-// ============================================================
 const API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
 const RAW_URL = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_FILE_PATH}`;
 const FALLBACK_KEY = 'cftv_fallback';
@@ -499,7 +601,6 @@ function carregarLocal(){
   }catch(e){ cameras = buildInitial(); }
 }
 
-// ⚠️ Mantidas para uso via console (F12), sem botão na interface
 async function sincronizarManual(){
   toast('Sincronizando...', 'info');
   await salvarNoGitHub();
@@ -595,6 +696,8 @@ function setTab(t){
   document.getElementById('tab-cameras-content').style.display = t==='cameras' ? 'block' : 'none';
   document.getElementById('tab-equipamentos-content').style.display = t==='equipamentos' ? 'block' : 'none';
   document.getElementById('tab-auditoria-content').style.display = t==='auditoria' ? 'block' : 'none';
+  document.getElementById('tab-equipe-content').style.display = t==='equipe' ? 'block' : 'none';
+  if(t==='equipe' && window.eqRecalc) setTimeout(window.eqRecalc, 60);
 }
 function exportarCSV(){
   const headers = ['ID','Nome','Tipo','Status','Piso','IP','Modelo','Local','Desde'];
@@ -673,7 +776,6 @@ function render(){
   const ip = cameras.filter(c=>c.t==='IP').length;
   const analog = total - ip;
   const eol = EQUIPAMENTOS.filter(e=>e.status==='eol').length;
-  const servidores = EQUIPAMENTOS.filter(e=>e.tipo==='SRV').length;
   const audit = auditar();
 
   document.getElementById('kpis').innerHTML = `
@@ -686,7 +788,6 @@ function render(){
     <div class="kpi blue"><div class="kpi-label">IP</div><div class="kpi-value">${ip}</div><small>Câmeras IP</small></div>
     <div class="kpi purple"><div class="kpi-label">Analógica</div><div class="kpi-value">${analog}</div><small>Câmeras analógicas</small></div>
     <div class="kpi amber" onclick="setTab('equipamentos');"><div class="kpi-label">⚠️ EOL</div><div class="kpi-value">${eol}</div><small>Precisam trocar</small></div>
-    <div class="kpi blue" onclick="setTab('equipamentos');"><div class="kpi-label">🖥️ Servidores</div><div class="kpi-value">${servidores}</div><small>Gravação</small></div>
     <div class="kpi red" onclick="setTab('auditoria');"><div class="kpi-label">🔍 Problemas</div><div class="kpi-value">${audit.totalProblemas}</div><small>Ver auditoria</small></div>
   `;
 
@@ -822,6 +923,268 @@ function renderAuditoria(a){
     + card('blue','📋 Sem Piso', a.semPiso, c => `<div class="audit-item"><div class="audit-item-title">${escapeHtml(c.n)}</div><div class="audit-item-detail"><span>Local: ${escapeHtml(c.local||'—')}</span></div></div>`)
     + card('blue','📋 Sem Local', a.semLocal, c => `<div class="audit-item"><div class="audit-item-title">${escapeHtml(c.n)}</div><div class="audit-item-detail"><span>Piso: ${escapeHtml(c.p||'—')}</span></div></div>`);
 }
+
+// ============================================================
+// ABA EQUIPE — lógica isolada em IIFE
+// ============================================================
+(function(){
+  const eqDepartments = [
+    { id: 'rh',        name: 'RH',        color: '#6366f1', avatar: 'https://i.pravatar.cc/150?img=47', yOffset: 20 },
+    { id: 'juridico',  name: 'Jurídico',  color: '#0ea5e9', avatar: 'https://i.pravatar.cc/150?img=32', yOffset: -40 },
+    { id: 'vendas',    name: 'Vendas',    color: '#f59e0b', avatar: 'https://i.pravatar.cc/150?img=44', yOffset: 0 },
+    { id: 'marketing', name: 'Marketing', color: '#10b981', avatar: 'https://i.pravatar.cc/150?img=12', yOffset: 30 },
+  ];
+
+  const eqContacts = [
+    { id: 1, name: 'Ana Souza',     role: 'Gerente de RH',        department: 'rh',        avatar: 'https://i.pravatar.cc/150?img=47', email: 'ana@empresa.com',      phone: '+55 11 99999-0001' },
+    { id: 2, name: 'Bruno Lima',    role: 'Analista de RH',       department: 'rh',        avatar: 'https://i.pravatar.cc/150?img=68', email: 'bruno@empresa.com',    phone: '+55 11 99999-0002' },
+    { id: 3, name: 'Carla Mendes',  role: 'Advogada',             department: 'juridico',  avatar: 'https://i.pravatar.cc/150?img=32', email: 'carla@empresa.com',    phone: '+55 11 99999-0003' },
+    { id: 4, name: 'Diego Rocha',   role: 'Advogado',             department: 'juridico',  avatar: 'https://i.pravatar.cc/150?img=59', email: 'diego@empresa.com',    phone: '+55 11 99999-0004' },
+    { id: 5, name: 'Elisa Prado',   role: 'Executiva de Vendas',  department: 'vendas',    avatar: 'https://i.pravatar.cc/150?img=44', email: 'elisa@empresa.com',    phone: '+55 11 99999-0005' },
+    { id: 6, name: 'Felipe Nunes',  role: 'Consultor de Vendas',  department: 'vendas',    avatar: 'https://i.pravatar.cc/150?img=15', email: 'felipe@empresa.com',   phone: '+55 11 99999-0006' },
+    { id: 7, name: 'Gabi Torres',   role: 'Gerente de Marketing', department: 'marketing', avatar: 'https://i.pravatar.cc/150?img=12', email: 'gabi@empresa.com',     phone: '+55 11 99999-0007' },
+    { id: 8, name: 'Henrique Dias', role: 'Designer',             department: 'marketing', avatar: 'https://i.pravatar.cc/150?img=33', email: 'henrique@empresa.com', phone: '+55 11 99999-0008' },
+  ];
+
+  const eqState = {
+    activeDept: null,
+    query: '',
+    cardEls: new Map(),
+    initialized: false,
+  };
+
+  const deptSelector = document.getElementById('eqDeptSelector');
+  const cardStack    = document.getElementById('eqCardStack');
+  const emptyState   = document.getElementById('eqEmptyState');
+  const statusText   = document.getElementById('eqStatusText');
+  const clearBtn     = document.getElementById('eqClearBtn');
+  const modal        = document.getElementById('eqModal');
+  const searchInput  = document.getElementById('eqSearchInput');
+  const searchClear  = document.getElementById('eqSearchClear');
+
+  const getDept = (id) => eqDepartments.find(d => d.id === id);
+
+  function getVisibleContacts() {
+    const q = eqState.query.trim().toLowerCase();
+    return eqContacts.filter(c => {
+      if (eqState.activeDept && c.department !== eqState.activeDept) return false;
+      if (!q) return true;
+      return (
+        c.name.toLowerCase().includes(q) ||
+        c.role.toLowerCase().includes(q) ||
+        c.email.toLowerCase().includes(q)
+      );
+    });
+  }
+
+  function renderDeptSelector() {
+    deptSelector.innerHTML = '';
+    eqDepartments.forEach(dept => {
+      const btn = document.createElement('button');
+      btn.className = 'eq-dept-item';
+      btn.dataset.dept = dept.id;
+      btn.style.setProperty('--dept-color', dept.color);
+      btn.style.setProperty('--y', dept.yOffset + 'px');
+      btn.setAttribute('aria-label', 'Filtrar por ' + dept.name);
+
+      btn.innerHTML =
+        '<img src="' + dept.avatar + '" alt="" />' +
+        '<span class="eq-dept-label">' + dept.name + '</span>';
+
+      btn.addEventListener('click', () => {
+        eqState.activeDept = eqState.activeDept === dept.id ? null : dept.id;
+        updateActiveDeptButtons();
+        updateLayout();
+      });
+
+      deptSelector.appendChild(btn);
+    });
+  }
+
+  function updateActiveDeptButtons() {
+    deptSelector.querySelectorAll('.eq-dept-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.dept === eqState.activeDept);
+    });
+  }
+
+  function renderAllCards() {
+    cardStack.innerHTML = '';
+    eqState.cardEls.clear();
+    eqContacts.forEach(contact => {
+      const dept = getDept(contact.department);
+      const card = document.createElement('div');
+      card.className = 'eq-card';
+      card.dataset.id = contact.id;
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', contact.name + ', ' + contact.role);
+      card.style.setProperty('--accent', dept ? dept.color : '#1a1a1a');
+
+      card.innerHTML =
+        '<div class="eq-card-accent"></div>' +
+        '<img class="eq-card-avatar" src="' + contact.avatar + '" alt="" />' +
+        '<h3 class="eq-card-name">' + contact.name + '</h3>' +
+        '<p class="eq-card-role">' + contact.role + '</p>' +
+        '<span class="eq-card-dept-tag" style="background:' + (dept ? dept.color : '#1a1a1a') + '">' + (dept ? dept.name : '') + '</span>' +
+        '<div class="eq-card-contact">' +
+          '<span>' + contact.email + '</span>' +
+          '<span>' + contact.phone + '</span>' +
+        '</div>';
+
+      card.addEventListener('mouseenter', () => onCardEnter(contact.id));
+      card.addEventListener('mouseleave', () => onCardLeave(contact.id));
+      card.addEventListener('focus', () => onCardEnter(contact.id));
+      card.addEventListener('blur',  () => onCardLeave(contact.id));
+      card.addEventListener('click', () => openEqModal(contact));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openEqModal(contact);
+        }
+      });
+      card.addEventListener('touchstart', () => onCardEnter(contact.id), { passive: true });
+      card.addEventListener('touchend',   () => onCardLeave(contact.id), { passive: true });
+
+      cardStack.appendChild(card);
+      eqState.cardEls.set(contact.id, card);
+    });
+  }
+
+  function updateLayout() {
+    const visible = getVisibleContacts();
+    const total   = visible.length;
+    const center  = (total - 1) / 2;
+
+    const maxAngle  = 28;
+    const angleStep = total > 1 ? Math.min(20, (maxAngle * 2) / (total - 1)) : 0;
+    const spacingX  = total > 1 ? Math.min(120, 300 / (total - 1)) : 0;
+
+    eqContacts.forEach(contact => {
+      const el = eqState.cardEls.get(contact.id);
+      const visIndex = visible.findIndex(c => c.id === contact.id);
+
+      if (visIndex === -1) {
+        el.style.transform     = 'translateX(0) translateY(60px) scale(0.5)';
+        el.style.opacity       = '0';
+        el.style.pointerEvents = 'none';
+        el.style.zIndex        = '0';
+        el.dataset.baseTransform = el.style.transform;
+        el.dataset.baseZ         = '0';
+        el.tabIndex              = -1;
+        return;
+      }
+
+      const offset   = visIndex - center;
+      const rotation = offset * angleStep;
+      const tx       = offset * spacingX;
+      const scale    = 1 - Math.abs(offset) * 0.035;
+      const zIndex   = Math.round(total - Math.abs(offset));
+
+      const transform = 'translateX(' + tx + 'px) rotate(' + rotation + 'deg) scale(' + scale + ')';
+
+      el.style.transform     = transform;
+      el.style.opacity       = '1';
+      el.style.pointerEvents = 'auto';
+      el.style.zIndex        = zIndex;
+      el.tabIndex            = 0;
+
+      el.dataset.baseTransform = transform;
+      el.dataset.baseZ         = zIndex;
+      el.dataset.tx            = tx;
+    });
+
+    emptyState.style.display = total === 0 ? 'flex' : 'none';
+
+    const deptName = eqState.activeDept ? (getDept(eqState.activeDept) || {}).name : null;
+    let label = total + ' contato' + (total !== 1 ? 's' : '');
+    if (deptName) label += ' em ' + deptName;
+    if (eqState.query) label += ' • busca "' + eqState.query + '"';
+    statusText.textContent = label;
+
+    clearBtn.style.display = (eqState.activeDept || eqState.query) ? 'inline-block' : 'none';
+  }
+
+  function onCardEnter(id) {
+    const el = eqState.cardEls.get(id);
+    if (!el || el.style.opacity === '0') return;
+    const tx = el.dataset.tx || 0;
+    el.style.transform = 'translateX(' + tx + 'px) translateY(-30px) rotate(0deg) scale(1.08)';
+    el.style.zIndex    = '999';
+  }
+
+  function onCardLeave(id) {
+    const el = eqState.cardEls.get(id);
+    if (!el) return;
+    el.style.transform = el.dataset.baseTransform;
+    el.style.zIndex    = el.dataset.baseZ;
+  }
+
+  function openEqModal(contact) {
+    const dept = getDept(contact.department);
+    document.getElementById('eqModalAvatar').src = contact.avatar;
+    document.getElementById('eqModalName').textContent = contact.name;
+    document.getElementById('eqModalRole').textContent = contact.role;
+    const deptEl = document.getElementById('eqModalDept');
+    deptEl.textContent = dept ? dept.name : '';
+    deptEl.style.background = dept ? dept.color : '#1a1a1a';
+    document.getElementById('eqModalEmail').textContent = contact.email;
+    document.getElementById('eqModalPhone').textContent = contact.phone;
+    modal.style.display = 'flex';
+  }
+
+  function closeEqModal() {
+    modal.style.display = 'none';
+  }
+
+  document.getElementById('eqModalClose').addEventListener('click', closeEqModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeEqModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeEqModal();
+  });
+
+  let searchDebounce;
+  searchInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    searchClear.classList.toggle('visible', value.length > 0);
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => {
+      eqState.query = value;
+      updateLayout();
+    }, 120);
+  });
+
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClear.classList.remove('visible');
+    eqState.query = '';
+    updateLayout();
+    searchInput.focus();
+  });
+
+  clearBtn.addEventListener('click', () => {
+    eqState.activeDept = null;
+    eqState.query = '';
+    searchInput.value = '';
+    searchClear.classList.remove('visible');
+    updateActiveDeptButtons();
+    updateLayout();
+  });
+
+  renderDeptSelector();
+  renderAllCards();
+  eqState.initialized = true;
+
+  // Atualiza o count da aba
+  const cnt = document.getElementById('tab-equipe-count');
+  if (cnt) cnt.textContent = eqContacts.length;
+
+  // Expõe função global pro setTab chamar quando a aba ficar visível
+  window.eqRecalc = function(){
+    updateLayout();
+  };
+})();
 
 // ============================================================
 // INICIALIZAÇÃO
